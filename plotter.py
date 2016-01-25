@@ -4,9 +4,9 @@ import tkinter # GUI
 import matplotlib.pyplot as plt
 plt.ion()
 class DynamicUpdatePlot:
-    def __init__(self, datatype, manager):
-        self.datatype = datatype
+    def __init__(self, manager, datatype):
         self.manager = manager
+        self.datatype = datatype
 
         #Set up plot
         self.figure, self.ax = plt.subplots()

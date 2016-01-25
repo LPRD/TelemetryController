@@ -8,8 +8,10 @@ class SerialReader:
     def start(self):
         self.manager.start()
         while True:
-            data = self.ser.readline().decode("utf-8")
-            if data.startswith("@@@@@"):
-                data = data[5:]
-                name, value = data.split(':')
+            line = self.ser.readline().decode("utf-8").rstrip()
+            if line.startswith("@@@@@"):
+                line = line[5:]
+                name, value = line.split(':')
                 self.manager.accept(name, value)
+            else:
+                print(line)
