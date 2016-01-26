@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import manager
-import serialinput
+import serialmanager
 import plotter
 
 if __name__ == '__main__':
@@ -11,5 +11,5 @@ if __name__ == '__main__':
     m = manager.DataManager(dt1, dt2, dt3)
     plot1 = plotter.DynamicUpdatePlot(m, dt1)
     plot2 = plotter.DynamicUpdatePlot(m, dt2)
-    serial_in = serialinput.SerialReader(m)
+    serial_in = serialmanager.SerialManager(m)
     serial_in.start()

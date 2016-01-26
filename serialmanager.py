@@ -1,7 +1,7 @@
 import serial
 import sys
 
-class SerialReader:
+class SerialManager:
     def __init__(self, manager, port='/dev/ttyACM0', baud=9600):
         self.manager = manager
         self.ser = serial.Serial(port, baud)

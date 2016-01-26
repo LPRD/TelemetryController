@@ -1,4 +1,4 @@
-import serialinput
+import serialmanager
 import manager
 
 from tkinter import *
@@ -17,7 +17,7 @@ class Application(Frame):
         self.master = master
 
         self.manager = manager
-        self.serialReader = serialinput.SerialReader(self.manager)
+        self.serialReader = serialmanager.SerialManager(self.manager)
 
         # Init gui
         Frame.__init__(self, master)
