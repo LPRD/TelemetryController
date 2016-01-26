@@ -17,16 +17,18 @@ class Application(Frame):
         self.master = master
 
         self.manager = manager
-        self.serialReader = serialmanager.SerialManager(self.manager)
 
         # Init gui
         Frame.__init__(self, master)
         self.pack()
-        #master.attributes("-fullscreen", True)
+        master.attributes("-fullscreen", True)
         master.bind('<Escape>', self.unmaximize)
         self.createWidgets()
 
         # Start reading from Serial
+        self.checkPorts()
+        self.serialPort.set(serialmanager.serial_ports()[0])
+        self.serialReader = serialmanager.SerialManager(self.manager, self.serialPort.get())
         self.startSerial()
 
     def createWidgets(self):
@@ -63,7 +65,13 @@ class Application(Frame):
         self.exitButton = Button(buttons)
         self.exitButton["text"] = "Quit"
         self.exitButton["command"] = sys.exit
-        self.exitButton.pack()
+        self.exitButton.pack(side=LEFT)
+
+        self.serialPort = StringVar(self)
+        self.serialSelect = OptionMenu(buttons, self.serialPort, *serialmanager.serial_ports(), command=self.changePort)
+        self.serialSelect["text"] = "Select serial port"
+        self.serialSelect.pack()
+        
         buttons.pack()
 
         serialLabel = Label(self, text="Serial console")
@@ -109,3 +117,14 @@ class Application(Frame):
 
     def unmaximize(self, _):
         self.master.attributes("-fullscreen", False)
+
+    def changePort(self, _):
+        self.serialReader = serialmanager.SerialManager(self.manager, self.serialPort.get())
+
+    def checkPorts(self):
+        self.serialSelect['menu'].delete(0, 'end')
+        for port in serialmanager.serial_ports():
+            self.serialSelect['menu'].add_command(label=port, command=lambda p=port: self.serialPort.set(p))
+        self.after(1000, self.checkPorts)
+
+        
