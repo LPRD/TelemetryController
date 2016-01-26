@@ -3,6 +3,7 @@ import manager
 
 from tkinter import *
 from tkinter.scrolledtext import *
+from tkinter.filedialog import askopenfilename, asksaveasfilename
 
 import matplotlib
 #matplotlib.use("TkAgg")
@@ -46,7 +47,9 @@ class Application(Frame):
                 x_data, y_data = self.manager.request(name)
                 sp.clear()
                 sp.set_xlabel('time (sec)')
-                sp.set_ylabel(name)
+                sp.set_title(name + # should be ylabel, but graphics issues
+                             (" (" + self.manager.data_types[name].units + ")"
+                              if self.manager.data_types[name].units else ""))
                 sp.plot([x / 1000 for x in x_data], y_data)
 
         ani = FuncAnimation(self.fig, animate, interval=100)
@@ -67,10 +70,15 @@ class Application(Frame):
         self.exitButton["command"] = sys.exit
         self.exitButton.pack(side=LEFT)
 
-        self.serialPort = StringVar(self)
-        self.serialSelect = OptionMenu(buttons, self.serialPort, *serialmanager.serial_ports(), command=self.changePort)
-        self.serialSelect["text"] = "Select serial port"
-        self.serialSelect.pack()
+        self.openButton = Button(buttons)
+        self.openButton["text"] = "Open..."
+        self.openButton["command"] = self.openFile
+        self.openButton.pack(side=LEFT)
+
+        self.saveButton = Button(buttons)
+        self.saveButton["text"] = "Save as..."
+        self.saveButton["command"] = self.saveFile
+        self.saveButton.pack(side=LEFT)
         
         buttons.pack()
 
@@ -88,6 +96,11 @@ class Application(Frame):
         self.serialIn.bind('<Return>', self.sendSerial)
         self.serialIn.pack()
 
+        self.serialPort = StringVar(self)
+        self.serialSelect = OptionMenu(self, self.serialPort, *serialmanager.serial_ports(), command=self.changePort)
+        self.serialSelect["text"] = "Select serial port"
+        self.serialSelect.pack()
+
     def write(self, txt):
         self.serial.config(state=NORMAL)
         self.serial.insert(END, str(txt))
@@ -96,6 +109,11 @@ class Application(Frame):
 
     def start(self):
         self.manager.start()
+        self.controlButton["text"] = "Stop"
+        self.controlButton["command"] = self.stop
+    
+    def stop(self):
+        self.manager.stop()
         self.controlButton["text"] = "Reset"
         self.controlButton["command"] = self.reset
     
@@ -127,4 +145,18 @@ class Application(Frame):
             self.serialSelect['menu'].add_command(label=port, command=lambda p=port: self.serialPort.set(p))
         self.after(1000, self.checkPorts)
 
+    def openFile(self):
+        filename = askopenfilename()
+        if filename:
+            extension = filename.split('.')[-1]
+            self.manager.load(extension, open(filename).read())
+
+    def saveFile(self):
+        filename = asksaveasfilename()
+        if filename:
+            extension = filename.split('.')[-1]
+            open(filename, 'w').write(self.manager.dump(extension))
+
+            self.controlButton["text"] = "Reset"
+            self.controlButton["command"] = self.reset
         

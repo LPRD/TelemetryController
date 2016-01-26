@@ -6,10 +6,11 @@ import sys
 import matplotlib
 
 class DataType:
-    def __init__(self, name, type=float, plot=True):
+    def __init__(self, name, type=float, plot=True, units=None):
         self.name = name
         self.type = type
         self.plot = plot
+        self.units = units
 
 class DataManager:
     def __init__(self, *data_types):
@@ -33,6 +34,10 @@ class DataManager:
 
     def start(self):
         self.start_time = int(round(time.time() * 1000))
+        self.update_all_listeners()
+
+    def stop(self):
+        self.start_time = None
         self.update_all_listeners()
 
     def reset(self):
@@ -72,22 +77,24 @@ class DataManager:
 
     def dump(self, format):
         if format == 'csv':
-            result = "time" + ",".join(self.data_names) + "\n"
-            current_vals = {d.name: None for d in data_types}
-            for time, updates in sorted(data.items()):
+            result = "time," + ",".join(self.data_names) + "\n"
+            current_vals = {name: None for name in self.data_names}
+            for time, updates in sorted(self.data.items()):
                 for name, update in updates.items():
                     current_vals[name] = update
-                result.append(str(time), ",".join(current_vals[name]
-                                                  if current_vals[name] != None
-                                                  else "" for n in self.data_names) + "\n")
+                result += (str(time) +
+                           "," +
+                           ",".join(str(current_vals[n])
+                                    if current_vals[n] != None
+                                    else "" for n in self.data_names) + "\n")
             return result
         elif format == 'json':
-            return json.dump(self.data)
+            return json.dumps(list(self.data.items()))
         else:
             sys.exit("Unsupported format", format)
 
     def load(self, format, text):
         if format == 'json':
-            self.data = json.load(text)
+            self.data = dict(json.loads(text))
         else:
             sys.exit("Unsupported format", format)
