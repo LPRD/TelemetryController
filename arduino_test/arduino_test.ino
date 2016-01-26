@@ -9,11 +9,14 @@ void loop() {
   Serial.print("@@@@@test2:");
   Serial.println(random(10) + 3.14);
   Serial.print("@@@@@test3:");
-  Serial.println(random(1)? "abc" : "def");
+  Serial.println(random(2) == 1? "abc" : "def");
+  Serial.print("@@@@@test4:");
+  Serial.println(0.01 * random(-100, 100));
+
 
   if (Serial.available()) {
     Serial.print("Data: ");
     Serial.println(Serial.readString());
   }
-  delay(10);
+  delay(100);
 }

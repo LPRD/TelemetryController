@@ -98,3 +98,4 @@ class DataManager:
             self.data = dict(json.loads(text))
         else:
             sys.exit("Unsupported format", format)
+        self.update_all_listeners()
