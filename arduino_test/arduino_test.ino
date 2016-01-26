@@ -10,5 +10,10 @@ void loop() {
   Serial.println(random(10) + 3.14);
   Serial.print("@@@@@test3:");
   Serial.println(random(1)? "abc" : "def");
-  delay(1000);
+
+  if (Serial.available()) {
+    Serial.print("Data: ");
+    Serial.println(Serial.readString());
+  }
+  delay(10);
 }

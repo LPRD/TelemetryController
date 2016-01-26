@@ -6,15 +6,18 @@ import sys
 import matplotlib
 
 class DataType:
-    def __init__(self, name, type=float):
+    def __init__(self, name, type=float, plot=True):
         self.name = name
         self.type = type
+        self.plot = plot
 
 class DataManager:
     def __init__(self, *data_types):
+        self.data_names = [d.name for d in data_types]
         self.data_types = {d.name: d for d in data_types}
         self.data = {}
-        self.listeners = {d.name: [] for d in data_types}
+        self.listeners = {name: [] for name in self.data_names}
+        self.start_time = None
 
     def add_listener(self, name, fn):
         self.listeners[name].append(fn)
@@ -37,6 +40,9 @@ class DataManager:
         self.start_time = None
         self.update_all_listeners()
 
+    def isrunning(self):
+        return self.start_time != None
+
     def accept(self, name, value):
         if self.start_time == None:
             print("Data manager is not running, cannot accept new data")
@@ -48,7 +54,10 @@ class DataManager:
             recieved_time = int(round(time.time() * 1000)) - self.start_time
             if recieved_time not in self.data:
                 self.data[recieved_time] = {}
-            self.data[recieved_time][name] = self.data_types[name].type(value)
+            try:
+                self.data[recieved_time][name] = self.data_types[name].type(value)
+            except ValueError:
+                print("Invalid value for", name, "recieved:", value)
             self.update_listeners(name)
             return True
 
@@ -63,15 +72,14 @@ class DataManager:
 
     def dump(self, format):
         if format == 'csv':
-            names = data_types.keys()
-            result = "time" + ",".join(names) + "\n"
+            result = "time" + ",".join(self.data_names) + "\n"
             current_vals = {d.name: None for d in data_types}
             for time, updates in sorted(data.items()):
                 for name, update in updates.items():
                     current_vals[name] = update
                 result.append(str(time), ",".join(current_vals[name]
                                                   if current_vals[name] != None
-                                                  else "" for n in names) + "\n")
+                                                  else "" for n in self.data_names) + "\n")
             return result
         elif format == 'json':
             return json.dump(self.data)
