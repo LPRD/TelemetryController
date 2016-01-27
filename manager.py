@@ -18,7 +18,7 @@ class DataManager:
         self.data_types = {d.name: d for d in data_types}
         self.data = {}
         self.listeners = {name: [] for name in self.data_names}
-        self.start_time = None
+        self.running = False
 
     def add_listener(self, name, fn):
         self.listeners[name].append(fn)
@@ -33,34 +33,36 @@ class DataManager:
             self.update_listeners(name)
 
     def start(self):
-        self.start_time = int(round(time.time() * 1000))
+        self.running = True
+        self.start_time = None
         self.update_all_listeners()
 
     def stop(self):
-        self.start_time = None
+        self.running = False
         self.update_all_listeners()
 
     def reset(self):
         self.data.clear()
-        self.start_time = None
+        self.running = False
         self.update_all_listeners()
 
-    def isrunning(self):
-        return self.start_time != None
-
-    def accept(self, name, value):
-        if self.start_time == None:
+    def accept(self, name, time, value):
+        if not self.running:
             print("Data manager is not running, cannot accept new data")
             return False
         elif name not in self.data_types:
             print("Received unrecognized data type", name)
             return False
         else:
-            recieved_time = int(round(time.time() * 1000)) - self.start_time
-            if recieved_time not in self.data:
-                self.data[recieved_time] = {}
+            if self.start_time == None:
+                self.start_time = time
+                time = 0
+            else:
+                time -= self.start_time
+            if time not in self.data:
+                self.data[time] = {}
             try:
-                self.data[recieved_time][name] = self.data_types[name].type(value)
+                self.data[time][name] = self.data_types[name].type(value)
             except ValueError:
                 print("Invalid value for", name, "recieved:", value)
             self.update_listeners(name)

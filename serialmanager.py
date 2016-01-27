@@ -3,7 +3,7 @@ import sys
 import glob
 
 class SerialManager:
-    def __init__(self, manager, port='/dev/ttyACM0', baud=9600):
+    def __init__(self, manager, port='/dev/ttyACM0', baud=115200):
         self.manager = manager
         self.ser = serial.Serial(port, baud)
         
@@ -13,22 +13,21 @@ class SerialManager:
             line = self.ser.readline().decode("utf-8").rstrip()
             if line.startswith("@@@@@"):
                 line = line[5:]
-                name, value = line.split(':')
-                self.manager.accept(name, value)
+                time, name, value = line.split(':')
+                self.manager.accept(name, int(time), value)
             else:
                 print(line, file=txtout)
 
     def tryInput(self, txtout=sys.stdout):
         if self.ser.inWaiting():
             line = self.ser.readline().decode("utf-8").rstrip()
-            if self.manager.isrunning():
+            if self.manager.running:
                 if line.startswith("@@@@@"):
                     try:
-                        name, value = line[5:].split(':')
+                        time, name, value = line[5:].split(':')
+                        self.manager.accept(name, int(time), value)
                     except ValueError:
                         print("Ill-formed data packet", line)
-                    else:
-                        self.manager.accept(name, value)
                 else:
                     print(line, file=txtout)
     

@@ -210,9 +210,9 @@ class Application(Frame):
     def openFile(self):
         filename = askopenfilename()
         if filename:
+            self.reset()
             extension = filename.split('.')[-1]
             self.manager.load(extension, open(filename).read())
-            print("opened", filename)
             self.valuesList.delete(0, END)
             self.controlButton["text"] = "Reset"
             self.controlButton["command"] = self.reset
