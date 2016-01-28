@@ -17,7 +17,7 @@ float j = 0;
 long last_sent = 0;
 
 void loop() {
-  if (millis() - last_sent > 500) {
+  if (millis() - last_sent > 100) {
     last_sent = millis();
     Serial.println("Sending data");
     SEND(test1, random(100))
@@ -28,6 +28,7 @@ void loop() {
     SEND(test6, sin(i))
     SEND(test7, i)
     SEND(test8, j)
+    Serial.println(millis());
   
     i += 0.01;
     j += 0.01 * random(-100, 100);

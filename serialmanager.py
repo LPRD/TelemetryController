@@ -1,26 +1,40 @@
 import serial
 import sys
 import glob
+import multiprocessing
+import time
+
+def serialIO(ser, queue):
+    while True:
+        try:
+            queue.put(ser.readline().decode("utf-8").rstrip())
+            time.sleep(1 / 1000)
+        except serial.serialutil.SerialException: # This error causes random crashes, appairently a kernal bug
+            print("Serial error!!!")
+            time.sleep(10 / 1000)
+            pass 
 
 class SerialManager:
     def __init__(self, manager, port='/dev/ttyACM0', baud=115200):
         self.manager = manager
         self.ser = serial.Serial(port, baud)
+        self.running = False
         
     def start(self, txtout=sys.stdout):
-        self.manager.start()
-        while True:
-            line = self.ser.readline().decode("utf-8").rstrip()
-            if line.startswith("@@@@@"):
-                line = line[5:]
-                time, name, value = line.split(':')
-                self.manager.accept(name, int(time), value)
-            else:
-                print(line, file=txtout)
+        self.queue = multiprocessing.Queue()
+        self.proc = multiprocessing.Process(target=serialIO, args=(self.ser, self.queue))
+        self.proc.start()
+        self.running = True
+        
+    def stop(self):
+        self.proc.terminate()
+        self.running = False
 
-    def tryInput(self, txtout=sys.stdout):
-        if self.ser.inWaiting():
-            line = self.ser.readline().decode("utf-8").rstrip()
+    def handleInput(self, txtout=sys.stdout):
+        if not self.running:
+            self.start(txtout)
+        while not self.queue.empty():
+            line = self.queue.get()
             if self.manager.running:
                 if line.startswith("@@@@@"):
                     try:

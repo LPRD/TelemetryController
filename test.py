@@ -17,4 +17,6 @@ if __name__ == '__main__':
     plot1 = plotter.DynamicUpdatePlot(m, dt6)
     plot2 = plotter.DynamicUpdatePlot(m, dt8)
     serial_in = serialmanager.SerialManager(m)
+    
+    m.start()
     serial_in.start()

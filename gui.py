@@ -22,8 +22,9 @@ class Application(Frame):
         # Init gui
         Frame.__init__(self, master)
         self.pack()
-        master.attributes("-fullscreen", True)
+        #master.attributes("-fullscreen", True)
         master.bind('<Escape>', self.unmaximize)
+        master.wm_title("Telemetry monitor")
         self.createWidgets()
 
         # Start reading from Serial
@@ -31,8 +32,12 @@ class Application(Frame):
         ports = serialmanager.serial_ports()
         if ports:
             self.serialPort.set(ports[0])
-            self.serialReader = serialmanager.SerialManager(self.manager, self.serialPort.get())
+            self.serialManager = serialmanager.SerialManager(self.manager, self.serialPort.get())
+            self.startListeners()
+            self.startNonblockListeners()
             self.startSerial()
+
+        self.startListeners()
 
     def createWidgets(self):
         self.fig = matplotlib.figure.Figure(figsize=(10,10),dpi=100)
@@ -47,13 +52,19 @@ class Application(Frame):
 
         update = {name: ([], []) for name in data_names}
 
+        max_points = 100
+
         def get_listener(name):
             def fn(x_data, y_data):
+                # 'Prune' plotted data to avoid slow-down
+                indices = range(0, len(x_data), max(len(x_data) // max_points, 1))
+                x_data = [x_data[i] for i in indices]
+                y_data = [y_data[i] for i in indices]
                 update[name] = x_data, y_data
             return fn
 
         for name in data_names:
-            self.manager.add_listener(name, get_listener(name))
+            self.manager.add_listener(name, get_listener(name), True)
 
         def animate(i):
             for name, sp in subplots.items():
@@ -81,7 +92,7 @@ class Application(Frame):
 
         self.exitButton = Button(buttons)
         self.exitButton["text"] = "Quit"
-        self.exitButton["command"] = sys.exit
+        self.exitButton["command"] = self.terminate
         self.exitButton.pack(side=LEFT)
 
         self.openButton = Button(buttons)
@@ -155,6 +166,11 @@ class Application(Frame):
         self.valuesList.pack()
         valuesTable.pack()
 
+    def terminate(self):
+        if self.serialManager and self.serialManager.running:
+            self.serialManager.stop()
+        sys.exit(0)
+
     def write(self, txt):
         self.serial.config(state=NORMAL)
         self.serial.insert(END, str(txt))
@@ -182,14 +198,9 @@ class Application(Frame):
         self.valuesList.delete(0, END)
         self.controlButton["text"] = "Start"
         self.controlButton["command"] = self.start
-
-    def startSerial(self):
-        if self.serialReader:
-            self.serialReader.tryInput(self)
-            self.after(10, self.startSerial)
         
     def sendSerial(self, _):
-        self.serialReader.write(self.serialIn.get())
+        self.serialManager.write(self.serialIn.get())
         self.serialIn.delete(0, 'end')
 
     def unmaximize(self, _):
@@ -197,7 +208,9 @@ class Application(Frame):
 
     def changePort(self):
         #print("Selected port", self.serialPort.get())
-        self.serialReader = serialmanager.SerialManager(self.manager, self.serialPort.get())
+        if self.serialManager and self.serialManager.running:
+            self.serialManager.stop()
+        self.serialManager = serialmanager.SerialManager(self.manager, self.serialPort.get())
         self.startSerial()
         self.reset()
 
@@ -206,6 +219,19 @@ class Application(Frame):
         for port in serialmanager.serial_ports():
             self.serialSelect['menu'].add_command(label=port, command=lambda p=port: self.serialPort.set(p))
         self.after(1000, self.checkPorts)
+
+    def startListeners(self):
+        self.manager.update_all_listeners()
+        self.after(1000, self.startListeners)
+
+    def startNonblockListeners(self):
+        self.manager.update_all_nonblock_listeners()
+        self.after(250, self.startNonblockListeners)
+
+    def startSerial(self):
+        if self.serialManager:
+            self.serialManager.handleInput(self)
+            self.after(100, self.startSerial)
 
     def openFile(self):
         filename = askopenfilename()
