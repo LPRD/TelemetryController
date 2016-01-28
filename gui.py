@@ -5,6 +5,7 @@ from tkinter import *
 from tkinter.scrolledtext import *
 #from tkinter.ttk import *
 from tkinter.filedialog import askopenfilename, asksaveasfilename
+from tkinter.messagebox import showerror
 
 import matplotlib
 #matplotlib.use("TkAgg")
@@ -36,6 +37,8 @@ class Application(Frame):
             self.startListeners()
             self.startNonblockListeners()
             self.startSerial()
+        else:
+            self.serialManager = None
 
         self.startListeners()
 
@@ -56,6 +59,7 @@ class Application(Frame):
 
         def get_listener(name):
             def fn(x_data, y_data):
+                assert len(x_data) == len(y_data)
                 # 'Prune' plotted data to avoid slow-down
                 indices = range(0, len(x_data), max(len(x_data) // max_points, 1))
                 x_data = [x_data[i] for i in indices]
@@ -178,12 +182,15 @@ class Application(Frame):
         self.serial.config(state=DISABLED)
 
     def start(self):
-        self.manager.start()
-        self.controlButton["text"] = "Stop"
-        self.controlButton["command"] = self.stop
+        if self.serialManager:
+            self.manager.start()
+            self.controlButton["text"] = "Stop"
+            self.controlButton["command"] = self.stop
 
-        for i in range(len(self.manager.data_names)):
-            self.valuesList.insert(i, "")
+            for i in range(len(self.manager.data_names)):
+                self.valuesList.insert(i, "")
+        else:
+            showerror("Error", "No serial port selected")
     
     def stop(self):
         self.manager.stop()
@@ -222,11 +229,11 @@ class Application(Frame):
 
     def startListeners(self):
         self.manager.update_all_listeners()
-        self.after(1000, self.startListeners)
+        self.after(250, self.startListeners)
 
     def startNonblockListeners(self):
         self.manager.update_all_nonblock_listeners()
-        self.after(250, self.startNonblockListeners)
+        self.after(100, self.startNonblockListeners)
 
     def startSerial(self):
         if self.serialManager:

@@ -16,7 +16,7 @@ class DataManager:
     def __init__(self, *data_types):
         self.data_names = [d.name for d in data_types]
         self.data_types = {d.name: d for d in data_types}
-        self.data = OrderedDict()
+        self.data = OrderedDict((name, ([], [])) for name in self.data_names)
         self.listeners = {name: [] for name in self.data_names}
         self.nonblock_listeners = {name: [] for name in self.data_names}
         self.needs_update = {name: False for name in self.data_names}
@@ -69,7 +69,9 @@ class DataManager:
         self.force_update_all_listeners()
 
     def reset(self):
-        self.data.clear()
+        for times, values in self.data.values():
+            times.clear()
+            values.clear()
         self.running = False
         self.force_update_all_listeners()
 
@@ -86,29 +88,28 @@ class DataManager:
                 time = 0
             else:
                 time -= self.start_time
-            if time not in self.data:
-                self.data[time] = {}
             try:
-                self.data[time][name] = self.data_types[name].type(value)
+                self.data[name][1].append(self.data_types[name].type(value))
+                self.data[name][0].append(time)
             except ValueError:
                 print("Invalid value for", name, "recieved:", value)
             self.needs_update[name] = True
             return True
 
     def request(self, name):
-        times = []
-        values = []
-        for time, entries in self.data.items():
-            if name in entries:
-                times.append(time)
-                values.append(entries[name])
-        return times, values
+        return self.data[name]
 
     def dump(self, format):
         if format == 'csv':
             result = "time," + ",".join(self.data_names) + "\n"
+            data = {}
+            for name, (times, values) in self.data.items():
+                for time, value in zip(times, values):
+                    if time not in data:
+                        data[time] = {}
+                    data[time][name] = value
             current_vals = {name: None for name in self.data_names}
-            for time, updates in self.data.items():
+            for time, updates in sorted(data.items()):
                 for name, update in updates.items():
                     current_vals[name] = update
                 result += (str(time) +

@@ -4,7 +4,8 @@
   Serial.print(":");        \
   Serial.print(#field);     \
   Serial.print(":");        \
-  Serial.println(value);      \
+  Serial.println(value);    \
+  Serial.flush();            \
 }
 
 void setup() {
@@ -25,13 +26,13 @@ void loop() {
     SEND(test3, random(2) == 1? "abc" : "def")
     SEND(test4, 0.01 * random(-100, 100))
     SEND(test5, data)
-    SEND(test6, sin(i))
+    SEND(test6, sin((float)millis() / 1000))
     SEND(test7, i)
     SEND(test8, j)
     Serial.println(millis());
   
     i += 0.01;
-    j += 0.01 * random(-100, 100);
+    j += 0.01 * random(-100, 101);
   }
 
   if (Serial.available()) {
