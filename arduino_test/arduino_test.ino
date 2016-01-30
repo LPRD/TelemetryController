@@ -19,7 +19,7 @@ long last_sent = 0;
 long last_sent1 = 0;
 
 void loop() {
-  if (millis() - last_sent > 100) {
+  if (millis() - last_sent > 10) {
     last_sent = millis();
     Serial.println("Sending data");
     SEND(test1, random(100))

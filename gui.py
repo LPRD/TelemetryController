@@ -42,54 +42,7 @@ class Application(Frame):
         self.startListeners()
 
     def createWidgets(self):
-        self.fig = matplotlib.figure.Figure(figsize=(10,10),dpi=100)
-        self.canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.fig, master=self)
-        data_names = [name for name in self.manager.data_names if self.manager.data_types[name].plot]
-        width = int(math.ceil(math.sqrt(len(data_names))))
-        height = width - 1 if width * (width - 1) >= len(data_names) else width
-        subplots = {}
-        lines = {}
-        for i, name in enumerate(data_names):
-            subplots[name] = self.fig.add_subplot(width, height, i + 1)
-            subplots[name].set_title(name)
-            subplots[name].set_xlabel('time (sec)')
-            subplots[name].set_ylabel(self.manager.data_types[name].units if self.manager.data_types[name].units else "")
-            lines[name], = subplots[name].plot([], [])
-        self.fig.tight_layout(pad=2, w_pad=1, h_pad=3.5)
-
-        update = {name: ([], []) for name in data_names}
-
-        max_points = 200
-
-        def get_listener(name):
-            def fn(x_data, y_data):
-                assert len(x_data) == len(y_data)
-                # 'Prune' plotted data to avoid slow-down
-                indices = range(0, len(x_data), max(len(x_data) // max_points, 1))
-                x_data = [x_data[i] for i in indices]
-                y_data = [y_data[i] for i in indices]
-                update[name] = x_data, y_data
-            return fn
-
-        for name in data_names:
-            self.manager.add_listener(name, get_listener(name))
-
-        def animate(i):
-            for name, sp in subplots.items():
-                if update[name]:
-                    x_data, y_data = update[name]
-                    update[name] = None
-                    lines[name].set_xdata([x / 1000 for x in x_data])
-                    lines[name].set_ydata(y_data)
-                    subplots[name].relim()
-                    subplots[name].autoscale_view(None, True, True)
-
-        ani = FuncAnimation(self.fig, animate, interval=100)
-
-        self.canvas.show()
-        self.canvas.get_tk_widget().pack(side=LEFT)
-        self.canvas._tkcanvas.pack(side=LEFT)
-        #self.update() # Is this needed? Causes freezing with lots of plots
+        self.setupPlots()
 
         buttons = Frame(self)
         self.controlButton = Button(buttons)
@@ -172,6 +125,56 @@ class Application(Frame):
         self.namesList.pack(side=LEFT)
         self.valuesList.pack()
         valuesTable.pack()
+
+    def setupPlots(self):
+        self.fig = matplotlib.figure.Figure(figsize=(10,10),dpi=100)
+        self.canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.fig, master=self)
+        data_names = [name for name in self.manager.data_names if self.manager.data_types[name].plot]
+        width = int(math.ceil(math.sqrt(len(data_names))))
+        height = width - 1 if width * (width - 1) >= len(data_names) else width
+        subplots = {}
+        lines = {}
+        for i, name in enumerate(data_names):
+            subplots[name] = self.fig.add_subplot(width, height, i + 1)
+            subplots[name].set_title(name)
+            subplots[name].set_xlabel('time (sec)')
+            subplots[name].set_ylabel(self.manager.data_types[name].units if self.manager.data_types[name].units else "")
+            lines[name], = subplots[name].plot([], [])
+        self.fig.tight_layout(pad=2)
+
+        update = {name: ([], []) for name in data_names}
+
+        max_points = 1000
+
+        def get_listener(name):
+            def fn(x_data, y_data):
+                assert len(x_data) == len(y_data)
+                # 'Prune' plotted data to avoid slow-down
+                indices = range(0, len(x_data), max(len(x_data) // max_points, 1))
+                x_data = [x_data[i] for i in indices]
+                y_data = [y_data[i] for i in indices]
+                update[name] = x_data, y_data
+            return fn
+
+        for name in data_names:
+            self.manager.add_listener(name, get_listener(name))
+
+        def animate(i):
+            for name, sp in subplots.items():
+                if update[name]:
+                    x_data, y_data = update[name]
+                    update[name] = None
+                    lines[name].set_xdata([x / 1000 for x in x_data])
+                    lines[name].set_ydata(y_data)
+                    subplots[name].relim()
+                    subplots[name].autoscale_view(None, True, True)
+
+        ani = FuncAnimation(self.fig, animate, interval=100)
+
+        self.canvas.show()
+        self.canvas.get_tk_widget().pack(side=LEFT)
+        self.canvas._tkcanvas.pack(side=LEFT)
+        #self.update() # Is this needed? Causes freezing with lots of plots
 
     def terminate(self):
         if self.serialManager and self.serialManager.running:
