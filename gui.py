@@ -35,7 +35,6 @@ class Application(Frame):
             self.serialPort.set(ports[0])
             self.serialManager = serialmanager.SerialManager(self.manager, self.serialPort.get())
             self.startListeners()
-            self.startNonblockListeners()
             self.startSerial()
         else:
             self.serialManager = None
@@ -49,13 +48,18 @@ class Application(Frame):
         width = int(math.ceil(math.sqrt(len(data_names))))
         height = width - 1 if width * (width - 1) >= len(data_names) else width
         subplots = {}
+        lines = {}
         for i, name in enumerate(data_names):
             subplots[name] = self.fig.add_subplot(width, height, i + 1)
+            subplots[name].set_title(name)
+            subplots[name].set_xlabel('time (sec)')
+            subplots[name].set_ylabel(self.manager.data_types[name].units if self.manager.data_types[name].units else "")
+            lines[name], = subplots[name].plot([], [])
         self.fig.tight_layout(pad=2, w_pad=1, h_pad=3.5)
 
         update = {name: ([], []) for name in data_names}
 
-        max_points = 100
+        max_points = 200
 
         def get_listener(name):
             def fn(x_data, y_data):
@@ -68,18 +72,17 @@ class Application(Frame):
             return fn
 
         for name in data_names:
-            self.manager.add_listener(name, get_listener(name), True)
+            self.manager.add_listener(name, get_listener(name))
 
         def animate(i):
             for name, sp in subplots.items():
                 if update[name]:
                     x_data, y_data = update[name]
                     update[name] = None
-                    sp.clear()
-                    sp.set_title(name)
-                    sp.set_xlabel('time (sec)')
-                    sp.set_ylabel(self.manager.data_types[name].units if self.manager.data_types[name].units else "")
-                    sp.plot([x / 1000 for x in x_data], y_data)
+                    lines[name].set_xdata([x / 1000 for x in x_data])
+                    lines[name].set_ydata(y_data)
+                    subplots[name].relim()
+                    subplots[name].autoscale_view(None, True, True)
 
         ani = FuncAnimation(self.fig, animate, interval=100)
 
@@ -229,11 +232,7 @@ class Application(Frame):
 
     def startListeners(self):
         self.manager.update_all_listeners()
-        self.after(250, self.startListeners)
-
-    def startNonblockListeners(self):
-        self.manager.update_all_nonblock_listeners()
-        self.after(100, self.startNonblockListeners)
+        self.after(100, self.startListeners)
 
     def startSerial(self):
         if self.serialManager:

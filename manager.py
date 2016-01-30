@@ -18,14 +18,11 @@ class DataManager:
         self.data_types = {d.name: d for d in data_types}
         self.data = OrderedDict((name, ([], [])) for name in self.data_names)
         self.listeners = {name: [] for name in self.data_names}
-        self.nonblock_listeners = {name: [] for name in self.data_names}
         self.needs_update = {name: False for name in self.data_names}
         self.running = False
 
-    def add_listener(self, name, fn, blocking=False):
+    def add_listener(self, name, fn):
         self.listeners[name].append(fn)
-        if not blocking:
-            self.nonblock_listeners[name].append(fn)
 
     def update_listeners(self, name):
         self.needs_update[name] = False
@@ -33,21 +30,10 @@ class DataManager:
         for listener in self.listeners[name]:
             listener(times, values)
 
-    def update_nonblock_listeners(self, name):
-        self.needs_update[name] = False
-        times, values = self.request(name)
-        for listener in self.nonblock_listeners[name]:
-            listener(times, values)
-
     def update_all_listeners(self):
         for name in self.data_types:
             if self.needs_update[name]:
                 self.update_listeners(name)
-
-    def update_all_nonblock_listeners(self):
-        for name in self.data_types:
-            if self.needs_update[name]:
-                self.update_nonblock_listeners(name)
 
     def update_one_listener(self):
         for name in self.data_types:
