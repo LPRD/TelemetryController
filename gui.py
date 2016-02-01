@@ -29,15 +29,15 @@ class Application(Frame):
         self.createWidgets()
 
         # Start reading from Serial
-        self.checkPorts()
+        self.serialManager = None
+        self.checkSerial()
         ports = serialmanager.serial_ports()
         if ports:
             self.serialPort.set(ports[0])
             self.serialManager = serialmanager.SerialManager(self.manager, self.serialPort.get())
+            self.baud.set(self.serialManager.baud)
             self.startListeners()
             self.startSerial()
-        else:
-            self.serialManager = None
 
         self.startListeners()
 
@@ -67,43 +67,48 @@ class Application(Frame):
         
         buttons.pack()
 
-        serialControlLabel = Label(self, text="Serial port")
-        serialControlLabel.pack()
+        serialLabel = Label(self, text="\nSerial console")
+        serialLabel.pack()
 
-        serialControl = Frame(self)
+        serial = Frame(self)
+        serialControls = Frame(self)
 
         self.serialPort = StringVar(self)
-        self.serialSelect = OptionMenu(serialControl, self.serialPort, *(serialmanager.serial_ports() + ['<None>']))
+        self.serialSelect = OptionMenu(serialControls, self.serialPort, *(serialmanager.serial_ports() + ['<None>']))
         self.serialSelect["text"] = "Select serial port"
         self.serialSelect.pack(side=LEFT)
 
-        self.selectPortButton = Button(serialControl)
+        self.baud = StringVar(self)
+        self.baudSelect = OptionMenu(serialControls, self.baud, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200)
+        self.baudSelect["text"] = "Select serial port"
+        self.baudSelect.pack(side=LEFT)
+
+        self.selectPortButton = Button(serialControls)
         self.selectPortButton["text"] = "Select"
-        self.selectPortButton["command"] = self.changePort
+        self.selectPortButton["command"] = self.changeSerial
         self.selectPortButton.pack()
 
-        serialControl.pack()
+        serialControls.pack()
 
-        serialLabel = Label(self, text="Serial console")
-        serialLabel.pack()
+        self.serialOut = ScrolledText(serial, width=50, height=20)
+        self.serialOut.config(state=DISABLED)
+        self.serialOut.pack()
 
-        self.serial = ScrolledText(self, width=50, height=20)
-        self.serial.config(state=DISABLED)
-        self.serial.pack()
+        #serialInLabel = Label(self, text="Serial input")
+        #serialInLabel.pack()
 
-        serialInLabel = Label(self, text="Serial input")
-        serialInLabel.pack()
-
-        self.serialIn = Entry(self)
+        self.serialIn = Entry(serial, width=50)
         self.serialIn.bind('<Return>', self.sendSerial)
         self.serialIn.pack()
 
-        valuesLabel = Label(self, text="Current values")
+        serial.pack()
+
+        valuesLabel = Label(self, text="\nCurrent values")
         valuesLabel.pack()
 
         valuesTable = Frame(self)
-        self.namesList = Listbox(valuesTable, width=12, height=len(self.manager.data_names) + 1)
-        self.valuesList = Listbox(valuesTable, width=30, height=len(self.manager.data_names) + 1)
+        self.namesList = Listbox(valuesTable, width=15, height=len(self.manager.data_names) + 1)
+        self.valuesList = Listbox(valuesTable, width=35, height=len(self.manager.data_names) + 1)
         self.namesList.insert(1, "abs time (ms)")
         def fn(xdata, ydata):
             if xdata:
@@ -182,10 +187,10 @@ class Application(Frame):
         sys.exit(0)
 
     def write(self, txt):
-        self.serial.config(state=NORMAL)
-        self.serial.insert(END, str(txt))
-        self.serial.see(END)
-        self.serial.config(state=DISABLED)
+        self.serialOut.config(state=NORMAL)
+        self.serialOut.insert(END, str(txt))
+        self.serialOut.see(END)
+        self.serialOut.config(state=DISABLED)
 
     def start(self):
         if self.serialManager:
@@ -205,9 +210,9 @@ class Application(Frame):
     
     def reset(self):
         self.manager.reset()
-        self.serial.config(state=NORMAL)
-        self.serial.delete(1.0, 'end')
-        self.serial.config(state=DISABLED)
+        self.serialOut.config(state=NORMAL)
+        self.serialOut.delete(1.0, 'end')
+        self.serialOut.config(state=DISABLED)
         self.valuesList.delete(0, END)
         self.controlButton["text"] = "Start"
         self.controlButton["command"] = self.start
@@ -219,19 +224,19 @@ class Application(Frame):
     def unmaximize(self, _):
         self.master.attributes("-fullscreen", False)
 
-    def changePort(self):
+    def changeSerial(self):
         #print("Selected port", self.serialPort.get())
         if self.serialManager and self.serialManager.running:
             self.serialManager.stop()
-        self.serialManager = serialmanager.SerialManager(self.manager, self.serialPort.get())
+        self.serialManager = serialmanager.SerialManager(self.manager, self.serialPort.get())#, int(self.baud.get()))
         self.startSerial()
         self.reset()
 
-    def checkPorts(self):
+    def checkSerial(self):
         self.serialSelect['menu'].delete(0, 'end')
         for port in serialmanager.serial_ports():
             self.serialSelect['menu'].add_command(label=port, command=lambda p=port: self.serialPort.set(p))
-        self.after(1000, self.checkPorts)
+        self.after(1000, self.checkSerial)
 
     def startListeners(self):
         self.manager.update_all_listeners()
