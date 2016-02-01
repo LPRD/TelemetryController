@@ -87,7 +87,7 @@ class Application(Frame):
         serialLabel = Label(self, text="Serial console")
         serialLabel.pack()
 
-        self.serial = ScrolledText(self, width=50)
+        self.serial = ScrolledText(self, width=50, height=20)
         self.serial.config(state=DISABLED)
         self.serial.pack()
 
@@ -102,9 +102,9 @@ class Application(Frame):
         valuesLabel.pack()
 
         valuesTable = Frame(self)
-        self.namesList = Listbox(valuesTable, width=10)
-        self.valuesList = Listbox(valuesTable, width=30)
-        self.namesList.insert(1, "time (ms)")
+        self.namesList = Listbox(valuesTable, width=12, height=len(self.manager.data_names) + 1)
+        self.valuesList = Listbox(valuesTable, width=30, height=len(self.manager.data_names) + 1)
+        self.namesList.insert(1, "abs time (ms)")
         def fn(xdata, ydata):
             if xdata:
                 self.valuesList.delete(0)

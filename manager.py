@@ -14,6 +14,8 @@ class DataType:
 
 class DataManager:
     def __init__(self, *data_types):
+        data_types = (DataType('sys date', str, False), DataType('sys time', str, False)) + data_types
+
         self.data_names = [d.name for d in data_types]
         self.data_types = {d.name: d for d in data_types}
         self.data = OrderedDict((name, ([], [])) for name in self.data_names)
@@ -61,7 +63,12 @@ class DataManager:
         self.running = False
         self.force_update_all_listeners()
 
-    def accept(self, name, time, value):
+    def accept(self, name, in_time, value):
+        assert self._accept("sys date", in_time, time.strftime("%d/%m/%Y"))
+        assert self._accept("sys time", in_time, time.strftime("%H:%M:%S"))
+        return self._accept(name, in_time, value)
+        
+    def _accept(self, name, time, value):
         if not self.running:
             print("Data manager is not running, cannot accept new data")
             return False
@@ -87,7 +94,7 @@ class DataManager:
 
     def dump(self, format):
         if format == 'csv':
-            result = "time," + ",".join(self.data_names) + "\n"
+            result = "abs time," + ",".join(self.data_names) + "\n"
             data = {}
             for name, (times, values) in self.data.items():
                 for time, value in zip(times, values):
