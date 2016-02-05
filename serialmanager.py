@@ -1,50 +1,38 @@
 import serial
 import sys
 import glob
-import multiprocessing
 import time
 
-def serialIO(ser, queue):
-    while True:
-        try:
-            queue.put(ser.readline().decode("utf-8").rstrip())
-            time.sleep(1 / 1000)
-        except serial.serialutil.SerialException: # This error causes random crashes, appairently a kernal bug
-            print("Serial error!!!")
-            time.sleep(10 / 1000)
-            pass 
-
 class SerialManager:
-    def __init__(self, manager, port='/dev/ttyACM0', baud=115200):
+    def __init__(self, manager, port='/dev/ttyACM0', baud=9600):
         self.manager = manager
         self.baud = baud
         self.ser = serial.Serial(port, baud)
-        self.running = False
-        
-    def start(self, txtout=sys.stdout):
-        self.queue = multiprocessing.Queue()
-        self.proc = multiprocessing.Process(target=serialIO, args=(self.ser, self.queue))
-        self.proc.start()
-        self.running = True
-        
-    def stop(self):
-        self.proc.terminate()
-        self.running = False
+        self.current_line = ""
 
     def handleInput(self, txtout=sys.stdout):
-        if not self.running:
-            self.start(txtout)
-        while not self.queue.empty():
-            line = self.queue.get()
-            if self.manager.running:
-                if line.startswith("@@@@@"):
+        if self.ser.in_waiting:
+            try:
+                bytes_in = self.ser.read(self.ser.in_waiting)
+            except serial.serialutil.SerialException:
+                time.sleep(10 / 1000)
+            decode = bytes_in.decode("utf-8")
+            lines = (decode + self.current_line).split("\r\n")
+            for line in lines[:-1]:
+                if line.startswith("@@@@@") and line.endswith("&&&&&"):
                     try:
-                        time, name, value = line[5:].split(':')
-                        self.manager.accept(name, int(time), value)
+                        time, name, value = line[5:][:-5].split(':')
+                        if self.manager.running:
+                            self.manager.accept(name, int(time), value)
                     except ValueError:
                         print("Ill-formed data packet", line)
                 else:
                     print(line, file=txtout)
+            if lines[-1].startswith("@"):
+                self.current_line = lines[-1]
+            else:
+                print(lines[-1], end='', file=txtout)
+                self.current_line = ""
     
     def write(self, txt):
         self.ser.write(txt.encode())

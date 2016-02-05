@@ -4,8 +4,9 @@
   Serial.print(":");        \
   Serial.print(#field);     \
   Serial.print(":");        \
-  Serial.println(value);    \
-  Serial.flush();            \
+  Serial.print(value);      \
+  Serial.println("&&&&&");  \
+  Serial.flush();           \
 }
 
 void setup() {

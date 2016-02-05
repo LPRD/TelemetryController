@@ -182,8 +182,6 @@ class Application(Frame):
         #self.update() # Is this needed? Causes freezing with lots of plots
 
     def terminate(self):
-        if self.serialManager and self.serialManager.running:
-            self.serialManager.stop()
         sys.exit(0)
 
     def write(self, txt):
@@ -210,9 +208,6 @@ class Application(Frame):
     
     def reset(self):
         self.manager.reset()
-        self.serialOut.config(state=NORMAL)
-        self.serialOut.delete(1.0, 'end')
-        self.serialOut.config(state=DISABLED)
         self.valuesList.delete(0, END)
         self.controlButton["text"] = "Start"
         self.controlButton["command"] = self.start
@@ -226,8 +221,6 @@ class Application(Frame):
 
     def changeSerial(self):
         #print("Selected port", self.serialPort.get())
-        if self.serialManager and self.serialManager.running:
-            self.serialManager.stop()
         self.serialManager = serialmanager.SerialManager(self.manager, self.serialPort.get())#, int(self.baud.get()))
         self.startSerial()
         self.reset()
