@@ -36,7 +36,6 @@ class Application(Frame):
             self.serialPort.set(ports[0])
             self.serialManager = serialmanager.SerialManager(self.manager, self.serialPort.get())
             self.baud.set(self.serialManager.baud)
-            self.startListeners()
             self.startSerial()
 
         self.startListeners()
@@ -208,7 +207,6 @@ class Application(Frame):
     
     def reset(self):
         self.manager.reset()
-        self.valuesList.delete(0, END)
         self.controlButton["text"] = "Start"
         self.controlButton["command"] = self.start
         
@@ -221,9 +219,13 @@ class Application(Frame):
 
     def changeSerial(self):
         #print("Selected port", self.serialPort.get())
+        self.serialOut.config(state=NORMAL)
+        self.serialOut.delete(1.0, 'end')
+        self.serialOut.config(state=DISABLED)
+        self.valuesList.delete(0, END)
+        self.reset()
         self.serialManager = serialmanager.SerialManager(self.manager, self.serialPort.get())#, int(self.baud.get()))
         self.startSerial()
-        self.reset()
 
     def checkSerial(self):
         self.serialSelect['menu'].delete(0, 'end')
