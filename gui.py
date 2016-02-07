@@ -16,7 +16,8 @@ from matplotlib.animation import FuncAnimation
 import math
 
 class Application(Frame):
-    def __init__(self, manager, master=None):
+    def __init__(self, dispatcher, manager, master=None):
+        self.dispatcher = dispatcher
         self.manager = manager
         self.master = master
 
@@ -34,7 +35,7 @@ class Application(Frame):
         ports = serialmanager.serial_ports()
         if ports:
             self.serialPort.set(ports[0])
-            self.serialManager = serialmanager.SerialManager(self.manager, self.serialPort.get())
+            self.serialManager = serialmanager.SerialManager(self.dispatcher, self.serialPort.get())
             self.baud.set(self.serialManager.baud)
             self.startSerial()
 
@@ -106,25 +107,23 @@ class Application(Frame):
         valuesLabel.pack()
 
         valuesTable = Frame(self)
-        self.namesList = Listbox(valuesTable, width=15, height=len(self.manager.data_names) + 1)
-        self.valuesList = Listbox(valuesTable, width=35, height=len(self.manager.data_names) + 1)
+        self.namesList = Listbox(valuesTable, width=15, height=len(self.dispatcher.data_names) + 1)
+        self.valuesList = Listbox(valuesTable, width=35, height=len(self.dispatcher.data_names) + 1)
         self.namesList.insert(1, "abs time (ms)")
         def fn(xdata, ydata):
-            if xdata:
-                self.valuesList.delete(0)
-                self.valuesList.insert(0, str(xdata[-1]))
-        self.manager.add_listener(self.manager.data_names[0], fn)
-        for i, name in enumerate(self.manager.data_names):
-            if self.manager.data_types[name].units:
-                full_name = name + " (" + self.manager.data_types[name].units + ")"
+            self.valuesList.delete(0)
+            self.valuesList.insert(0, str(xdata))
+        self.dispatcher.add_listener('sys time', fn, 100)
+        for i, name in enumerate(self.dispatcher.data_names):
+            if self.dispatcher.data_types[name].units:
+                full_name = name + " (" + self.dispatcher.data_types[name].units + ")"
             else:
                 full_name = name
             self.namesList.insert(i + 1, full_name)
             def fn(xdata, ydata, i = i):
-                if ydata:
-                    self.valuesList.delete(i + 1)
-                    self.valuesList.insert(i + 1, str(ydata[-1]))
-            self.manager.add_listener(name, fn)
+                self.valuesList.delete(i + 1)
+                self.valuesList.insert(i + 1, str(ydata))
+            self.dispatcher.add_listener(name, fn, 100)
 
         self.namesList.pack(side=LEFT)
         self.valuesList.pack()
@@ -133,7 +132,7 @@ class Application(Frame):
     def setupPlots(self):
         self.fig = matplotlib.figure.Figure(figsize=(10,10),dpi=100)
         self.canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.fig, master=self)
-        data_names = [name for name in self.manager.data_names if self.manager.data_types[name].plot]
+        data_names = [name for name in self.dispatcher.data_names if self.dispatcher.data_types[name].plot]
         width = int(math.ceil(math.sqrt(len(data_names))))
         height = width - 1 if width * (width - 1) >= len(data_names) else width
         subplots = {}
@@ -142,7 +141,7 @@ class Application(Frame):
             subplots[name] = self.fig.add_subplot(width, height, i + 1)
             subplots[name].set_title(name)
             subplots[name].set_xlabel('time (sec)')
-            subplots[name].set_ylabel(self.manager.data_types[name].units if self.manager.data_types[name].units else "")
+            subplots[name].set_ylabel(self.dispatcher.data_types[name].units if self.dispatcher.data_types[name].units else "")
             lines[name], = subplots[name].plot([], [])
         self.fig.tight_layout(pad=2)
 
@@ -195,7 +194,7 @@ class Application(Frame):
             self.controlButton["text"] = "Stop"
             self.controlButton["command"] = self.stop
 
-            for i in range(len(self.manager.data_names)):
+            for i in range(len(self.dispatcher.data_names)):
                 self.valuesList.insert(i, "")
         else:
             showerror("Error", "No serial port selected")

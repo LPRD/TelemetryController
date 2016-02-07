@@ -4,8 +4,8 @@ import glob
 import time
 
 class SerialManager:
-    def __init__(self, manager, port='/dev/ttyACM0', baud=9600):
-        self.manager = manager
+    def __init__(self, dispatcher, port='/dev/ttyACM0', baud=9600):
+        self.dispatcher = dispatcher
         self.baud = baud
         self.ser = serial.Serial(port, baud)
         self.current_line = ""
@@ -22,8 +22,7 @@ class SerialManager:
                 if line.startswith("@@@@@") and line.endswith("&&&&&"):
                     try:
                         time, name, value = line[5:][:-5].split(':')
-                        if self.manager.running:
-                            self.manager.accept(name, int(time), value)
+                        self.dispatcher.accept(name, int(time), value)
                     except ValueError:
                         print("Ill-formed data packet", line)
                 else:

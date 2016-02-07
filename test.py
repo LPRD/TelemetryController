@@ -13,10 +13,13 @@ if __name__ == '__main__':
     dt6 = manager.DataType('test6', float)
     dt7 = manager.DataType('test7', float)
     dt8 = manager.DataType('test8', float)
-    m = manager.DataManager(dt1, dt2, dt3, dt4, dt5, dt6, dt7, dt8)
+    d = manager.Dispatcher(dt1, dt2, dt3, dt4, dt5, dt6, dt7, dt8)
+    m = manager.DataManager(d)
     plot1 = plotter.DynamicUpdatePlot(m, dt6)
     plot2 = plotter.DynamicUpdatePlot(m, dt8)
-    serial_in = serialmanager.SerialManager(m)
+    serial_in = serialmanager.SerialManager(d, serialmanager.serial_ports()[0])
     
     m.start()
-    serial_in.start()
+    while True:
+        serial_in.handleInput()
+        m.update_all_listeners()
