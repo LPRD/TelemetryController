@@ -7,5 +7,5 @@ Python matplotlib-based graphical viewer for telemetry streams
 * Add button to send newline
 * Remove explict 'Select' button for serial
 
-# Major
+## Major
 * Extensible gui panel?  
