@@ -71,7 +71,7 @@ class Application(Frame):
         serialLabel.pack()
 
         serial = Frame(self)
-        serialControls = Frame(self)
+        serialControls = Frame(serial)
 
         self.serialPort = StringVar(self)
         self.serialSelect = OptionMenu(serialControls, self.serialPort, *(serialmanager.serial_ports() + ['<None>']))
@@ -90,7 +90,7 @@ class Application(Frame):
 
         serialControls.pack()
 
-        self.serialOut = ScrolledText(serial, width=50, height=20)
+        self.serialOut = ScrolledText(serial, width=50, height=15)
         self.serialOut.config(state=DISABLED)
         self.serialOut.pack()
 
@@ -101,18 +101,58 @@ class Application(Frame):
         self.serialIn.bind('<Return>', self.sendSerial)
         self.serialIn.pack()
 
+        serialSendButtons = Frame(serial)
+
+        self.sendButton = Button(serialSendButtons)
+        self.sendButton["text"] = "Send"
+        self.sendButton["command"] = self.sendSerial
+        self.sendButton.pack(side=LEFT)
+
+        self.sendNewlineButton = Button(serialSendButtons)
+        self.sendNewlineButton["text"] = "Send with newline"
+        self.sendNewlineButton["command"] = self.sendSerialNewline
+        self.sendNewlineButton.pack(side=LEFT)
+
+        serialSendButtons.pack()
+
+        serialSendButtons = Frame(serial)
+
         serial.pack()
+
+        sendValuesLabel = Label(self, text="\nSend value")
+        sendValuesLabel.pack()
+
+        sendValues = Frame(self)
+
+        self.sendDataName = StringVar(self)
+        self.sendDataName.set(self.dispatcher.data_names[2])
+        self.sendDataNameSelect = OptionMenu(sendValues, self.sendDataName, *self.dispatcher.data_names[2:])
+        self.sendDataNameSelect["text"] = "Select serial port"
+        self.sendDataNameSelect.pack(side=LEFT)
+
+        self.sendDataIn = Entry(sendValues, width=25)
+        self.sendDataIn.bind('<Return>', self.sendValues)
+        self.sendDataIn.pack(side=LEFT)
+
+        # self.sendDataButton = Button(sendValues)
+        # self.sendDataButton["text"] = "Send"
+        # self.sendDataButton["command"] = self.sendValues
+        # self.sendDataButton.pack(side=LEFT)
+
+        sendValues.pack()
 
         valuesLabel = Label(self, text="\nCurrent values")
         valuesLabel.pack()
 
         valuesTable = Frame(self)
+
         self.namesList = Listbox(valuesTable, width=15, height=len(self.dispatcher.data_names) + 1)
         self.valuesList = Listbox(valuesTable, width=35, height=len(self.dispatcher.data_names) + 1)
-        self.namesList.insert(1, "abs time (ms)")
+        self.namesList.insert(0, "abs time (ms)")
+        self.valuesList.insert(0, "")
         def fn(xdata, ydata):
             self.valuesList.delete(0)
-            self.valuesList.insert(0, str(xdata))
+            self.valuesList.insert(0, str(xdata) if xdata else "")
         self.dispatcher.add_listener('sys time', fn, 100)
         for i, name in enumerate(self.dispatcher.data_names):
             if self.dispatcher.data_types[name].units:
@@ -120,13 +160,16 @@ class Application(Frame):
             else:
                 full_name = name
             self.namesList.insert(i + 1, full_name)
+            self.valuesList.insert(i + 1, "")
             def fn(xdata, ydata, i = i):
+                print(i + 1, str(ydata))
                 self.valuesList.delete(i + 1)
                 self.valuesList.insert(i + 1, str(ydata))
             self.dispatcher.add_listener(name, fn, 100)
 
         self.namesList.pack(side=LEFT)
         self.valuesList.pack()
+
         valuesTable.pack()
 
     def setupPlots(self):
@@ -209,9 +252,31 @@ class Application(Frame):
         self.controlButton["text"] = "Start"
         self.controlButton["command"] = self.start
         
-    def sendSerial(self, _):
-        self.serialManager.write(self.serialIn.get())
-        self.serialIn.delete(0, 'end')
+    def sendSerial(self, _=None):
+        if self.serialManager:
+            self.serialManager.write(self.serialIn.get())
+            self.serialIn.delete(0, 'end')
+        else:
+            showerror("Error", "No serial port selected")
+        
+    def sendSerialNewline(self, _=None):
+        if self.serialManager:
+            self.serialManager.write(self.serialIn.get() + "\r\n")
+            self.serialIn.delete(0, 'end')
+        else:
+            showerror("Error", "No serial port selected")
+        
+    def sendValues(self, _=None):
+        if self.serialManager:
+            try:
+                self.dispatcher.data_types[self.sendDataName.get()].type(self.sendDataIn.get())
+            except ValueError:
+                showerror("Error", "Invalid value format for " + self.sendDataName.get() + ": " + self.sendDataIn.get())
+            else:
+                self.serialManager.write("@@@@@:" + self.sendDataName.get() + ":" + self.sendDataIn.get() + "&&&&&\r\n")
+            self.sendDataIn.delete(0, 'end')
+        else:
+            showerror("Error", "No serial port selected")
 
     def unmaximize(self, _):
         self.master.attributes("-fullscreen", False)

@@ -22,7 +22,7 @@ class SerialManager:
                 if line.startswith("@@@@@") and line.endswith("&&&&&"):
                     try:
                         time, name, value = line[5:][:-5].split(':')
-                        self.dispatcher.accept(name, int(time), value)
+                        self.dispatcher.accept(name, int(time) if time else None, value)
                     except ValueError:
                         print("Ill-formed data packet", line)
                 else:

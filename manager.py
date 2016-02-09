@@ -42,11 +42,12 @@ class Dispatcher:
             print("Received unrecognized data type", name)
             return False
         else:
-            if self.start_time == None:
-                self.start_time = time
-                time = 0
-            else:
-                time -= self.start_time
+            if time != None:
+                if self.start_time == None:
+                    self.start_time = time
+                    time = 0
+                else:
+                    time -= self.start_time
             try:
                 self.data[name] = self.data_types[name].type(value)
                 self.time[name] = time
@@ -55,9 +56,10 @@ class Dispatcher:
 
             for l in self.listeners[name]:
                 delay, last, listener = l
-                if time - last > delay:
+                if time == None or time - last > delay:
                     listener(*self.request(name))
-                    l[1] = time
+                    if time != None:
+                        l[1] = time
             return True
 
     def request(self, name):
@@ -73,7 +75,7 @@ class DataManager:
 
         for name in dispatcher.data_names:
             def fn(time, value, name=name):
-                if self.running:
+                if self.running and time != None:
                     self.data[name][0].append(time)
                     self.data[name][1].append(value)
                     self.needs_update[name] = True
