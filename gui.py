@@ -205,16 +205,17 @@ class Application(Frame):
             self.manager.add_listener(name, get_listener(name))
 
         def animate(i):
-            for name, sp in subplots.items():
-                if update[name]:
-                    x_data, y_data = update[name]
-                    update[name] = None
-                    lines[name].set_xdata([x / 1000 for x in x_data])
-                    lines[name].set_ydata(y_data)
-                    subplots[name].relim()
-                    subplots[name].autoscale_view(None, True, True)
+            if self.manager.running:
+                for name, sp in subplots.items():
+                    if update[name]:
+                        x_data, y_data = update[name]
+                        update[name] = None
+                        lines[name].set_xdata([x / 1000 for x in x_data])
+                        lines[name].set_ydata(y_data)
+                        subplots[name].relim()
+                        subplots[name].autoscale_view(None, True, True)
 
-        ani = FuncAnimation(self.fig, animate, interval=100)
+        ani = FuncAnimation(self.fig, animate, interval=200)
 
         self.canvas.show()
         self.canvas.get_tk_widget().pack(side=LEFT)
@@ -287,7 +288,7 @@ class Application(Frame):
         self.serialOut.config(state=DISABLED)
         self.valuesList.delete(0, END)
         self.reset()
-        self.serialManager = serialmanager.SerialManager(self.manager, self.serialPort.get())#, int(self.baud.get()))
+        self.serialManager = serialmanager.SerialManager(self.dispatcher, self.serialPort.get())#, int(self.baud.get()))
         self.startSerial()
 
     def checkSerial(self):
