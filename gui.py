@@ -162,7 +162,6 @@ class Application(Frame):
             self.namesList.insert(i + 1, full_name)
             self.valuesList.insert(i + 1, "")
             def fn(xdata, ydata, i = i):
-                print(i + 1, str(ydata))
                 self.valuesList.delete(i + 1)
                 self.valuesList.insert(i + 1, str(ydata))
             self.dispatcher.add_listener(name, fn, 100)
@@ -298,13 +297,17 @@ class Application(Frame):
         self.after(1000, self.checkSerial)
 
     def startListeners(self):
-        self.manager.update_all_listeners()
-        self.after(100, self.startListeners)
+        if self.manager.update_all_listeners():
+            self.after(50, self.startListeners)
+        else:
+            self.after(100, self.startListeners)
 
     def startSerial(self):
         if self.serialManager:
-            self.serialManager.handleInput(self)
-            self.after(100, self.startSerial)
+            if self.serialManager.handleInput(self):
+                self.after(50, self.startSerial)
+            else:
+                self.after(100, self.startSerial)
 
     def openFile(self):
         filename = askopenfilename()

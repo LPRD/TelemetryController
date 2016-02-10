@@ -32,6 +32,8 @@ class SerialManager:
             else:
                 print(lines[-1], end='', file=txtout)
                 self.current_line = ""
+            return True
+        return False
     
     def write(self, txt):
         self.ser.write(txt.encode())

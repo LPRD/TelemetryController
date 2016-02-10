@@ -91,9 +91,12 @@ class DataManager:
             listener(times, values)
 
     def update_all_listeners(self, force=False):
+        updated = False
         for name in self.dispatcher.data_types:
             if self.needs_update[name] or force:
                 self.update_listeners(name)
+                updated = True
+        return updated
 
     def request(self, name):
         return self.data[name]
