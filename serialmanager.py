@@ -17,8 +17,9 @@ class SerialManager:
             except serial.serialutil.SerialException:
                 time.sleep(10 / 1000)
             decode = bytes_in.decode("utf-8", errors='ignore')
-            lines = (self.current_line + decode).split("\r\n")
+            lines = (self.current_line + decode).split("\n")
             for line in lines[:-1]:
+                line = line.strip("\r")
                 if line.startswith("@@@@@") and line.endswith("&&&&&"):
                     try:
                         time, name, value = line[5:][:-5].split(':')
