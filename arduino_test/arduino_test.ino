@@ -10,10 +10,10 @@
 }
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
 }
 
-String data = "";
+String data = "abcd";
 float i = 0;
 float j = 0;
 long last_sent = 0;

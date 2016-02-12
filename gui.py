@@ -83,6 +83,11 @@ class Application(Frame):
         self.baudSelect["text"] = "Select serial port"
         self.baudSelect.pack(side=LEFT)
 
+        self.refreshPortButton = Button(serialControls)
+        self.refreshPortButton["text"] = "Refresh"
+        self.refreshPortButton["command"] = self.checkSerial
+        self.refreshPortButton.pack()
+
         self.selectPortButton = Button(serialControls)
         self.selectPortButton["text"] = "Select"
         self.selectPortButton["command"] = self.changeSerial
@@ -295,7 +300,6 @@ class Application(Frame):
         self.serialSelect['menu'].delete(0, 'end')
         for port in serialmanager.serial_ports():
             self.serialSelect['menu'].add_command(label=port, command=lambda p=port: self.serialPort.set(p))
-        self.after(1000, self.checkSerial)
 
     def startListeners(self):
         if self.manager.update_all_listeners():
