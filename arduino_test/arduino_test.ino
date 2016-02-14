@@ -1,49 +1,51 @@
-#define SEND(field, value) {\
-  Serial.print("@@@@@");    \
-  Serial.print(millis());   \
-  Serial.print(":");        \
-  Serial.print(#field);     \
-  Serial.print(":");        \
-  Serial.print(value);      \
-  Serial.println("&&&&&");  \
-  Serial.flush();           \
-}
+#include "communications.h"
 
 void setup() {
   Serial.begin(9600);
 }
 
-String data = "abcd";
-float i = 0;
+char data[10] = "";
+char data_name[20] = "";
+char foo[10] = "abcd";
+int i = 0;
 float j = 0;
+uint8_t k = 0;
 long last_sent = 0;
 long last_sent1 = 0;
 
 void loop() {
   if (millis() - last_sent > 10) {
     last_sent = millis();
-    Serial.println("Sending data");
+    //Serial.println("Sending data");
     SEND(test1, random(100))
     SEND(test3, random(2) == 1? "abc" : "def")
     SEND(test4, 0.01 * random(-100, 100))
-    SEND(test5, data)
+    SEND(test5, foo)
     SEND(test6, sin((float)millis() / 1000))
     SEND(test8, j)
-    Serial.println(millis());
+    //Serial.println(millis());
   
     j += 0.01 * random(-100, 101);
   }
   
   if (millis() - last_sent1 > 1000) {
     last_sent1 = millis();
-    SEND(test2, random(10) + 3.14)
+    SEND(test2, k)
     SEND(test7, i)
-    i += 0.01;
+    i++;
+    k++;
   }
 
-  if (Serial.available()) {
-    data = Serial.readString();
-    Serial.print("Data: ");
+  BEGIN_READ
+  READ_FIELD(foo, "%s")
+    Serial.println("Read foo");
+  READ_FIELD(i, "%d")
+    Serial.println("Read i");
+  READ_DEFAULT(data_name, data) {
+    Serial.print("Data name: ");
+    Serial.println(data_name);
+    Serial.print("Data val:  ");
     Serial.println(data);
   }
+  END_READ
 }
