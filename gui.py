@@ -74,11 +74,13 @@ class Application(Frame):
         serialControls = Frame(serial)
 
         self.serialPort = StringVar(self)
-        self.serialSelect = OptionMenu(serialControls, self.serialPort, *(serialmanager.serial_ports() + ['<None>']))
+        self.serialPort.trace('w', self.changeSerial)
+        self.serialSelect = OptionMenu(serialControls, self.serialPort, [])
         self.serialSelect["text"] = "Select serial port"
         self.serialSelect.pack(side=LEFT)
 
         self.baud = StringVar(self)
+        self.baud.trace('w', self.changeSerial)
         self.baudSelect = OptionMenu(serialControls, self.baud, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200)
         self.baudSelect["text"] = "Select serial port"
         self.baudSelect.pack(side=LEFT)
@@ -88,10 +90,10 @@ class Application(Frame):
         self.refreshPortButton["command"] = self.checkSerial
         self.refreshPortButton.pack()
 
-        self.selectPortButton = Button(serialControls)
-        self.selectPortButton["text"] = "Select"
-        self.selectPortButton["command"] = self.changeSerial
-        self.selectPortButton.pack()
+        # self.selectPortButton = Button(serialControls)
+        # self.selectPortButton["text"] = "Select"
+        # self.selectPortButton["command"] = self.changeSerial
+        # self.selectPortButton.pack()
 
         serialControls.pack()
 
@@ -129,20 +131,12 @@ class Application(Frame):
 
         sendValues = Frame(self)
 
-        self.sendDataName = StringVar(self)
-        self.sendDataName.set(self.dispatcher.data_names[2])
-        self.sendDataNameSelect = OptionMenu(sendValues, self.sendDataName, *self.dispatcher.data_names[2:])
-        self.sendDataNameSelect["text"] = "Select serial port"
-        self.sendDataNameSelect.pack(side=LEFT)
+        self.sendDataName = Entry(sendValues, width=10)
+        self.sendDataName.pack(side=LEFT)
 
         self.sendDataIn = Entry(sendValues, width=25)
         self.sendDataIn.bind('<Return>', self.sendValues)
         self.sendDataIn.pack(side=LEFT)
-
-        # self.sendDataButton = Button(sendValues)
-        # self.sendDataButton["text"] = "Send"
-        # self.sendDataButton["command"] = self.sendValues
-        # self.sendDataButton.pack(side=LEFT)
 
         sendValues.pack()
 
@@ -210,15 +204,14 @@ class Application(Frame):
             self.manager.add_listener(name, get_listener(name))
 
         def animate(i):
-            if self.manager.running:
-                for name, sp in subplots.items():
-                    if update[name]:
-                        x_data, y_data = update[name]
-                        update[name] = None
-                        lines[name].set_xdata([x / 1000 for x in x_data])
-                        lines[name].set_ydata(y_data)
-                        subplots[name].relim()
-                        subplots[name].autoscale_view(None, True, True)
+            for name, sp in subplots.items():
+                if update[name]:
+                    x_data, y_data = update[name]
+                    update[name] = None
+                    lines[name].set_xdata([x / 1000 for x in x_data])
+                    lines[name].set_ydata(y_data)
+                    subplots[name].relim()
+                    subplots[name].autoscale_view(None, True, True)
 
         ani = FuncAnimation(self.fig, animate, interval=200)
 
@@ -273,12 +266,7 @@ class Application(Frame):
         
     def sendValues(self, _=None):
         if self.serialManager:
-            try:
-                self.dispatcher.data_types[self.sendDataName.get()].type(self.sendDataIn.get())
-            except ValueError:
-                showerror("Error", "Invalid value format for " + self.sendDataName.get() + ": " + self.sendDataIn.get())
-            else:
-                self.serialManager.write("@@@@@:" + self.sendDataName.get() + ":" + self.sendDataIn.get() + "&&&&&\r\n")
+            self.serialManager.write("@@@@@:" + self.sendDataName.get() + ":" + self.sendDataIn.get() + "&&&&&\r\n")
             self.sendDataIn.delete(0, 'end')
         else:
             showerror("Error", "No serial port selected")
@@ -286,7 +274,7 @@ class Application(Frame):
     def unmaximize(self, _):
         self.master.attributes("-fullscreen", False)
 
-    def changeSerial(self):
+    def changeSerial(self, *args):
         #print("Selected port", self.serialPort.get())
         self.serialOut.config(state=NORMAL)
         self.serialOut.delete(1.0, 'end')
