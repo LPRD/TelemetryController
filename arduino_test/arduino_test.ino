@@ -1,4 +1,4 @@
-#include "../include/communications.h"
+#include "communications.h"
 
 void setup() {
   Serial.begin(9600);

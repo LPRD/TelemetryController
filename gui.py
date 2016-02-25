@@ -132,6 +132,7 @@ class Application(Frame):
         sendValues = Frame(self)
 
         self.sendDataName = Entry(sendValues, width=10)
+        self.sendDataName.bind('<Return>', self.sendValues)
         self.sendDataName.pack(side=LEFT)
 
         self.sendDataIn = Entry(sendValues, width=25)
