@@ -143,7 +143,11 @@ class DataManager:
 
     def load(self, format, text):
         if format == 'json':
-            self.data = OrderedDict(json.loads(text))
+            data = OrderedDict(json.loads(text))
+            if set(self.data.keys()) != set(data.keys()):
+                sys.exit("Invalid fields") # TODO: Nice error message in gui for this
+            else:
+                self.data = data
         else:
             sys.exit("Unsupported format" + format)
-        self.force_update_all_listeners()
+        self.update_all_listeners(True)
