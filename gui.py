@@ -306,16 +306,24 @@ class Application(Frame):
     def openFile(self):
         filename = askopenfilename()
         if filename:
-            self.reset()
-            extension = filename.split('.')[-1]
-            self.manager.load(extension, open(filename).read())
-            self.valuesList.delete(0, END)
-            self.controlButton["text"] = "Reset"
-            self.controlButton["command"] = self.reset
+            extension = "".join(filename.split(".")[1:])
+            if extension != "json":
+                showerror("Error", "Invalid file extension \"." + extension + "\"")
+            else:
+                self.reset()
+                extension = filename.split('.')[-1]
+                self.manager.load(extension, open(filename).read())
+                self.valuesList.delete(0, END)
+                self.controlButton["text"] = "Reset"
+                self.controlButton["command"] = self.reset
 
     def saveFile(self):
         filename = asksaveasfilename()
         if filename:
-            extension = filename.split('.')[-1]
-            open(filename, 'w').write(self.manager.dump(extension))
+            extension = "".join(filename.split(".")[1:])
+            if extension != "json":
+                showerror("Error", "Invalid file extension \"." + extension + "\"")
+            else:
+                extension = filename.split('.')[-1]
+                open(filename, 'w').write(self.manager.dump(extension))
         

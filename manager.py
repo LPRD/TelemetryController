@@ -139,11 +139,11 @@ class DataManager:
         elif format == 'json':
             return json.dumps(list(self.data.items()))
         else:
-            sys.exit("Unsupported format", format)
+            sys.exit("Unsupported format" + format)
 
     def load(self, format, text):
         if format == 'json':
             self.data = OrderedDict(json.loads(text))
         else:
-            sys.exit("Unsupported format", format)
+            sys.exit("Unsupported format" + format)
         self.force_update_all_listeners()
