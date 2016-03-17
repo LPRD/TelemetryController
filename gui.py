@@ -321,7 +321,7 @@ class Application(Frame):
         filename = asksaveasfilename()
         if filename:
             extension = "".join(filename.split(".")[1:])
-            if extension != "json":
+            if extension not in ["json", "csv"]:
                 showerror("Error", "Invalid file extension \"." + extension + "\"")
             else:
                 extension = filename.split('.')[-1]
