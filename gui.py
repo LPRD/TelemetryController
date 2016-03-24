@@ -22,6 +22,10 @@ class Application(Frame):
         self.master = master
         self.flags = flags
 
+        # Defaults
+        if "send_with_newline_default" not in self.flags:
+            self.flags["send_with_newline_default"] = False
+
         # Init gui
         Frame.__init__(self, master)
         self.pack()
@@ -311,11 +315,11 @@ class Application(Frame):
         filename = askopenfilename()
         if filename:
             extension = "".join(filename.split(".")[1:])
-            if extension != "json":
-                showerror("Error", "Invalid file extension \"." + extension + "\"")
+            if extension not in ["json"]:#, "csv"]:
+                showerror("Error", "Invalid file extension \"." + extension + "\"\n" +
+                          "Legal formats are json")#, csv")
             else:
                 self.reset()
-                extension = filename.split('.')[-1]
                 self.manager.load(extension, open(filename).read())
                 self.valuesList.delete(0, END)
                 self.controlButton["text"] = "Reset"
@@ -325,9 +329,13 @@ class Application(Frame):
         filename = asksaveasfilename()
         if filename:
             extension = "".join(filename.split(".")[1:])
-            if extension not in ["json", "csv"]:
-                showerror("Error", "Invalid file extension \"." + extension + "\"")
+            if extension not in ["json", "csv", # Data formats
+                                 "eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"]: # Image formats
+                showerror("Error", "Invalid file extension \"." + extension + "\"\n"
+                          "Legal formats are json, csv, eps, pdf, pgf, png, ps, raw, rgba, svg, svgz")
             else:
-                extension = filename.split('.')[-1]
-                open(filename, 'w').write(self.manager.dump(extension))
+                if extension in ["json", "csv"]:
+                    open(filename, 'w').write(self.manager.dump(extension))
+                else:
+                    self.fig.savefig(filename)
         

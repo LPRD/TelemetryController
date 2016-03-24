@@ -5,7 +5,6 @@ Python matplotlib-based graphical viewer for telemetry streams
 ### Minor
 * Real-time logging
 * Nice setup configuration modes
-* Export graphs as images
 
 ### Major
 * Extensible gui panel?  
