@@ -3,7 +3,7 @@ from collections import OrderedDict
 import time
 import json
 import sys
-import matplotlib
+#import matplotlib
 
 class DataType:
     def __init__(self, name, type=float, plot=True, units=None):
@@ -148,6 +148,20 @@ class DataManager:
                 sys.exit("Invalid fields") # TODO: Nice error message in gui for this
             else:
                 self.data = data
+        elif format == 'csv': # TODO: in progress
+            rows = [row.split(',') for row in text.split('\n')]
+            data = [(name, ([], [])) for name in rows[0]]
+            last_row = ["" for elem in rows[0]]
+            for row in rows[1:]:
+                for i, elem in enumerate(row):
+                    if elem != last_row[i]:
+                        if data[i][0] not in ['abs time', 'sys data', 'sys time']:
+                            elem = self.dispatcher.data_types[data[i][0]].type(elem)
+                        if data[i][0] != 'abs time':
+                            data[i][1][0].append(int(row[0]))
+                            data[i][1][1].append(elem)
+                last_row = row
+            data = OrderedDict(data)
         else:
             sys.exit("Unsupported format" + format)
         self.update_all_listeners(True)
