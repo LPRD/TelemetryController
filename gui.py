@@ -16,10 +16,11 @@ from matplotlib.animation import FuncAnimation
 import math
 
 class Application(Frame):
-    def __init__(self, dispatcher, manager, master=None):
+    def __init__(self, dispatcher, manager, master=None, **flags):
         self.dispatcher = dispatcher
         self.manager = manager
         self.master = master
+        self.flags = flags
 
         # Init gui
         Frame.__init__(self, master)
@@ -105,7 +106,10 @@ class Application(Frame):
         #serialInLabel.pack()
 
         self.serialIn = Entry(serial, width=50)
-        self.serialIn.bind('<Return>', self.sendSerial)
+        if self.flags["send_with_newline_default"]:
+            self.serialIn.bind('<Return>', self.sendSerialNewline)
+        else:
+            self.serialIn.bind('<Return>', self.sendSerial)
         self.serialIn.pack()
 
         serialSendButtons = Frame(serial)
