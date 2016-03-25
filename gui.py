@@ -306,10 +306,14 @@ class Application(Frame):
 
     def startSerial(self):
         if self.serialManager:
-            if self.serialManager.handleInput(self):
-                self.after(50, self.startSerial)
-            else:
-                self.after(100, self.startSerial)
+            try:
+                if self.serialManager.handleInput(self):
+                    self.after(50, self.startSerial)
+                else:
+                    self.after(100, self.startSerial)
+            except OSError:
+                self.serialManager = None
+                self.checkSerial()
 
     def openFile(self):
         filename = askopenfilename()
@@ -320,10 +324,12 @@ class Application(Frame):
                           "Legal formats are json")#, csv")
             else:
                 self.reset()
-                self.manager.load(extension, open(filename).read())
-                self.valuesList.delete(0, END)
-                self.controlButton["text"] = "Reset"
-                self.controlButton["command"] = self.reset
+                if self.manager.load(extension, open(filename).read()):
+                    self.valuesList.delete(0, END)
+                    self.controlButton["text"] = "Reset"
+                    self.controlButton["command"] = self.reset
+                else:
+                    showerror("Error", "Invalid data file")
 
     def saveFile(self):
         filename = asksaveasfilename()

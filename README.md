@@ -11,5 +11,4 @@ Python matplotlib-based graphical viewer for telemetry streams
 * Multiple plots on the same graph?  
 
 ## Known issues
-* Partial crash when USB disconnected
-* No automatic restart after port change, need to start/stop/reset
+* No automatic restart after port change, need to start/stop/reset (check if resolved?)

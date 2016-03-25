@@ -145,7 +145,8 @@ class DataManager:
         if format == 'json':
             data = OrderedDict(json.loads(text))
             if set(self.data.keys()) != set(data.keys()):
-                sys.exit("Invalid fields") # TODO: Nice error message in gui for this
+                #sys.exit("Invalid fields")
+                return False
             else:
                 self.data = data
         elif format == 'csv': # TODO: in progress
@@ -165,3 +166,4 @@ class DataManager:
         else:
             sys.exit("Unsupported format" + format)
         self.update_all_listeners(True)
+        return True
