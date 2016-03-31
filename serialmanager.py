@@ -10,6 +10,8 @@ class SerialManager:
         self.ser = serial.Serial(port, baud)
         self.current_line = ""
 
+        self.dispatcher.reset()
+
     def handleInput(self, txtout=sys.stdout):
         if self.ser.in_waiting:
             try:
