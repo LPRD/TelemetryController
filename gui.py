@@ -23,13 +23,20 @@ class Application(Frame):
         self.flags = flags
 
         # Defaults
-        if "send_with_newline_default" not in self.flags:
-            self.flags["send_with_newline_default"] = False
+        if 'send_with_newline_default' not in self.flags:
+            self.flags['send_with_newline_default'] = False
+        if 'show_current_values' not in self.flags:
+            self.flags['show_current_values'] = True
+        if 'show_send_value' not in self.flags:
+            self.flags['show_send_value'] = True
+        if 'full_screen' not in self.flags:
+            self.flags['full_screen'] = True
+            
 
         # Init gui
         Frame.__init__(self, master)
         self.pack()
-        #master.attributes("-fullscreen", True)
+        master.attributes("-fullscreen", self.flags['full_screen'])
         master.bind('<Escape>', self.unmaximize)
         master.wm_title("Telemetry monitor")
         self.createWidgets()
@@ -135,7 +142,8 @@ class Application(Frame):
         serial.pack()
 
         sendValuesLabel = Label(self, text="\nSend value")
-        sendValuesLabel.pack()
+        if self.flags['show_send_value']:
+            sendValuesLabel.pack()
 
         sendValues = Frame(self)
 
@@ -147,10 +155,12 @@ class Application(Frame):
         self.sendDataIn.bind('<Return>', self.sendValues)
         self.sendDataIn.pack(side=LEFT)
 
-        sendValues.pack()
+        if self.flags['show_send_value']:
+            sendValues.pack()
 
         valuesLabel = Label(self, text="\nCurrent values")
-        valuesLabel.pack()
+        if self.flags['show_current_values']:
+            valuesLabel.pack()
 
         valuesTable = Frame(self)
 
@@ -177,7 +187,10 @@ class Application(Frame):
         self.namesList.pack(side=LEFT)
         self.valuesList.pack()
 
-        valuesTable.pack()
+        if self.flags['show_current_values']:
+            valuesTable.pack()
+
+        self.miscGuiPanel = None
 
     def setupPlots(self):
         self.fig = matplotlib.figure.Figure(figsize=(10,10),dpi=100)
