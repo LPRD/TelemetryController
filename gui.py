@@ -31,7 +31,8 @@ class Application(Frame):
             self.flags['show_send_value'] = True
         if 'full_screen' not in self.flags:
             self.flags['full_screen'] = True
-            
+        if 'backup_log' not in self.flags:
+            self.flags['backup_log'] = ".temp_log.json"
 
         # Init gui
         Frame.__init__(self, master)
@@ -40,6 +41,7 @@ class Application(Frame):
         master.bind('<Escape>', self.unmaximize)
         master.wm_title("Telemetry monitor")
         self.createWidgets()
+        self.manager.add_listener("sys time", self.saveBackup)
 
         # Start reading from Serial
         self.serialManager = None
@@ -327,6 +329,12 @@ class Application(Frame):
             except OSError:
                 self.serialManager = None
                 self.checkSerial()
+
+    last_update_time = ""
+    def saveBackup(self, times, values):
+        if len(values) > 0 and values[-1] != self.last_update_time:
+            self.last_update_time = values[0]
+            open(self.flags["backup_log"], 'w').write(self.manager.dump('json'))
 
     def openFile(self):
         filename = askopenfilename()
