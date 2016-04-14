@@ -23,7 +23,7 @@ if __name__ == '__main__':
     controlsFrame.pack()
     def writeZero():
         if app.serialManager:
-            app.serialManager.write("zero\r\n")
+            app.serialManager.write("@@@@@:zero:&&&&&\r\n")
         else:
             showerror("Error", "No serial port selected")
     zeroButton = Button(controlsFrame, text="Zero", command=writeZero)
