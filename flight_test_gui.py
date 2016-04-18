@@ -6,10 +6,10 @@ import manager
 import gui
 
 if __name__ == '__main__':
-    dts = [manager.DataType('temperature', float, units='deg C'),
-           manager.DataType('x', float, units='Gs'),
-           manager.DataType('y', float, units='Gs'),
-           manager.DataType('z', float, units='Gs')]
+    dts = [manager.DataType('temperature', float, plot=True, units='deg C'),
+           manager.DataType('x', float, plot=True, units='Gs'),
+           manager.DataType('y', float, plot=True, units='Gs'),
+           manager.DataType('z', float, plot=True, units='Gs')]
     dispatcher = manager.Dispatcher(*dts)
     manager = manager.DataManager(dispatcher)
     root = Tk()

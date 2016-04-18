@@ -6,15 +6,16 @@ import sys
 #import matplotlib
 
 class DataType:
-    def __init__(self, name, type=float, plot=True, units=None):
+    def __init__(self, name, type=float, plot=False, show=True, units=None):
         self.name = name
         self.type = type
         self.plot = plot
+        self.show = show
         self.units = units
 
 class Dispatcher:
     def __init__(self, *data_types):
-        data_types = (DataType('sys date', str, False), DataType('sys time', str, False)) + data_types
+        data_types = (DataType('sys date', str, False, False), DataType('sys time', str, False, False)) + data_types
 
         self.data_names = [d.name for d in data_types]
         self.data_types = {d.name: d for d in data_types}

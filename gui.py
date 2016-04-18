@@ -5,7 +5,7 @@ from tkinter import *
 from tkinter.scrolledtext import *
 #from tkinter.ttk import *
 from tkinter.filedialog import askopenfilename, asksaveasfilename
-from tkinter.messagebox import showerror
+from tkinter.messagebox import showerror, askquestion
 
 import matplotlib
 #matplotlib.use("TkAgg")
@@ -25,7 +25,7 @@ class Application(Frame):
         new_flags = {'send_with_newline_default': False,
                      'show_current_values': True,
                      'show_send_value': True,
-                     'full_screen': True,
+                     'full_screen': False,
                      'backup_log': ".temp_log.json",
                      'serial_console_height': 15}
         new_flags.update(flags)
@@ -138,25 +138,28 @@ class Application(Frame):
 
         valuesTable = Frame(self)
 
-        self.namesList = Listbox(valuesTable, width=15, height=len(self.dispatcher.data_names) + 1)
-        self.valuesList = Listbox(valuesTable, width=35, height=len(self.dispatcher.data_names) + 1)
+        shown_data_types = [self.dispatcher.data_types[name]
+                            for name in self.dispatcher.data_names
+                            if self.dispatcher.data_types[name].show]
+        self.namesList = Listbox(valuesTable, width=15, height=len(shown_data_types) + 1)
+        self.valuesList = Listbox(valuesTable, width=35, height=len(shown_data_types) + 1)
         self.namesList.insert(0, "abs time (ms)")
         self.valuesList.insert(0, "")
         def fn(xdata, ydata):
             self.valuesList.delete(0)
             self.valuesList.insert(0, str(xdata) if xdata else "")
         self.dispatcher.add_listener('sys time', fn, 100)
-        for i, name in enumerate(self.dispatcher.data_names):
-            if self.dispatcher.data_types[name].units:
-                full_name = name + " (" + self.dispatcher.data_types[name].units + ")"
+        for i, ty in enumerate(shown_data_types):
+            if ty.units:
+                full_name = ty.name + " (" + ty.units + ")"
             else:
-                full_name = name
+                full_name = ty.name
             self.namesList.insert(i + 1, full_name)
             self.valuesList.insert(i + 1, "")
             def fn(xdata, ydata, i = i):
                 self.valuesList.delete(i + 1)
                 self.valuesList.insert(i + 1, str(ydata))
-            self.dispatcher.add_listener(name, fn, 100)
+            self.dispatcher.add_listener(ty.name, fn, 100)
 
         self.namesList.pack(side=LEFT)
         self.valuesList.pack()
@@ -217,7 +220,14 @@ class Application(Frame):
         #self.update() # Is this needed? Causes freezing with lots of plots
 
     def terminate(self):
-        sys.exit(0)
+        if self.manager.running:
+            result = askquestion("Exit",
+                                 "Logging is running, do you really want to exit?",
+                                 icon='warning')
+            if result == 'yes':
+                sys.exit(0)
+        else:  
+            sys.exit(0)
 
     def write(self, txt):
         self.serialOut.config(state=NORMAL)
