@@ -20,19 +20,16 @@ class Application(Frame):
         self.dispatcher = dispatcher
         self.manager = manager
         self.master = master
-        self.flags = flags
 
         # Defaults
-        if 'send_with_newline_default' not in self.flags:
-            self.flags['send_with_newline_default'] = False
-        if 'show_current_values' not in self.flags:
-            self.flags['show_current_values'] = True
-        if 'show_send_value' not in self.flags:
-            self.flags['show_send_value'] = True
-        if 'full_screen' not in self.flags:
-            self.flags['full_screen'] = True
-        if 'backup_log' not in self.flags:
-            self.flags['backup_log'] = ".temp_log.json"
+        new_flags = {'send_with_newline_default': False,
+                     'show_current_values': True,
+                     'show_send_value': True,
+                     'full_screen': True,
+                     'backup_log': ".temp_log.json",
+                     'serial_console_height': 15}
+        new_flags.update(flags)
+        self.flags = new_flags
 
         # Init gui
         Frame.__init__(self, master)
@@ -59,24 +56,16 @@ class Application(Frame):
         self.setupPlots()
 
         buttons = Frame(self)
-        self.controlButton = Button(buttons)
-        self.controlButton["text"] = "Start"
-        self.controlButton["command"] = self.start
+        self.controlButton = Button(buttons, text="Start", command=self.start, bg="lime green")
         self.controlButton.pack(side=LEFT)
 
-        self.exitButton = Button(buttons)
-        self.exitButton["text"] = "Quit"
-        self.exitButton["command"] = self.terminate
+        self.exitButton = Button(buttons, text="Quit", command=self.terminate)
         self.exitButton.pack(side=LEFT)
 
-        self.openButton = Button(buttons)
-        self.openButton["text"] = "Open..."
-        self.openButton["command"] = self.openFile
+        self.openButton = Button(buttons, text="Open...", command=self.openFile)
         self.openButton.pack(side=LEFT)
 
-        self.saveButton = Button(buttons)
-        self.saveButton["text"] = "Save as..."
-        self.saveButton["command"] = self.saveFile
+        self.saveButton = Button(buttons, text="Save as...", command=self.saveFile)
         self.saveButton.pack(side=LEFT)
         
         buttons.pack()
@@ -90,33 +79,21 @@ class Application(Frame):
         self.serialPort = StringVar(self)
         self.serialPort.trace('w', self.changeSerial)
         self.serialSelect = OptionMenu(serialControls, self.serialPort, [])
-        self.serialSelect["text"] = "Select serial port"
         self.serialSelect.pack(side=LEFT)
 
         self.baud = StringVar(self)
         self.baud.trace('w', self.changeSerial)
         self.baudSelect = OptionMenu(serialControls, self.baud, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200)
-        self.baudSelect["text"] = "Select serial port"
         self.baudSelect.pack(side=LEFT)
 
-        self.refreshPortButton = Button(serialControls)
-        self.refreshPortButton["text"] = "Refresh"
-        self.refreshPortButton["command"] = self.checkSerial
+        self.refreshPortButton = Button(serialControls, text="Refresh", command=self.checkSerial)
         self.refreshPortButton.pack()
-
-        # self.selectPortButton = Button(serialControls)
-        # self.selectPortButton["text"] = "Select"
-        # self.selectPortButton["command"] = self.changeSerial
-        # self.selectPortButton.pack()
 
         serialControls.pack()
 
-        self.serialOut = ScrolledText(serial, width=50, height=15)
+        self.serialOut = ScrolledText(serial, width=50, height=self.flags['serial_console_height'])
         self.serialOut.config(state=DISABLED)
         self.serialOut.pack()
-
-        #serialInLabel = Label(self, text="Serial input")
-        #serialInLabel.pack()
 
         self.serialIn = Entry(serial, width=50)
         if self.flags["send_with_newline_default"]:
@@ -127,18 +104,13 @@ class Application(Frame):
 
         serialSendButtons = Frame(serial)
 
-        self.sendButton = Button(serialSendButtons)
-        self.sendButton["text"] = "Send"
-        self.sendButton["command"] = self.sendSerial
+        self.sendButton = Button(serialSendButtons, text="Send", command=self.sendSerial)
         self.sendButton.pack(side=LEFT)
 
-        self.sendNewlineButton = Button(serialSendButtons)
-        self.sendNewlineButton["text"] = "Send with newline"
-        self.sendNewlineButton["command"] = self.sendSerialNewline
+        self.sendNewlineButton = Button(serialSendButtons, text="Send with newline", command=self.sendSerialNewline)
         self.sendNewlineButton.pack(side=LEFT)
 
         serialSendButtons.pack()
-
         serialSendButtons = Frame(serial)
 
         serial.pack()
@@ -256,8 +228,7 @@ class Application(Frame):
     def start(self):
         if self.serialManager:
             self.manager.start()
-            self.controlButton["text"] = "Stop"
-            self.controlButton["command"] = self.stop
+            self.controlButton.config(text="Stop", bg="red", command=self.stop)
 
             for i in range(len(self.dispatcher.data_names)):
                 self.valuesList.insert(i, "")
@@ -266,13 +237,11 @@ class Application(Frame):
     
     def stop(self):
         self.manager.stop()
-        self.controlButton["text"] = "Reset"
-        self.controlButton["command"] = self.reset
+        self.controlButton.config(text="Reset", bg="grey", command=self.reset)
     
     def reset(self):
         self.manager.reset()
-        self.controlButton["text"] = "Start"
-        self.controlButton["command"] = self.start
+        self.controlButton.config(text="Start", bg="lime green", command=self.start)
         
     def sendSerial(self, _=None):
         if self.serialManager:
@@ -289,11 +258,16 @@ class Application(Frame):
             showerror("Error", "No serial port selected")
         
     def sendValues(self, _=None):
+        self.sendValue(self.sendDataName.get(), self.sendDataIn.get())
         if self.serialManager:
-            self.serialManager.write("@@@@@:" + self.sendDataName.get() + ":" + self.sendDataIn.get() + "&&&&&\r\n")
             self.sendDataIn.delete(0, 'end')
+
+    def sendValue(self, name, value=""):
+        if self.serialManager:
+            self.serialManager.write("@@@@@:" + name + ":" + value + "&&&&&\r\n")
         else:
             showerror("Error", "No serial port selected")
+
 
     def unmaximize(self, _):
         self.master.attributes("-fullscreen", False)
@@ -347,8 +321,7 @@ class Application(Frame):
                 self.reset()
                 if self.manager.load(extension, open(filename).read()):
                     self.valuesList.delete(0, END)
-                    self.controlButton["text"] = "Reset"
-                    self.controlButton["command"] = self.reset
+                    self.controlButton.config(text="Reset", bg="grey", command=self.reset)
                 else:
                     showerror("Error", "Invalid data file")
 
@@ -365,4 +338,4 @@ class Application(Frame):
                     open(filename, 'w').write(self.manager.dump(extension))
                 else:
                     self.fig.savefig(filename)
-        
+
