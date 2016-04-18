@@ -232,8 +232,10 @@ class Application(Frame):
 
             for i in range(len(self.dispatcher.data_names)):
                 self.valuesList.insert(i, "")
+            return True
         else:
             showerror("Error", "No serial port selected")
+            return False
     
     def stop(self):
         self.manager.stop()
@@ -265,8 +267,10 @@ class Application(Frame):
     def sendValue(self, name, value=""):
         if self.serialManager:
             self.serialManager.write("@@@@@:" + name + ":" + value + "&&&&&\r\n")
+            return True
         else:
             showerror("Error", "No serial port selected")
+            return False
 
 
     def unmaximize(self, _):
