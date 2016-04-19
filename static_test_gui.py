@@ -20,6 +20,37 @@ root = Tk()
 app = gui.Application(dispatcher, manager, master=root,
                       show_send_value=False,
                       serial_console_height=5)
+running = False
+def start_abort_handler():
+    global start_time, running
+    if running:
+        app.sendValue("stop")
+    else:
+        app.reset()
+        if app.start():
+            running = True
+            app.sendValue("start")
+
+def check_stop(time, status):
+    global running
+    if status == 'Manual control':
+        app.stop()
+        running = False
+        countdown.config(text="  T-01:00:00")
+        start_abort_button.config(text="Start", bg='lime green')
+    else:
+        start_abort_button.config(text="Abort", bg='red')
+
+def update_time(abs_time, relative_time):
+    if not running:
+        relative_time = -60000
+    sign = "+" if relative_time > 0 else "-"
+    mins = abs(relative_time) // 60000
+    secs = (abs(relative_time) // 1000) % 60
+    cs   = (abs(relative_time) // 10) % 100
+    text = "  T{}{:02}:{:02}:{:02}".format(sign, mins, secs, cs)
+    countdown.config(text=text, fg = "green" if relative_time > 0 else "red")
+
 
 # Add custom gui controls
 Label(app, text="\nSensor Controls").pack()
@@ -30,41 +61,16 @@ Label(app, text="\nRun Controls").pack()
 runFrame = Frame(app)
 runFrame.pack()
 
-countdown = Label(runFrame, text="T-01:00:00", fg="red", font=("Helvetica", 20, "bold"))
+start_abort_button = Button(runFrame, text="Start", command=start_abort_handler, bg="lime green", height=3, width=10)
+start_abort_button.pack(side=LEFT)
+countdown = Label(runFrame, text="  T-01:00:00", fg="red", font=("Helvetica", 20, "bold"))
 countdown.pack()
-status = Label(runFrame, text="Ready", bg="white", font=("TkDefaultFont", 15))
+status = Label(runFrame, text="  Manual control", width=15, font=("Helvetica", 17))
 status.pack()
 
-running = False
-def start():
-    global start_time
-    app.reset()
-    if app.start():
-        running = True
-        app.sendValue("start")
-
-def abort():
-    app.sendValue("stop")
-
-def check_stop(time, status):
-    if status == 'Ready':
-        app.stop()
-        running = False
-
-def update_time(abs_time, relative_time):
-    sign = "+" if relative_time > 0 else "-"
-    mins = abs(relative_time) // 60000
-    secs = (abs(relative_time) // 1000) % 60
-    cs   = (abs(relative_time) // 10) % 100
-    text = "T{}{:02}:{:02}:{:02}".format(sign, mins, secs, cs)
-    countdown.config(text=text, fg = "green" if relative_time > 0 else "red")
-
-app.dispatcher.add_listener('status', lambda time, val: status.config(text=val))
+app.dispatcher.add_listener('status', lambda time, val: status.config(text="  " + val))
 app.dispatcher.add_listener('status', check_stop)
 app.dispatcher.add_listener('run_time', update_time)
-
-Button(runFrame, text="Start", command=start, bg = "lime green", height=3, width=10).pack(side=LEFT)
-Button(runFrame, text="Abort", command=abort, bg = "red", height=3, width=10).pack(side=LEFT)
 
 if __name__ == '__main__':
     app.mainloop()
