@@ -7,6 +7,9 @@ import sys
 
 class DataType:
     def __init__(self, name, type=float, plot=False, show=True, units=None):
+        # bool doesn't actually parse the value, just checks whether string is empty
+        if type == bool:
+            type = lambda x: x == "1" or x == "True"
         self.name = name
         self.type = type
         self.plot = plot
