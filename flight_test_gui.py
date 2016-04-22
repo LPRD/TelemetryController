@@ -6,7 +6,7 @@ import manager
 import gui
 
 if __name__ == '__main__':
-    dts = [manager.DataType('temperature', float, plot=True, units='deg C'),
+    dts = [#manager.DataType('temperature', float, plot=True, units='deg C'),
            manager.DataType('x', float, plot=True, units='Gs'),
            manager.DataType('y', float, plot=True, units='Gs'),
            manager.DataType('z', float, plot=True, units='Gs')]
