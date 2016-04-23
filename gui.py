@@ -328,12 +328,12 @@ class Application(Frame):
         filename = askopenfilename()
         if filename:
             extension = "".join(filename.split(".")[1:])
-            if extension not in ["json"]:#, "csv"]:
+            if extension not in ["json", "log"]:#, "csv"]:
                 showerror("Error", "Invalid file extension \"." + extension + "\"\n" +
-                          "Legal formats are json")#, csv")
+                          "Legal formats are json, log")#, csv")
             else:
                 self.reset()
-                if self.manager.load(extension, open(filename).read()):
+                if self.manager.load(extension, open(filename).read(), self):
                     self.valuesList.delete(0, END)
                     self.controlButton.config(text="Reset", bg="grey", command=self.reset)
                 else:
@@ -343,13 +343,15 @@ class Application(Frame):
         filename = asksaveasfilename()
         if filename:
             extension = "".join(filename.split(".")[1:])
-            if extension not in ["json", "csv", # Data formats
+            if extension not in ["json", "csv", "log", # Data formats
                                  "eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"]: # Image formats
                 showerror("Error", "Invalid file extension \"." + extension + "\"\n"
-                          "Legal formats are json, csv, eps, pdf, pgf, png, ps, raw, rgba, svg, svgz")
+                          "Legal formats are json, csv, log, eps, pdf, pgf, png, ps, raw, rgba, svg, svgz")
             else:
-                if extension in ["json", "csv"]:
+                if extension in ["json", "csv", "log"]:
+                    self.serialManager.paused = True
                     open(filename, 'w').write(self.manager.dump(extension))
+                    self.serialManager.paused = False
                 else:
                     self.fig.savefig(filename)
 

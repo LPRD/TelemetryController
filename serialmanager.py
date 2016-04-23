@@ -8,33 +8,20 @@ class SerialManager:
         self.dispatcher = dispatcher
         self.baud = baud
         self.ser = serial.Serial(port, baud)
-        self.current_line = ""
+        self.paused = False
 
         self.dispatcher.reset()
 
     def handleInput(self, txtout=sys.stdout):
+        while self.paused:
+            time.sleep(100 / 1000) # Sleep 100 ms
         if self.ser.in_waiting:
             try:
                 bytes_in = self.ser.read(self.ser.in_waiting)
             except serial.serialutil.SerialException:
-                time.sleep(10 / 1000)
+                time.sleep(10 / 1000) # Sleep 10 ms
             decode = bytes_in.decode("utf-8", errors='ignore')
-            lines = (self.current_line + decode).split("\n")
-            for line in lines[:-1]:
-                line = line.strip("\r")
-                if line.startswith("@@@@@") and line.endswith("&&&&&"):
-                    try:
-                        time, name, value = line[5:][:-5].split(':')
-                        self.dispatcher.accept(name, int(time) if time else None, value)
-                    except ValueError:
-                        print("Ill-formed data packet", line)
-                else:
-                    print(line, file=txtout)
-            if lines[-1].startswith("@"):
-                self.current_line = lines[-1]
-            else:
-                print(lines[-1], end='', file=txtout)
-                self.current_line = ""
+            self.dispatcher.acceptText(decode, txtout)
             return True
         return False
     

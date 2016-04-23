@@ -18,7 +18,9 @@ class DataType:
 
 class Dispatcher:
     def __init__(self, *data_types):
-        data_types = (DataType('sys date', str, False, False), DataType('sys time', str, False, False)) + data_types
+        data_types = (DataType('sys date', str, False, False),
+                      DataType('sys time', str, False, False),
+                      DataType('log', str, False, False)) + data_types
 
         self.data_names = [d.name for d in data_types]
         self.data_types = {d.name: d for d in data_types}
@@ -26,6 +28,7 @@ class Dispatcher:
         self.time = {name: None for name in self.data_names}
         self.listeners = {name: [] for name in self.data_names}
         self.start_time = None
+        self.current_line = ""
 
     def reset(self):
         self.start_time = None
@@ -36,12 +39,31 @@ class Dispatcher:
     def add_listener(self, name, fn, delay=0):
         self.listeners[name].append([delay, 0, fn])
 
-    def accept(self, name, in_time, value):
-        assert self._accept("sys date", in_time, time.strftime("%d/%m/%Y"))
-        assert self._accept("sys time", in_time, time.strftime("%H:%M:%S"))
-        return self._accept(name, in_time, value)
+    def acceptText(self, text, txtout=sys.stdout):
+        lines = (self.current_line + text).split("\n")
+        abs_time = None
+        for line in lines[:-1]:
+            line = line.strip("\r")
+            if line.startswith("@@@@@") and line.endswith("&&&&&"):
+                try:
+                    abs_time, name, value = line[5:][:-5].split(':')
+                    abs_time = int(abs_time) if abs_time != "" else None
+                    self.accept(name, abs_time, value)
+                    self.accept("sys date", abs_time, time.strftime("%d/%m/%Y"))
+                    self.accept("sys time", abs_time, time.strftime("%H:%M:%S"))
+                except ValueError:
+                    print("Ill-formed data packet", line)
+            else:
+                print(line, file=txtout)
+        if lines[-1].startswith("@"):
+            self.current_line = lines[-1]
+        else:
+            print(lines[-1], end='', file=txtout)
+            self.current_line = ""
+        # Always update log, even if parse failed
+        self.accept('log', abs_time, text)
         
-    def _accept(self, name, time, value):
+    def accept(self, name, time, value):
         if name not in self.data_types:
             print("Received unrecognized data type", name)
             return False
@@ -82,7 +104,8 @@ class DataManager:
                 if self.running and time != None:
                     # If the time jumps backward (recieved a corrupted timestamp
                     # overwrite the most recent data point
-                    if len(self.data[name][0]) > 0 and time < self.data[name][0][-1]:
+                    if (len(self.data[name][0]) > 0 and
+                        (time < self.data[name][0][-1] or self.data[name][0][-1] < 0)):
                         self.data[name][0][-1] = time
                         self.data[name][1][-1] = value
                     else:
@@ -148,10 +171,13 @@ class DataManager:
             return result
         elif format == 'json':
             return json.dumps(list(self.data.items()))
+        elif format == 'log':
+            return "".join(self.request('log')[1])
         else:
             sys.exit("Unsupported format" + format)
 
-    def load(self, format, text):
+    # txtout is stream to write non-packet text when loading a log
+    def load(self, format, text, txtout=sys.stdout):
         if format == 'json':
             data = OrderedDict(json.loads(text))
             if set(self.data.keys()) != set(data.keys()):
@@ -173,6 +199,11 @@ class DataManager:
                             data[i][1][1].append(elem)
                 last_row = row
             data = OrderedDict(data)
+        elif format == 'log':
+            self.reset()
+            self.start()
+            self.dispatcher.acceptText(text, txtout)
+            self.stop()
         else:
             sys.exit("Unsupported format" + format)
         self.update_all_listeners(True)
