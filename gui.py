@@ -327,7 +327,7 @@ class Application(Frame):
     def openFile(self):
         filename = askopenfilename()
         if filename:
-            extension = "".join(filename.split(".")[1:])
+            extension = filename.split(".")[-1]
             if extension not in ["json", "log"]:#, "csv"]:
                 showerror("Error", "Invalid file extension \"." + extension + "\"\n" +
                           "Legal formats are json, log")#, csv")
@@ -342,7 +342,7 @@ class Application(Frame):
     def saveFile(self):
         filename = asksaveasfilename()
         if filename:
-            extension = "".join(filename.split(".")[1:])
+            extension = filename.split(".")[-1]
             if extension not in ["json", "csv", "log", # Data formats
                                  "eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"]: # Image formats
                 showerror("Error", "Invalid file extension \"." + extension + "\"\n"
