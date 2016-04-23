@@ -60,7 +60,7 @@ class Dispatcher:
 
             for l in self.listeners[name]:
                 delay, last, listener = l
-                if time == None or time - last > delay:
+                if time == None or time - last > delay or time < last:
                     listener(*self.request(name))
                     if time != None:
                         l[1] = time
@@ -80,8 +80,14 @@ class DataManager:
         for name in dispatcher.data_names:
             def fn(time, value, name=name):
                 if self.running and time != None:
-                    self.data[name][0].append(time)
-                    self.data[name][1].append(value)
+                    # If the time jumps backward (recieved a corrupted timestamp
+                    # overwrite the most recent data point
+                    if len(self.data[name][0]) > 0 and time < self.data[name][0][-1]:
+                        self.data[name][0][-1] = time
+                        self.data[name][1][-1] = value
+                    else:
+                        self.data[name][0].append(time)
+                        self.data[name][1].append(value)
                     self.needs_update[name] = True
             dispatcher.add_listener(name, fn)
 
