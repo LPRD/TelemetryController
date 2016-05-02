@@ -6,7 +6,7 @@ import sys
 #import matplotlib
 
 class DataType:
-    def __init__(self, name, type=float, plot=False, show=True, units=None):
+    def __init__(self, name, type=float, plot=False, show=True, export_csv=True, units=None):
         # bool doesn't actually parse the value, just checks whether string is empty
         if type == bool:
             type = lambda x: x == "1" or x == "True"
@@ -14,13 +14,14 @@ class DataType:
         self.type = type
         self.plot = plot
         self.show = show
+        self.export_csv = export_csv
         self.units = units
 
 class Dispatcher:
     def __init__(self, *data_types):
         data_types = (DataType('sys date', str, False, False),
                       DataType('sys time', str, False, False),
-                      DataType('log', str, False, False)) + data_types
+                      DataType('log', str, False, False, False)) + data_types
 
         self.data_names = [d.name for d in data_types]
         self.data_types = {d.name: d for d in data_types}
@@ -102,7 +103,7 @@ class DataManager:
         for name in dispatcher.data_names:
             def fn(time, value, name=name):
                 if self.running and time != None:
-                    # If the time jumps backward (recieved a corrupted timestamp
+                    # If the time jumps backward (recieved a corrupted timestamp)
                     # overwrite the most recent data point
                     if (len(self.data[name][0]) > 0 and
                         (time < self.data[name][0][-1] or self.data[name][0][-1] < 0)):
@@ -155,10 +156,11 @@ class DataManager:
             result = "abs time," + ",".join(self.dispatcher.data_names) + "\n"
             data = {}
             for name, (times, values) in self.data.items():
-                for time, value in zip(times, values):
-                    if time not in data:
-                        data[time] = {}
-                    data[time][name] = value
+                if self.dispatcher.data_types[name].export_csv:
+                    for time, value in zip(times, values):
+                        if time not in data:
+                            data[time] = {}
+                        data[time][name] = value
             current_vals = {name: None for name in self.dispatcher.data_names}
             for time, updates in sorted(data.items()):
                 for name, update in updates.items():

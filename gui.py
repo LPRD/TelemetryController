@@ -349,9 +349,11 @@ class Application(Frame):
                           "Legal formats are json, csv, log, eps, pdf, pgf, png, ps, raw, rgba, svg, svgz")
             else:
                 if extension in ["json", "csv", "log"]:
-                    self.serialManager.paused = True
+                    if self.serialManager:
+                        self.serialManager.paused = True
                     open(filename, 'w').write(self.manager.dump(extension))
-                    self.serialManager.paused = False
+                    if self.serialManager:
+                        self.serialManager.paused = False
                 else:
                     self.fig.savefig(filename)
 
