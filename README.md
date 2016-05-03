@@ -28,22 +28,24 @@ Note that Linux dist builds are uncompressed and very large, I am working on a f
 
 ### Cross-compiling a Windows distribution using wine on Linux
 Unless your name is Lucas (or maybe Jude?), you should ignore this.  I am putting it here for reference anyway.  
+
 1. Install wine (can be done via apt-get) and pyinstaller (see above)
-2. Get a msi python installer image for a recent release of python 3.4+.  As of writing, the latest is 3.4.4:
+2. Get a msi python installer image for a recent release of python 3.4+.  As of writing, the latest is 3.4.4:  
 ```> wget https://www.python.org/ftp/python/3.4.4/python-3.4.4.msi```
-3. Install python onto the wine virtual windows environment:
-```> wine msiexec /i python-3.4.4.msi```
+3. Install python onto the wine virtual windows environment:  
+```> wine msiexec /i python-3.4.4.msi```  
 This will open a grapical Windows installer window, you should be able to click through this keeping the default options.  This will install both python 3 and pip.
 4. Copy the executables python.exe and pip*.exe from ```~/.wine/drive_c/Python34``` to ```~/.wine/drive_c/windows```.  This makes it so you don't have to give the absolute paths to the exes to wine every time you want to run.
-5. Verify that python is working correctly by running
+5. Verify that python is working correctly by running  
 ```> wine python```
 This should print the python version and start the python REPL.
-6. Install pefile (needed for pyinstaller on Windows), matplotlib and pyserial, this can be done via pip with
+6. Install pefile (needed for pyinstaller on Windows), matplotlib and pyserial, this can be done via pip with  
 ```> wine python -m pip install -U pefile matplotlib pyserial```
 7. Set up the ```make_dist``` script with pyinstaller as above
-8. You are finally ready to build!  Run
-```> ./make_dist --wine-build```.  This should build the executatbles and put them in the dist folder.
-9. To test the build, you can run the exes with wine:
+8. You are finally ready to build!  Run  
+```> ./make_dist --wine-build```.  
+This should build the executatbles and put them in the dist folder.
+9. To test the build, you can run the exes with wine:  
 ```> wine dist/flight_test_gue.exe```
 10. Remember to commit and push the new builds to be public on github, if you are ready.  
 
