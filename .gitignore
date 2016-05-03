@@ -2,3 +2,5 @@
 *__pycache__*
 .temp_log.json
 build
+dist/static_test_gui
+dist/flight_test_gui
