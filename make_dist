@@ -1,7 +1,9 @@
 #!/bin/bash
 
-PYINSTALLER_PATH=../pyinstaller/ # Set this appropriately
-PYINSTALLER_FLAGS="-F --windowed --distpath ../dist --workpath ../build"
+# Set this appropriately to the path to the pyinstaller script
+PYINSTALLER_PATH=../pyinstaller/pyinstaller.py
+
+PYINSTALLER_FLAGS="-F --windowed"
 
 # Only use this flag if you are building a windows exe on linux or a mac
 # For this you need wine with python 3 installed with all needed libs
@@ -9,13 +11,12 @@ PYINSTALLER_FLAGS="-F --windowed --distpath ../dist --workpath ../build"
 if [[ $@ == *--wine-build* ]]
 then
     echo "Building with python on wine..."
-    PYINSTALLER="wine python ../$PYINSTALLER_PATH/pyinstaller.py"
+    PYINSTALLER="wine python $PYINSTALLER_PATH"
 else
-    PYINSTALLER="python3 ../$PYINSTALLER_PATH/pyinstaller.py"
+    PYINSTALLER="python3 $PYINSTALLER_PATH"
 fi
 
-cd src
 # Build both targets in parallel
-$PYINSTALLER $PYINSTALLER_FLAGS flight_test_gui.py &
-$PYINSTALLER $PYINSTALLER_FLAGS static_test_gui.py &
+$PYINSTALLER $PYINSTALLER_FLAGS src/flight_test_gui.py &
+$PYINSTALLER $PYINSTALLER_FLAGS src/static_test_gui.py &
 wait
