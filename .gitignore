@@ -2,7 +2,4 @@
 *__pycache__*
 .temp_log.json
 .fuse_hidden*
-*.spec
 build
-dist/static_test_gui
-dist/flight_test_gui
