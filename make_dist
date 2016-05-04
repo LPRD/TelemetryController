@@ -16,7 +16,13 @@ else
     PYINSTALLER="python3 $PYINSTALLER_PATH"
 fi
 
-# Build both targets in parallel
-$PYINSTALLER $PYINSTALLER_FLAGS src/flight_test_gui.py &
-$PYINSTALLER $PYINSTALLER_FLAGS src/static_test_gui.py &
+# Copy sources to another working folder, to avoid dumping .spec files in src
+mkdir -p tmp
+cp src/*.py tmp
+
+# Build all targets in parallel
+$PYINSTALLER $PYINSTALLER_FLAGS tmp/flight_test_gui.py &
+$PYINSTALLER $PYINSTALLER_FLAGS tmp/static_test_gui.py &
 wait
+
+rm -r tmp
