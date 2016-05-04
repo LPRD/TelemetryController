@@ -1,28 +1,50 @@
 #!/bin/bash
 
-# Set this appropriately to the path to the pyinstaller script
-PYINSTALLER_PATH=../pyinstaller/pyinstaller.py
+PYINSTALLER_PATH=build_tools/pyinstaller/pyinstaller.py
 
-PYINSTALLER_FLAGS="-F --windowed"
+TARGETS="flight_test_gui static_test_gui"
+EXCLUDE_MODULES=
+PYINSTALLER_FLAGS="-F --windowed --specpath build"
+
+if [[ $@ == *--clean* ]]
+then
+    rm -rf dist build
+fi
+
+if [[ $@ == *--all* ]]
+then
+   ./make_dist --wine-build &
+   ./make_dist --virtual-linux-build &
+   wait
+   exit 0
+fi
 
 # Only use this flag if you are building a windows exe on linux or a mac
 # For this you need wine with python 3 installed with all needed libs
 # I (Lucas) should really only ever be the one that needs this
+# More info in README.md
 if [[ $@ == *--wine-build* ]]
 then
     echo "Building with python on wine..."
     PYINSTALLER="wine python $PYINSTALLER_PATH"
+# Build using the included python virtual env
+# This means you don't need to install any libraries
+# Also seems to fix the issues with massive binaries being generated
+elif [[ $@ == *--virtual-linux-build* ]]
+then
+    echo "Building with python on linux_venv..."
+    source build_tools/linux_venv/bin/activate
+    PYINSTALLER="python3 $PYINSTALLER_PATH"
 else
     PYINSTALLER="python3 $PYINSTALLER_PATH"
 fi
 
-# Copy sources to another working folder, to avoid dumping .spec files in src
-mkdir -p tmp
-cp src/*.py tmp
-
 # Build all targets in parallel
-$PYINSTALLER $PYINSTALLER_FLAGS tmp/flight_test_gui.py &
-$PYINSTALLER $PYINSTALLER_FLAGS tmp/static_test_gui.py &
+for target in $TARGETS
+do
+    echo "Building $target"
+    rm -rf build/$target/cycler*.egg # Needed b/c pyinstaller sometimes chokes when this already exists
+    echo "$PYINSTALLER $PYINSTALLER_FLAGS src/$target.py &"
+    $PYINSTALLER $PYINSTALLER_FLAGS src/$target.py &
+done
 wait
-
-rm -r tmp
