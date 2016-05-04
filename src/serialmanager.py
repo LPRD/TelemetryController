@@ -3,6 +3,7 @@ import sys
 import glob
 import time
 
+# Manages recieving data from a serial port and passes it to a Dispatcher
 class SerialManager:
     def __init__(self, dispatcher, port='/dev/ttyACM0', baud=9600):
         self.dispatcher = dispatcher
@@ -29,6 +30,7 @@ class SerialManager:
         self.ser.write(txt.encode())
         self.ser.flush()
 
+# Utility function, get the list of all available serial devices
 def serial_ports():
     """ Lists serial port names
 

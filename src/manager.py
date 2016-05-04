@@ -3,8 +3,8 @@ from collections import OrderedDict
 import time
 import json
 import sys
-#import matplotlib
 
+# Representation of a data value category, with various properties
 class DataType:
     def __init__(self, name, type=float, plot=False, show=True, export_csv=True, units=None):
         # bool doesn't actually parse the value, just checks whether string is empty
@@ -17,6 +17,8 @@ class DataType:
         self.export_csv = export_csv
         self.units = units
 
+# Manages parsing incoming serial packets, recieving data in given data types, and passes it to
+# handlers.  Also tracks system data and time.  
 class Dispatcher:
     def __init__(self, *data_types):
         data_types = (DataType('sys date', str, False, False),
@@ -92,6 +94,9 @@ class Dispatcher:
     def request(self, name):
         return self.time[name], self.data[name]
 
+# Manages the data for a spesific run.  Attatches handlers to a Dispatcher, logs the data when
+# running, can save or load data runs in various formats.  Handlers can be attatched that trigger
+# on new data when there is an active run
 class DataManager:
     def __init__(self, dispatcher):
         self.dispatcher = dispatcher
