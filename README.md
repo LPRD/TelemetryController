@@ -11,7 +11,8 @@ Python matplotlib-based graphical viewer for telemetry streams
 Same as instructions for Windows, except you will likely need to install a package manager first instead of apt-get (I have found that brew works well)
 
 ### Windows
-You can simply download the packaged executables under dist, which should run with no extra dependancies.  Jon is working on figuring out how to install python with the required libraries directly, to side-step this.  
+You can simply download the packaged executables under dist, which should run with no extra dependencies. 
+Jon is working on setting up libraries to do development on Windows and will update this when he is done.  The libraries should be the same as for Linux.  
 
 ## Building a distribution
 If you want to create a packaged dist that others can use without installing python and the needed libraries, you can do this.  It uses pyinstaller to bundle the source code, all needed libraries and the python interpreter into one binary.  
