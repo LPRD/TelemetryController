@@ -3,18 +3,18 @@ import manager
 
 from tkinter import *
 from tkinter.scrolledtext import *
-#from tkinter.ttk import *
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.messagebox import showerror, askquestion
 
 import matplotlib
-#matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
 from matplotlib.animation import FuncAnimation
 
 import math
 
+# Main gui application class.  Extends frame so an instance can be extended with additional widgets
+# directly.  
 class Application(Frame):
     def __init__(self, dispatcher, manager, master=None, **flags):
         self.dispatcher = dispatcher
@@ -52,6 +52,7 @@ class Application(Frame):
 
         self.startListeners()
 
+    # Initialize the various widgets in the main frame
     def createWidgets(self):
         self.setupPlots()
 
@@ -115,6 +116,7 @@ class Application(Frame):
 
         serial.pack()
 
+        # Formatted packet sending widget
         sendValuesLabel = Label(self, text="\nSend value")
         if self.flags['show_send_value']:
             sendValuesLabel.pack()
@@ -132,6 +134,7 @@ class Application(Frame):
         if self.flags['show_send_value']:
             sendValues.pack()
 
+        # Value readout widget
         valuesLabel = Label(self, text="\nCurrent values")
         if self.flags['show_current_values']:
             valuesLabel.pack()
@@ -169,6 +172,7 @@ class Application(Frame):
 
         self.miscGuiPanel = None
 
+    # Set up the plots and add it as a widget
     def setupPlots(self):
         self.fig = matplotlib.figure.Figure(figsize=(10,10),dpi=100)
         self.canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.fig, master=self)
@@ -219,6 +223,7 @@ class Application(Frame):
         self.canvas._tkcanvas.pack(side=LEFT)
         #self.update() # Is this needed? Causes freezing with lots of plots
 
+    # Exit, handler for quit button
     def terminate(self):
         if self.manager.running:
             result = askquestion("Exit",
@@ -229,12 +234,14 @@ class Application(Frame):
         else:  
             sys.exit(0)
 
+    # Write text to the serial console
     def write(self, txt):
         self.serialOut.config(state=NORMAL)
         self.serialOut.insert(END, str(txt))
         self.serialOut.see(END)
         self.serialOut.config(state=DISABLED)
 
+    # Start a run
     def start(self):
         if self.serialManager:
             self.manager.start()
@@ -247,14 +254,17 @@ class Application(Frame):
             showerror("Error", "No serial port selected")
             return False
     
+    # Stop the current run
     def stop(self):
         self.manager.stop()
         self.controlButton.config(text="Reset", bg="grey", command=self.reset)
     
+    # Reset for the next run
     def reset(self):
         self.manager.reset()
         self.controlButton.config(text="Start", bg="lime green", command=self.start)
         
+    # Send a serial command
     def sendSerial(self, _=None):
         if self.serialManager:
             self.serialManager.write(self.serialIn.get())
@@ -262,6 +272,7 @@ class Application(Frame):
         else:
             showerror("Error", "No serial port selected")
         
+    # Handler for sending a serial command with a newline appended
     def sendSerialNewline(self, _=None):
         if self.serialManager:
             self.serialManager.write(self.serialIn.get() + "\r\n")
@@ -269,11 +280,13 @@ class Application(Frame):
         else:
             showerror("Error", "No serial port selected")
         
+    # Handler for sending a formatted packet
     def sendValues(self, _=None):
         self.sendValue(self.sendDataName.get(), self.sendDataIn.get())
         if self.serialManager:
             self.sendDataIn.delete(0, 'end')
 
+    # Send a formatted packet
     def sendValue(self, name, value=""):
         if self.serialManager:
             self.serialManager.write("@@@@@:" + name + ":" + value + "&&&&&\r\n")
@@ -282,11 +295,12 @@ class Application(Frame):
             showerror("Error", "No serial port selected")
             return False
 
-
+    # Disable full-screen mode
     def unmaximize(self, _):
         self.master.attributes("-fullscreen", False)
 
-    def changeSerial(self, *args):
+    # Handler for changing the serial port
+    def changeSerial(self, _):
         #print("Selected port", self.serialPort.get())
         self.serialOut.config(state=NORMAL)
         self.serialOut.delete(1.0, 'end')
@@ -296,17 +310,20 @@ class Application(Frame):
         self.serialManager = serialmanager.SerialManager(self.dispatcher, self.serialPort.get())#, int(self.baud.get()))
         self.startSerial()
 
+    # Handler for checking the available serial ports
     def checkSerial(self):
         self.serialSelect['menu'].delete(0, 'end')
         for port in serialmanager.serial_ports():
             self.serialSelect['menu'].add_command(label=port, command=lambda p=port: self.serialPort.set(p))
 
+    # Begin updating the data manager listeners
     def startListeners(self):
         if self.manager.update_all_listeners():
             self.after(50, self.startListeners)
         else:
             self.after(100, self.startListeners)
 
+    # Begin reading serial data
     def startSerial(self):
         if self.serialManager:
             try:
@@ -318,12 +335,15 @@ class Application(Frame):
                 self.serialManager = None
                 self.checkSerial()
 
+    # Write the current run data log to the backup file
+    # TODO: use self.after(...)
     last_update_time = ""
     def saveBackup(self, times, values):
         if len(values) > 0 and values[-1] != self.last_update_time:
             self.last_update_time = values[0]
             open(self.flags["backup_log"], 'w').write(self.manager.dump('json'))
 
+    # Handler to open a file
     def openFile(self):
         filename = askopenfilename()
         if filename:
@@ -339,6 +359,7 @@ class Application(Frame):
                 else:
                     showerror("Error", "Invalid data file")
 
+    # Handler to save file
     def saveFile(self):
         filename = asksaveasfilename()
         if filename:
