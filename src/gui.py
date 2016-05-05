@@ -300,7 +300,7 @@ class Application(Frame):
         self.master.attributes("-fullscreen", False)
 
     # Handler for changing the serial port
-    def changeSerial(self, _):
+    def changeSerial(self, *args):
         #print("Selected port", self.serialPort.get())
         self.serialOut.config(state=NORMAL)
         self.serialOut.delete(1.0, 'end')
