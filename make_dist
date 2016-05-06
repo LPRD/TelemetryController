@@ -3,8 +3,7 @@
 PYINSTALLER_PATH=build_tools/pyinstaller/pyinstaller.py
 
 TARGETS="flight_test_gui static_test_gui"
-EXCLUDE_MODULES=
-PYINSTALLER_FLAGS="-F --windowed --specpath build"
+PYINSTALLER_FLAGS="-F --windowed --specpath build" #
 
 if [[ $@ == *--clean* ]]
 then
@@ -48,3 +47,8 @@ do
     $PYINSTALLER $PYINSTALLER_FLAGS src/$target.py &
 done
 wait
+
+if [[ $@ == *--commit* ]]
+then
+    ./dist_commit
+fi

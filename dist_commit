@@ -1,0 +1,3 @@
+#!/bin/bash
+git add dist --ignore-removal
+git commit -m "Updated dist files"
