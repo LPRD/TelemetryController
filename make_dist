@@ -50,5 +50,5 @@ wait
 
 if [[ $@ == *--commit* ]]
 then
-    ./dist_commit
+    ./commit_dist
 fi
