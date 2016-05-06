@@ -8,7 +8,11 @@ class SerialManager:
     def __init__(self, dispatcher, port='/dev/ttyACM0', baud=9600):
         self.dispatcher = dispatcher
         self.baud = baud
-        self.ser = serial.Serial(port, baud)
+        if sys.platform.startswith('win'):
+            self.ser = serial.Serial("\\.\COMxx" + port, baud)
+        else:
+            self.ser = serial.Serial(port, baud)
+        
         self.paused = False
 
         self.dispatcher.reset()
@@ -52,7 +56,10 @@ def serial_ports():
     result = []
     for port in ports:
         try:
-            s = serial.Serial(port)
+            if sys.platform.startswith('win'):
+                s = serial.Serial("\\.\COMxx" + port)
+            else:
+                s = serial.Serial(port)
             s.close()
             result.append(port)
         except (OSError, serial.SerialException):
