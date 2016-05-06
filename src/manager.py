@@ -42,7 +42,7 @@ class Dispatcher:
     def add_listener(self, name, fn, delay=0):
         self.listeners[name].append([delay, 0, fn])
 
-    def acceptText(self, text, txtout=sys.stdout):
+    def acceptText(self, text, txtout=sys.stdout, errout=sys.stderr):
         lines = (self.current_line + text).split("\n")
         abs_time = None
         for line in lines[:-1]:
@@ -51,11 +51,11 @@ class Dispatcher:
                 try:
                     abs_time, name, value = line[5:][:-5].split(':')
                     abs_time = int(abs_time) if abs_time != "" else None
-                    self.accept(name, abs_time, value)
+                    self.accept(name, abs_time, value, errout)
                     self.accept("sys date", abs_time, time.strftime("%d/%m/%Y"))
                     self.accept("sys time", abs_time, time.strftime("%H:%M:%S"))
                 except ValueError:
-                    print("Ill-formed data packet", line)
+                    print("Invalid packet", line, file=errout)
             else:
                 print(line, file=txtout)
         if lines[-1].startswith("@"):
@@ -64,9 +64,9 @@ class Dispatcher:
             print(lines[-1], end='', file=txtout)
             self.current_line = ""
         # Always update log, even if parse failed
-        self.accept('log', abs_time, text)
+        self.accept('log', abs_time, text, errout)
         
-    def accept(self, name, time, value):
+    def accept(self, name, time, value, errout=sys.stderr):
         if name not in self.data_types:
             print("Received unrecognized data type", name)
             return False
@@ -81,7 +81,7 @@ class Dispatcher:
                 self.data[name] = self.data_types[name].type(value)
                 self.time[name] = time
             except ValueError:
-                print("Invalid value for", name, "recieved:", value)
+                print("Invalid value for", name, "recieved:", value, file=errout)
 
             for l in self.listeners[name]:
                 delay, last, listener = l
@@ -184,7 +184,7 @@ class DataManager:
             sys.exit("Unsupported format" + format)
 
     # txtout is stream to write non-packet text when loading a log
-    def load(self, format, text, txtout=sys.stdout):
+    def load(self, format, text, txtout=sys.stdout, errout=sys.stderr):
         if format == 'json':
             data = OrderedDict(json.loads(text))
             if set(self.data.keys()) != set(data.keys()):
@@ -209,7 +209,7 @@ class DataManager:
         elif format == 'log':
             self.reset()
             self.start()
-            self.dispatcher.acceptText(text, txtout)
+            self.dispatcher.acceptText(text, txtout, errout)
             self.stop()
         else:
             sys.exit("Unsupported format" + format)

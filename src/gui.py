@@ -13,6 +13,11 @@ from matplotlib.animation import FuncAnimation
 
 import math
 
+# Helper class that has a write method that is provided to the constructor
+class FnWriteableStream:
+    def __init__(self, write):
+        self.write = write
+
 # Main gui application class.  Extends frame so an instance can be extended with additional widgets
 # directly.  
 class Application(Frame):
@@ -94,6 +99,10 @@ class Application(Frame):
 
         self.serialOut = ScrolledText(serial, width=50, height=self.flags['serial_console_height'])
         self.serialOut.config(state=DISABLED)
+        self.colorStreams = {}
+        for color in ['red', 'yellow', 'green', 'blue']:
+            self.serialOut.tag_config(color + '_text', foreground=color)
+            self.colorStreams[color] = FnWriteableStream(lambda txt, color=color: self.write(txt, str(color)))
         self.serialOut.pack()
 
         self.serialIn = Entry(serial, width=50)
@@ -235,9 +244,12 @@ class Application(Frame):
             sys.exit(0)
 
     # Write text to the serial console
-    def write(self, txt):
+    def write(self, txt, color=None):
         self.serialOut.config(state=NORMAL)
-        self.serialOut.insert(END, str(txt))
+        if color:
+            self.serialOut.insert(END, str(txt), color + '_text')
+        else:
+            self.serialOut.insert(END, str(txt))
         self.serialOut.see(END)
         self.serialOut.config(state=DISABLED)
 
@@ -327,7 +339,7 @@ class Application(Frame):
     def startSerial(self):
         if self.serialManager:
             try:
-                if self.serialManager.handleInput(self):
+                if self.serialManager.handleInput(self, self.colorStreams['red']):
                     self.after(50, self.startSerial)
                 else:
                     self.after(100, self.startSerial)
@@ -353,7 +365,7 @@ class Application(Frame):
                           "Legal formats are json, log")#, csv")
             else:
                 self.reset()
-                if self.manager.load(extension, open(filename).read(), self):
+                if self.manager.load(extension, open(filename).read(), self, self.colorStreams['red']):
                     self.valuesList.delete(0, END)
                     self.controlButton.config(text="Reset", bg="grey", command=self.reset)
                 else:

@@ -17,7 +17,7 @@ class SerialManager:
 
         self.dispatcher.reset()
 
-    def handleInput(self, txtout=sys.stdout):
+    def handleInput(self, txtout=sys.stdout, errout=sys.stderr):
         while self.paused:
             time.sleep(100 / 1000) # Sleep 100 ms
         if self.ser.in_waiting:
@@ -26,7 +26,7 @@ class SerialManager:
             except serial.serialutil.SerialException:
                 time.sleep(10 / 1000) # Sleep 10 ms
             decode = bytes_in.decode("utf-8", errors='ignore')
-            self.dispatcher.acceptText(decode, txtout)
+            self.dispatcher.acceptText(decode, txtout, errout)
             return True
         return False
     
