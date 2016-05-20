@@ -68,7 +68,6 @@ This should build the executatbles and put them in the dist folder.
 ## TODO items
 ### Major
 * Get CSV parsing working
-* Command line inteface
 * Multiple plots on the same graph?  
 
 ### Minor

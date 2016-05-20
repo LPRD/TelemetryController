@@ -11,6 +11,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.figure import Figure
 from matplotlib.animation import FuncAnimation
 
+import argparse
 import math
 
 # Helper class that has a write method that is provided to the constructor
@@ -26,7 +27,7 @@ class Application(Frame):
         self.manager = manager
         self.master = master
 
-        # Defaults
+        # Default values
         new_flags = {'send_with_newline_default': False,
                      'show_current_values': True,
                      'show_send_value': True,
@@ -35,6 +36,20 @@ class Application(Frame):
                      'serial_console_height': 15}
         new_flags.update(flags)
         self.flags = new_flags
+
+        # Command-line flags
+        parser = argparse.ArgumentParser()
+        parser.add_argument('filename',
+                            nargs='?',
+                            help="default file to open, if provided")
+        parser.add_argument('-F','--full-screen',
+                            action='store_true',
+                            default=self.flags['full_screen'],
+                            help="open the gui in full screen mode if requested")
+        parser.add_argument('-p','--port',
+                            help="default port to open")
+        args = parser.parse_args()
+        self.flags['full_screen'] = args.full_screen
 
         # Init gui
         Frame.__init__(self, master)
@@ -49,13 +64,35 @@ class Application(Frame):
         self.serialManager = None
         self.checkSerial()
         ports = serialmanager.serial_ports()
-        if ports:
+        if args.port:
+            if args.port in ports:
+                self.serialPort.set(args.port)
+            else:
+                parser.error("Invalid serial port " + args.port)
+        elif ports:
             self.serialPort.set(ports[0])
+        if ports:
             self.serialManager = serialmanager.SerialManager(self.dispatcher, self.serialPort.get())
             self.baud.set(self.serialManager.baud)
             self.startSerial()
 
         self.startListeners()
+
+        # Open a file if requested from command line
+        extension = args.filename.split(".")[-1]
+        if extension not in ["json", "log"]:#, "csv"]:
+            parser.error("Invalid file extension \"." + extension + "\"\n" +
+                         "Legal formats are json, log")#, csv")
+        else:
+            self.reset()
+            try:
+                if self.manager.load(extension, open(args.filename).read(), self, self.colorStreams['red']):
+                    self.valuesList.delete(0, END)
+                    self.controlButton.config(text="Reset", bg="grey", command=self.reset)
+                else:
+                    parser.error("Invalid data file")
+            except FileNotFoundError:
+                parser.error("File " + args.filename + " not found")
 
     # Initialize the various widgets in the main frame
     def createWidgets(self):
