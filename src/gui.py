@@ -248,7 +248,7 @@ class Application(Frame):
                 lines[plot, y], = subplots[plot].plot([], [], label=y)
                 
             if len(plot.ys) > 1:
-               subplots[plot].legend() 
+               subplots[plot].legend(loc='lower left') 
 
             plot.setup_listeners(self.manager, update)
 
