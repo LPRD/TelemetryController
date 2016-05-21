@@ -9,13 +9,16 @@ class SerialManager:
         self.dispatcher = dispatcher
         self.baud = baud
         if sys.platform.startswith('win'):
-            self.ser = serial.Serial("\\.\COMxx" + port, baud)
+            self.ser = serial.Serial(port, baud)
         else:
             self.ser = serial.Serial(port, baud)
         
         self.paused = False
 
         self.dispatcher.reset()
+
+    #def __del__(self):
+    #    self.ser.close()
 
     def handleInput(self, txtout=sys.stdout, errout=sys.stderr):
         while self.paused:
@@ -57,7 +60,7 @@ def serial_ports():
     for port in ports:
         try:
             if sys.platform.startswith('win'):
-                s = serial.Serial("\\.\COMxx" + port)
+                s = serial.Serial(port)
             else:
                 s = serial.Serial(port)
             s.close()
