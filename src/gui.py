@@ -80,8 +80,6 @@ class Application(Frame):
 
         self.startListeners()
 
-<<<<<<< HEAD
-<<<<<<< HEAD
         # Open a file if requested from command line
         if args.filename:
             extension = args.filename.split(".")[-1]
@@ -99,10 +97,6 @@ class Application(Frame):
                 except FileNotFoundError:
                     parser.error("File " + args.filename + " not found")
 
-=======
->>>>>>> cb475e42a348b7732611890ffa3e065ae3f822bf
-=======
->>>>>>> cb475e42a348b7732611890ffa3e065ae3f822bf
     # Initialize the various widgets in the main frame
     def createWidgets(self):
         self.setupPlots()
