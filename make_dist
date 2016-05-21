@@ -3,7 +3,8 @@
 PYINSTALLER_PATH=build_tools/pyinstaller/pyinstaller.py
 
 TARGETS="flight_test_gui static_test_gui"
-PYINSTALLER_FLAGS="-F --windowed --specpath build" #
+EXCLUDE_MODULES=
+PYINSTALLER_FLAGS="-F --windowed --specpath build"
 
 if [[ $@ == *--clean* ]]
 then
@@ -14,6 +15,7 @@ if [[ $@ == *--all* ]]
 then
    ./make_dist --wine-build &
    ./make_dist --virtual-linux-build &
+
 else
     # Only use this flag if you are building a windows exe on linux or a mac
     # For this you need wine with python 3 installed with all needed libs
@@ -23,9 +25,10 @@ else
     then
         echo "Building with python on wine..."
         PYINSTALLER="wine python $PYINSTALLER_PATH"
-        # Build using the included python virtual env
-        # This means you don't need to install any libraries
-        # Also seems to fix the issues with massive binaries being generated
+
+    # Build using the included python virtual env
+    # This means you don't need to install any libraries
+    # Also seems to fix the issues with massive binaries being generated
     elif [[ $@ == *--virtual-linux-build* ]]
     then
         echo "Building with python on linux_venv..."

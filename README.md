@@ -67,7 +67,10 @@ This should build the executatbles and put them in the dist folder.
 
 ## TODO items
 ### Major
-* Get CSV parsing working  
+* Get CSV parsing working
+* Command line inteface
+* Show invalid packets in serial window as a different color instead of stdout
+* Multiple plots on the same graph?  
 
 ### Minor
 * Nice setup configuration modes (What did I mean by this?)
