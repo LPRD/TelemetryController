@@ -14,6 +14,7 @@ from matplotlib.animation import FuncAnimation
 
 import argparse
 import math
+import sys
 
 # Helper class that has a write method that is provided to the constructor
 class FnWriteableStream:
@@ -123,12 +124,14 @@ class Application(Frame):
         serialControls = Frame(serial)
 
         self.serialPort = StringVar(self)
-        self.serialPort.trace('w', self.changeSerial)
+        if not sys.platform.startswith('win'):
+            self.serialPort.trace('w', self.changeSerial)
         self.serialSelect = OptionMenu(serialControls, self.serialPort, [])
         self.serialSelect.pack(side=LEFT)
 
         self.baud = StringVar(self)
-        self.baud.trace('w', self.changeSerial)
+        if not sys.platform.startswith('win'):
+            self.baud.trace('w', self.changeSerial)
         self.baudSelect = OptionMenu(serialControls, self.baud, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200)
         self.baudSelect.pack(side=LEFT)
 
