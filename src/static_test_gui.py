@@ -5,10 +5,11 @@ from tkinter.messagebox import showerror
 
 import manager
 import gui
+import plot
 import time
 
-dts = [manager.DataType('force', float, plot=True, units='Newtons'),
-       manager.DataType('temperature', float, plot=True, units='deg C'),
+dts = [manager.DataType('force', float, units='Newtons'),
+       manager.DataType('temperature', float, units='deg C'),
        manager.DataType('x', float, units='Gs'),
        manager.DataType('y', float, units='Gs'),
        manager.DataType('z', float, units='Gs'),
@@ -18,10 +19,13 @@ dts = [manager.DataType('force', float, plot=True, units='Newtons'),
        manager.DataType('oxy_control', int, show=False),
        manager.DataType('fuel_safety', bool, show=False),
        manager.DataType('oxy_safety', bool, show=False)]
+plots = [plot.Plot('time', 'force'),
+         plot.Plot('time', 'temperature'),
+         plot.Plot('time', ['x', 'y', 'z'], "acceleration")]
 dispatcher = manager.Dispatcher(*dts)
 manager = manager.DataManager(dispatcher)
 root = Tk()
-app = gui.Application(dispatcher, manager, master=root,
+app = gui.Application(dispatcher, manager, plots, master=root,
                       show_send_value=False,
                       serial_console_height=5)
 running = False

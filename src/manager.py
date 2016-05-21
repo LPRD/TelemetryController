@@ -6,24 +6,24 @@ import sys
 
 # Representation of a data value category, with various properties
 class DataType:
-    def __init__(self, name, type=float, plot=False, show=True, export_csv=True, units=None):
+    def __init__(self, name, type=float, show=True, export_csv=True, units=None):
         # bool doesn't actually parse the value, just checks whether string is empty
         if type == bool:
             type = lambda x: x == "1" or x == "True"
         self.name = name
         self.type = type
-        self.plot = plot
         self.show = show
         self.export_csv = export_csv
         self.units = units
+
 
 # Manages parsing incoming serial packets, recieving data in given data types, and passes it to
 # handlers.  Also tracks system data and time.  
 class Dispatcher:
     def __init__(self, *data_types):
-        data_types = (DataType('sys date', str, False, False),
-                      DataType('sys time', str, False, False),
-                      DataType('log', str, False, False, False)) + data_types
+        data_types = (DataType('sys date', str, False),
+                      DataType('sys time', str, False),
+                      DataType('log', str, False, False)) + data_types
 
         self.data_names = [d.name for d in data_types]
         self.data_types = {d.name: d for d in data_types}

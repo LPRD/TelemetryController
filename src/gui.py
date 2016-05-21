@@ -1,5 +1,6 @@
 import serialmanager
 import manager
+import plot
 
 from tkinter import *
 from tkinter.scrolledtext import *
@@ -22,9 +23,10 @@ class FnWriteableStream:
 # Main gui application class.  Extends frame so an instance can be extended with additional widgets
 # directly.  
 class Application(Frame):
-    def __init__(self, dispatcher, manager, master=None, **flags):
+    def __init__(self, dispatcher, manager, plots, master=None, **flags):
         self.dispatcher = dispatcher
         self.manager = manager
+        self.plots = plots
         self.master = master
 
         # Default values
@@ -79,20 +81,21 @@ class Application(Frame):
         self.startListeners()
 
         # Open a file if requested from command line
-        extension = args.filename.split(".")[-1]
-        if extension not in ["json", "log"]:#, "csv"]:
-            parser.error("Invalid file extension \"." + extension + "\"\n" +
-                         "Legal formats are json, log")#, csv")
-        else:
-            self.reset()
-            try:
-                if self.manager.load(extension, open(args.filename).read(), self, self.colorStreams['red']):
-                    self.valuesList.delete(0, END)
-                    self.controlButton.config(text="Reset", bg="grey", command=self.reset)
-                else:
-                    parser.error("Invalid data file")
-            except FileNotFoundError:
-                parser.error("File " + args.filename + " not found")
+        if args.filename:
+            extension = args.filename.split(".")[-1]
+            if extension not in ["json", "log"]:#, "csv"]:
+                parser.error("Invalid file extension \"." + extension + "\"\n" +
+                             "Legal formats are json, log")#, csv")
+            else:
+                self.reset()
+                try:
+                    if self.manager.load(extension, open(args.filename).read(), self, self.colorStreams['red']):
+                        self.valuesList.delete(0, END)
+                        self.controlButton.config(text="Reset", bg="grey", command=self.reset)
+                    else:
+                        parser.error("Invalid data file")
+                except FileNotFoundError:
+                    parser.error("File " + args.filename + " not found")
 
     # Initialize the various widgets in the main frame
     def createWidgets(self):
@@ -222,45 +225,48 @@ class Application(Frame):
     def setupPlots(self):
         self.fig = matplotlib.figure.Figure(figsize=(10,10),dpi=100)
         self.canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.fig, master=self)
-        data_names = [name for name in self.dispatcher.data_names if self.dispatcher.data_types[name].plot]
-        width = int(math.ceil(math.sqrt(len(data_names))))
-        height = width - 1 if width * (width - 1) >= len(data_names) else width
+        width = int(math.ceil(math.sqrt(len(self.plots))))
+        height = width - 1 if width * (width - 1) >= len(self.plots) else width
         subplots = {}
         lines = {}
-        for i, name in enumerate(data_names):
-            subplots[name] = self.fig.add_subplot(width, height, i + 1)
-            subplots[name].set_title(name)
-            subplots[name].set_xlabel('time (sec)')
-            subplots[name].set_ylabel(self.dispatcher.data_types[name].units if self.dispatcher.data_types[name].units else "")
-            lines[name], = subplots[name].plot([], [])
+        update = {(plot, y): ([], []) for plot in self.plots for y in plot.ys}
+        for i, plot in enumerate(self.plots):
+            subplots[plot] = self.fig.add_subplot(width, height, i + 1)
+            if plot.name:
+                subplots[plot].set_title(plot.name)
+            if plot.x == 'time':
+                subplots[plot].set_xlabel("time (sec)")
+            else:
+                subplots[plot].set_xlabel(plot.x +
+                                          (" (" + self.dispatcher.data_types[plot.x].units + ")"
+                                           if self.dispatcher.data_types[plot.x].units else ""))
+            ys_units = [self.dispatcher.data_types[y].units for y in plot.ys]
+            assert len(set(ys_units)) <= 1 # All units must be the same, if included
+            if ys_units[0]:
+                subplots[plot].set_ylabel(ys_units[0])
+            for y in plot.ys:
+                lines[plot, y], = subplots[plot].plot([], [], label=y)
+                
+            if len(plot.ys) > 1:
+               subplots[plot].legend() 
+
+            plot.setup_listeners(self.manager, update)
+
         self.fig.tight_layout(pad=2)
 
-        update = {name: ([], []) for name in data_names}
-
-        max_points = 1000
-
-        def get_listener(name):
-            def fn(x_data, y_data):
-                assert len(x_data) == len(y_data)
-                # 'Prune' plotted data to avoid slow-down
-                indices = range(0, len(x_data), max(len(x_data) // max_points, 1))
-                x_data = [x_data[i] for i in indices]
-                y_data = [y_data[i] for i in indices]
-                update[name] = x_data, y_data
-            return fn
-
-        for name in data_names:
-            self.manager.add_listener(name, get_listener(name))
-
         def animate(i):
-            for name, sp in subplots.items():
-                if update[name]:
-                    x_data, y_data = update[name]
-                    update[name] = None
-                    lines[name].set_xdata([x / 1000 for x in x_data])
-                    lines[name].set_ydata(y_data)
-                    subplots[name].relim()
-                    subplots[name].autoscale_view(None, True, True)
+            for plot, sp in subplots.items():
+                updated = False
+                for y in plot.ys:
+                    if update[plot, y]:
+                        x_data, y_data = update[plot, y]
+                        update[plot, y] = None
+                        lines[plot, y].set_xdata(x_data)
+                        lines[plot, y].set_ydata(y_data)
+                        updated = True
+                if updated:
+                    subplots[plot].relim()
+                    subplots[plot].autoscale_view(None, True, True)
 
         ani = FuncAnimation(self.fig, animate, interval=200)
 
