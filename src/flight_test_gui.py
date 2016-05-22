@@ -12,7 +12,7 @@ dts = [#manager.DataType('temperature', float, units='deg C'),
        manager.DataType('z', float, units='Gs')]
 plots = [#plot.Plot('time', 'temperature'),
          plot.Plot('time', ['x', 'y', 'z'], "acceleration vs. time"),
-         plot.Plot('y', ['x', 'z'], "vertical vs. horizontal acceleration")]
+         plot.Plot('y', ['x', 'z'], "vertical vs. horizontal acceleration", 'o')]
 dispatcher = manager.Dispatcher(*dts)
 manager = manager.DataManager(dispatcher)
 root = Tk()
