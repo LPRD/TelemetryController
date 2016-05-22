@@ -124,12 +124,14 @@ class Application(Frame):
         serialControls = Frame(serial)
 
         self.serialPort = StringVar(self)
+        # TODO: Make this work on windows
         if not sys.platform.startswith('win'):
             self.serialPort.trace('w', self.changeSerial)
         self.serialSelect = OptionMenu(serialControls, self.serialPort, [])
         self.serialSelect.pack(side=LEFT)
 
         self.baud = StringVar(self)
+        # TODO: Make this work on windows
         if not sys.platform.startswith('win'):
             self.baud.trace('w', self.changeSerial)
         self.baudSelect = OptionMenu(serialControls, self.baud, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200)
@@ -248,10 +250,12 @@ class Application(Frame):
             if ys_units[0]:
                 subplots[plot].set_ylabel(ys_units[0])
             for y in plot.ys:
-                lines[plot, y], = subplots[plot].plot([], [], label=y)
-                
+                if plot.style:
+                    lines[plot, y], = subplots[plot].plot([], [], plot.style, label=y)
+                else:
+                    lines[plot, y], = subplots[plot].plot([], [], label=y)
             if len(plot.ys) > 1:
-               subplots[plot].legend(loc='lower left') 
+               subplots[plot].legend(loc='lower right')
 
             plot.setup_listeners(self.manager, update)
 

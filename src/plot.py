@@ -2,12 +2,13 @@
 
 # Representation of a group of plotted data values
 class Plot:
-    def __init__(self, x, ys, name=None):
+    def __init__(self, x, ys, name=None, style=None):
         self.x = x
         self.ys = [ys] if type(ys) == str else ys
         if len(self.ys) == 1 and name == None:
             name = self.ys[0]
         self.name = name
+        self.style = style
 
     def setup_listeners(self, manager, update):
         max_points = 1000
