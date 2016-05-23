@@ -71,8 +71,10 @@ This should build the executatbles and put them in the dist folder.
 
 ### Minor
 * Migrate a lot of the plotting code to plot.py
+* Use makefile for building
 * Nice setup configuration modes (What did I mean by this?)
 
 ## Known issues
 * Can't select a serial port on Windows
 * No automatic restart after port change, need to start/stop/reset (check if resolved?)
+* Crashes with no plots included
