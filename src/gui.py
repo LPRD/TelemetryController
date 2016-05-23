@@ -258,8 +258,9 @@ class Application(Frame):
                subplots[plot].legend(loc='lower right')
 
             plot.setup_listeners(self.manager, update)
-
-        self.fig.tight_layout(pad=2)
+        
+        if self.plots:
+            self.fig.tight_layout(pad=2)
 
         def animate(i):
             for plot, sp in subplots.items():
