@@ -66,12 +66,13 @@ This should build the executatbles and put them in the dist folder.
 9. Remember to commit and push the new builds to be public on github, if you are ready.  
 
 ## TODO items
-### Major
+### High priority
+* Fix bugs
 * Get CSV parsing working
 
-### Minor
+### Low priority
 * Migrate a lot of the plotting code to plot.py
-* Use makefile for building
+* Set up virtual wine env
 * Nice setup configuration modes (What did I mean by this?)
 
 ## Known issues
