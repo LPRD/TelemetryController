@@ -1,0 +1,1157 @@
+WINE REGISTRY Version 2
+;; All keys relative to \\User\\S-1-5-21-0-0-0-1000
+
+#arch=win64
+
+[AppEvents\\Schemes\\Apps\\Explorer\\Navigating\\.Current] 1464050643
+@=""
+
+[Control Panel\\Accessibility\\Blind Access] 1464050624
+"On"="0"
+
+[Control Panel\\Accessibility\\Keyboard Preference] 1464050624
+"On"="1"
+
+[Control Panel\\Accessibility\\ShowSounds] 1464050624
+"On"="0"
+
+[Control Panel\\Colors] 1464050624
+
+[Control Panel\\Desktop] 1464050624
+"ActiveWndTrackTimeout"=dword:00000000
+"BlockSendInputResets"="0"
+"CaretWidth"=dword:00000001
+"ClickLockTime"=dword:000004b0
+"DoubleClickHeight"="4"
+"DoubleClickWidth"="4"
+"DragFullWindows"="0"
+"DragHeight"="4"
+"DragWidth"="4"
+"FocusBorderHeight"=dword:00000001
+"FocusBorderWidth"=dword:00000001
+"FontSmoothing"="2"
+"FontSmoothingGamma"=dword:00000000
+"FontSmoothingOrientation"=dword:00000001
+"FontSmoothingType"=dword:00000001
+"ForegroundFlashCount"=dword:00000003
+"ForegroundLockTimeout"=dword:00000000
+"IconTitleWrap"="1"
+"LowPowerActive"="0"
+"MenuShowDelay"="400"
+"UserPreferencesMask"=hex:30,00,00,80,10,00,00,00
+"Wallpaper"=""
+"WheelScrollChars"="3"
+"WheelScrollLines"="3"
+
+[Control Panel\\Desktop\\WindowMetrics] 1464050624
+"BorderWidth"="-15"
+"CaptionHeight"="-270"
+"CaptionWidth"="-270"
+"IconSpacing"="-1125"
+"IconTitleWrap"="1"
+"IconVerticalSpacing"="-1125"
+"MenuHeight"="-270"
+"MenuWidth"="-270"
+"PaddedBorderWidth"="0"
+"ScrollHeight"="-240"
+"ScrollWidth"="-240"
+"Shell Icon Size"="32"
+"SmCaptionHeight"="-225"
+"SmCaptionWidth"="-225"
+
+[Control Panel\\International] 1464050624
+"iCalendarType"="1"
+"iCountry"="1"
+"iCurrDigits"="2"
+"iCurrency"="0"
+"iDate"="0"
+"iDigits"="2"
+"iFirstDayOfWeek"="6"
+"iFirstWeekOfYear"="0"
+"iLDate"="0"
+"iLZero"="1"
+"iMeasure"="1"
+"iNegCurr"="0"
+"iNegNumber"="1"
+"iPaperSize"="1"
+"iTime"="0"
+"iTimePrefix"="0"
+"iTLZero"="0"
+"LC_CTYPE"="00000409"
+"LC_MEASUREMENT"="00000409"
+"LC_MONETARY"="00000409"
+"LC_NUMERIC"="00000409"
+"LC_PAPER"="00000409"
+"LC_TELEPHONE"="00000409"
+"LC_TIME"="00000409"
+"Locale"="00000409"
+"Numshape"="1"
+"s1159"="AM"
+"s2359"="PM"
+"sCountry"="United States"
+"sCurrency"="$"
+"sDate"="/"
+"sDecimal"="."
+"sGrouping"="3;0"
+"sLanguage"="ENU"
+"sList"=","
+"sLongDate"="dddd, MMMM dd, yyyy"
+"sMonDecimalSep"="."
+"sMonGrouping"="3;0"
+"sMonThousandSep"=","
+"sNativeDigits"="0123456789"
+"sNegativeSign"="-"
+"sPositiveSign"=""
+"sShortDate"="M/d/yyyy"
+"sThousand"=","
+"sTime"=":"
+"sTimeFormat"="h:mm:ss tt"
+"sYearMonth"="MMMM, yyyy"
+
+[Control Panel\\Keyboard] 1464050624
+"KeyboardDelay"="1"
+"KeyboardSpeed"="31"
+
+[Control Panel\\Mouse] 1464050624
+"ActiveWindowTracking"=dword:00000000
+"DoubleClickHeight"="4"
+"DoubleClickSpeed"="500"
+"DoubleClickWidth"="4"
+"MouseHoverHeight"="4"
+"MouseHoverTime"="400"
+"MouseHoverWidth"="4"
+"MouseSensitivity"="10"
+"MouseSpeed"="1"
+"MouseThreshold1"="6"
+"MouseThreshold2"="10"
+"SnapToDefaultButton"="0"
+"SwapMouseButtons"="0"
+
+[Control Panel\\Sound] 1464050624
+"Beep"="Yes"
+
+[Environment] 1464050628
+"TEMP"="C:\\users\\krame505\\Temp"
+"TMP"="C:\\users\\krame505\\Temp"
+
+[Keyboard Layout\\Preload] 1464050624
+"1"="00000409"
+
+[Software\\Classes\\.py] 1464051289
+@="Python.File"
+"Content Type"="text/plain"
+
+[Software\\Classes\\.pyc] 1464051289
+@="Python.CompiledFile"
+
+[Software\\Classes\\.pyo] 1464051289
+@="Python.CompiledFile"
+
+[Software\\Classes\\.pyw] 1464051289
+@="Python.NoConFile"
+"Content Type"="text/plain"
+
+[Software\\Classes\\Python.CompiledFile] 1464051289
+@="Compiled Python File"
+
+[Software\\Classes\\Python.CompiledFile\\DefaultIcon] 1464051289
+@="C:\\Python34\\DLLs\\pyc.ico"
+
+[Software\\Classes\\Python.CompiledFile\\shell\\open\\command] 1464051289
+@="\"C:\\Python34\\py.exe\" \"%1\" %*"
+
+[Software\\Classes\\Python.CompiledFile\\shellex\\DropHandler] 1464051289
+@="{60254CA5-953B-11CF-8C96-00AA00B8708C}"
+
+[Software\\Classes\\Python.File] 1464051289
+@="Python File"
+
+[Software\\Classes\\Python.File\\DefaultIcon] 1464051289
+@="C:\\Python34\\DLLs\\py.ico"
+
+[Software\\Classes\\Python.File\\shell\\open\\command] 1464051289
+@="\"C:\\Python34\\py.exe\" \"%1\" %*"
+
+[Software\\Classes\\Python.File\\shellex\\DropHandler] 1464051289
+@="{60254CA5-953B-11CF-8C96-00AA00B8708C}"
+
+[Software\\Classes\\Python.NoConFile] 1464051289
+@="Python File (no console)"
+
+[Software\\Classes\\Python.NoConFile\\DefaultIcon] 1464051289
+@="C:\\Python34\\DLLs\\py.ico"
+
+[Software\\Classes\\Python.NoConFile\\shell\\open\\command] 1464051289
+@="\"C:\\Python34\\pyw.exe\" \"%1\" %*"
+
+[Software\\Classes\\Python.NoConFile\\shellex\\DropHandler] 1464051289
+@="{60254CA5-953B-11CF-8C96-00AA00B8708C}"
+
+[Software\\Microsoft\\Installer\\Features\\0298D54E857A88046B6C13BD2B6799E2] 1464050640
+"wine_mono"=""
+
+[Software\\Microsoft\\Installer\\Features\\0DB9E75476BB40046A5AEDD3B9D57D71] 1464050643
+"wine_gecko"=""
+
+[Software\\Microsoft\\Installer\\Features\\27473F05BABC6C743A81C4B2EA408DBE] 1464051289
+"DefaultFeature"=""
+"Documentation"="DefaultFeature"
+"Extensions"="DefaultFeature"
+"pip_feature"="DefaultFeature"
+"PrependPath"="DefaultFeature"
+"PrivateCRT"="\6"
+"SharedCRT"="\6"
+"TclTk"="DefaultFeature"
+"Testsuite"="DefaultFeature"
+"Tools"="DefaultFeature"
+
+[Software\\Microsoft\\Installer\\Features\\81E4C843F5558224984251DDDE59D5C0] 1464050649
+"wine_gecko"=""
+
+[Software\\Microsoft\\Installer\\Products\\0298D54E857A88046B6C13BD2B6799E2] 1464050640
+"AdvertiseFlags"=dword:00000184
+"Assignment"=dword:00000000
+"AuthorizedLUAApp"=dword:00000000
+"Clients"=":"
+"InstanceType"=dword:00000000
+"Language"=dword:00000000
+"PackageCode"="B9208D3BCFF9C5F4A8CE9185F4BD032A"
+"ProductName"="Wine Mono"
+"Version"=dword:00000008
+
+[Software\\Microsoft\\Installer\\Products\\0298D54E857A88046B6C13BD2B6799E2\\SourceList] 1464050640
+"LastUsedSource"="n;1;Z:\\usr\\share\\wine\\mono\\"
+"PackageName"="wine-mono-0.0.8.msi"
+
+[Software\\Microsoft\\Installer\\Products\\0298D54E857A88046B6C13BD2B6799E2\\SourceList\\Media] 1464050640
+"1"=";"
+"DiskPrompt"=""
+"MediaPackage"=""
+
+[Software\\Microsoft\\Installer\\Products\\0298D54E857A88046B6C13BD2B6799E2\\SourceList\\Net] 1464050640
+"1"=str(2):"Z:\\usr\\share\\wine\\mono\\"
+
+[Software\\Microsoft\\Installer\\Products\\0DB9E75476BB40046A5AEDD3B9D57D71] 1464050643
+"AdvertiseFlags"=dword:00000184
+"Assignment"=dword:00000000
+"AuthorizedLUAApp"=dword:00000000
+"Clients"=":"
+"InstanceType"=dword:00000000
+"Language"=dword:00000000
+"PackageCode"="97B82D3EB3EB6B94791820F1DA58F645"
+"ProductName"="Wine Gecko (64-bit)"
+"Version"=dword:02150000
+
+[Software\\Microsoft\\Installer\\Products\\0DB9E75476BB40046A5AEDD3B9D57D71\\SourceList] 1464050643
+"LastUsedSource"="n;1;Z:\\usr\\share\\wine\\gecko\\"
+"PackageName"="wine_gecko-2.21-x86_64.msi"
+
+[Software\\Microsoft\\Installer\\Products\\0DB9E75476BB40046A5AEDD3B9D57D71\\SourceList\\Media] 1464050643
+"1"=";"
+"DiskPrompt"=""
+"MediaPackage"=""
+
+[Software\\Microsoft\\Installer\\Products\\0DB9E75476BB40046A5AEDD3B9D57D71\\SourceList\\Net] 1464050643
+"1"=str(2):"Z:\\usr\\share\\wine\\gecko\\"
+
+[Software\\Microsoft\\Installer\\Products\\27473F05BABC6C743A81C4B2EA408DBE] 1464051218
+"AdvertiseFlags"=dword:00000184
+"Assignment"=dword:00000000
+"AuthorizedLUAApp"=dword:00000000
+"Clients"=":"
+"InstanceType"=dword:00000000
+"Language"=dword:00000409
+"PackageCode"="239EC38D6DD07A3419030572EF7231F1"
+"ProductName"="Python 3.4.4"
+"Version"=dword:03044195
+
+[Software\\Microsoft\\Installer\\Products\\27473F05BABC6C743A81C4B2EA408DBE\\SourceList] 1464051289
+"LastUsedSource"="n;2;Z:\\media\\shared\\lrk\\U_of_M\\Research\\LPRD\\pyToExe\\"
+"PackageName"="../../../pyToExe/python-3.4.4.msi"
+
+[Software\\Microsoft\\Installer\\Products\\27473F05BABC6C743A81C4B2EA408DBE\\SourceList\\Media] 1464051218
+"1"=";"
+"3403"=";"
+"DiskPrompt"=""
+"MediaPackage"=""
+
+[Software\\Microsoft\\Installer\\Products\\27473F05BABC6C743A81C4B2EA408DBE\\SourceList\\Net] 1464051289
+"1"=str(2):"Z:\\media\\shared\\lrk\\U_of_M\\Research\\LPRD\\pyToExe\\"
+"2"=str(2):"Z:\\media\\shared\\lrk\\U_of_M\\Research\\LPRD\\pyToExe\\"
+
+[Software\\Microsoft\\Installer\\Products\\81E4C843F5558224984251DDDE59D5C0] 1464050649
+"AdvertiseFlags"=dword:00000184
+"Assignment"=dword:00000000
+"AuthorizedLUAApp"=dword:00000000
+"Clients"=":"
+"InstanceType"=dword:00000000
+"Language"=dword:00000000
+"PackageCode"="97B82D3EB3EB6B94791820F1DA58F645"
+"ProductName"="Wine Gecko (32-bit)"
+"Version"=dword:02150000
+
+[Software\\Microsoft\\Installer\\Products\\81E4C843F5558224984251DDDE59D5C0\\SourceList] 1464050649
+"LastUsedSource"="n;1;Z:\\usr\\share\\wine\\gecko\\"
+"PackageName"="wine_gecko-2.21-x86.msi"
+
+[Software\\Microsoft\\Installer\\Products\\81E4C843F5558224984251DDDE59D5C0\\SourceList\\Media] 1464050649
+"1"=";"
+"DiskPrompt"=""
+"MediaPackage"=""
+
+[Software\\Microsoft\\Installer\\Products\\81E4C843F5558224984251DDDE59D5C0\\SourceList\\Net] 1464050649
+"1"=str(2):"Z:\\usr\\share\\wine\\gecko\\"
+
+[Software\\Microsoft\\Installer\\UpgradeCodes\\18442A29BCE3CF048863407B69E60C5D] 1464051218
+"27473F05BABC6C743A81C4B2EA408DBE"=""
+
+[Software\\Microsoft\\Installer\\UpgradeCodes\\906426ED5B6CA6842947FEB058F4B65C] 1464050640
+"0298D54E857A88046B6C13BD2B6799E2"=""
+
+[Software\\Microsoft\\Installer\\UpgradeCodes\\ADF909AA16ED9784E920D37B806499E7] 1464050649
+"0DB9E75476BB40046A5AEDD3B9D57D71"=""
+"81E4C843F5558224984251DDDE59D5C0"=""
+
+[Software\\Microsoft\\Internet Explorer\\Main] 1464050643
+"Search Page"="http://www.google.com"
+"Start Page"="http://www.winehq.org"
+
+[Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl] 1464050628
+
+[Software\\Microsoft\\Internet Explorer\\Settings] 1464050643
+"Text Color"="0,0,0"
+
+[Software\\Microsoft\\Protected Storage System Provider] 1464050643
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Python.exe] 1464051289
+@="C:\\Python34\\Python.exe"
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders] 1464050628
+"AppData"="C:\\users\\krame505\\Application Data"
+"Cache"="C:\\users\\krame505\\Local Settings\\Temporary Internet Files"
+"Cookies"="C:\\users\\krame505\\Cookies"
+"Desktop"="C:\\users\\krame505\\Desktop"
+"Favorites"="C:\\users\\krame505\\Favorites"
+"Fonts"="C:\\windows\\Fonts"
+"History"="C:\\users\\krame505\\Local Settings\\History"
+"Local AppData"="C:\\users\\krame505\\Local Settings\\Application Data"
+"My Music"="C:\\users\\krame505\\My Music"
+"My Pictures"="C:\\users\\krame505\\My Pictures"
+"My Videos"="C:\\users\\krame505\\My Videos"
+"NetHood"="C:\\users\\krame505\\NetHood"
+"Personal"="C:\\users\\krame505\\My Documents"
+"PrintHood"="C:\\users\\krame505\\PrintHood"
+"Programs"="C:\\users\\krame505\\Start Menu\\Programs"
+"Recent"="C:\\users\\krame505\\Recent"
+"SendTo"="C:\\users\\krame505\\SendTo"
+"Start Menu"="C:\\users\\krame505\\Start Menu"
+"StartUp"="C:\\users\\krame505\\Start Menu\\Programs\\StartUp"
+"Templates"="C:\\users\\krame505\\Templates"
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders] 1464050628
+"AppData"=str(2):"%USERPROFILE%\\Application Data"
+"Cache"=str(2):"%USERPROFILE%\\Local Settings\\Temporary Internet Files"
+"Cookies"=str(2):"%USERPROFILE%\\Cookies"
+"Desktop"=str(2):"%USERPROFILE%\\Desktop"
+"Favorites"=str(2):"%USERPROFILE%\\Favorites"
+"Fonts"=str(2):"C:\\windows\\Fonts"
+"History"=str(2):"%USERPROFILE%\\Local Settings\\History"
+"Local AppData"=str(2):"%USERPROFILE%\\Local Settings\\Application Data"
+"My Music"=str(2):"%USERPROFILE%\\My Music"
+"My Pictures"=str(2):"%USERPROFILE%\\My Pictures"
+"My Videos"=str(2):"%USERPROFILE%\\My Videos"
+"NetHood"=str(2):"%USERPROFILE%\\NetHood"
+"Personal"=str(2):"%USERPROFILE%\\My Documents"
+"PrintHood"=str(2):"%USERPROFILE%\\PrintHood"
+"Programs"=str(2):"%USERPROFILE%\\Start Menu\\Programs"
+"Recent"=str(2):"%USERPROFILE%\\Recent"
+"SendTo"=str(2):"%USERPROFILE%\\SendTo"
+"Start Menu"=str(2):"%USERPROFILE%\\Start Menu"
+"StartUp"=str(2):"%USERPROFILE%\\Start Menu\\Programs\\StartUp"
+"Templates"=str(2):"%USERPROFILE%\\Templates"
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings] 1464050628
+"User Agent"="Mozilla/4.0 (compatible; MSIE 8.0; Win32)"
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\ZoneMap] 1464050643
+@=""
+"IntranetName"=dword:00000001
+"ProxyByPass"=dword:00000001
+"UNCAsIntranet"=dword:00000001
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\ZoneMap\\Domains] 1464050643
+@=""
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\ZoneMap\\ProtocolDefaults] 1464050643
+@=""
+"@ivt"=dword:00000001
+"file"=dword:00000003
+"ftp"=dword:00000003
+"http"=dword:00000003
+"https"=dword:00000003
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\ZoneMap\\Ranges] 1464050643
+@=""
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Zones] 1464050643
+@=""
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Zones\\0] 1464050643
+@=""
+"1001"=dword:00000000
+"1004"=dword:00000000
+"1200"=dword:00000000
+"1201"=dword:00000001
+"1400"=dword:00000000
+"1402"=dword:00000000
+"1405"=dword:00000000
+"1406"=dword:00000000
+"1407"=dword:00000000
+"1601"=dword:00000000
+"1604"=dword:00000000
+"1605"=dword:00000000
+"1606"=dword:00000000
+"1607"=dword:00000000
+"1608"=dword:00000000
+"1609"=dword:00000001
+"1800"=dword:00000000
+"1802"=dword:00000000
+"1803"=dword:00000000
+"1804"=dword:00000000
+"1805"=dword:00000000
+"1A00"=dword:00000000
+"1A02"=dword:00000000
+"1A03"=dword:00000000
+"1A04"=dword:00000000
+"1A05"=dword:00000000
+"1A06"=dword:00000000
+"1A10"=dword:00000000
+"1C00"=dword:00020000
+"1E05"=dword:00030000
+"CurrentLevel"=dword:00000000
+"Description"="Your computer"
+"DisplayName"="My Computer"
+"Flags"=dword:00000021
+"Icon"="explorer.exe#0100"
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Zones\\1] 1464050643
+@=""
+"1001"=dword:00000001
+"1004"=dword:00000003
+"1200"=dword:00000000
+"1201"=dword:00000003
+"1400"=dword:00000000
+"1402"=dword:00000000
+"1405"=dword:00000000
+"1406"=dword:00000001
+"1407"=dword:00000000
+"1601"=dword:00000000
+"1604"=dword:00000000
+"1605"=dword:00000000
+"1606"=dword:00000000
+"1607"=dword:00000000
+"1608"=dword:00000000
+"1609"=dword:00000001
+"1800"=dword:00000001
+"1802"=dword:00000000
+"1803"=dword:00000000
+"1804"=dword:00000001
+"1805"=dword:00000000
+"1A00"=dword:00020000
+"1A02"=dword:00000000
+"1A03"=dword:00000000
+"1A04"=dword:00000000
+"1A05"=dword:00000000
+"1A06"=dword:00000000
+"1A10"=dword:00000000
+"1C00"=dword:00020000
+"1E05"=dword:00020000
+"CurrentLevel"=dword:00010500
+"Description"="This zone contains all Web sites that are on your organization's intranet."
+"DisplayName"="Local intranet"
+"Flags"=dword:000000db
+"Icon"="shell32.dll#0018"
+"MinLevel"=dword:00010000
+"RecommendedLevel"=dword:00010500
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Zones\\2] 1464050643
+@=""
+"1001"=dword:00000000
+"1004"=dword:00000001
+"1200"=dword:00000000
+"1201"=dword:00000001
+"1400"=dword:00000000
+"1402"=dword:00000000
+"1405"=dword:00000000
+"1406"=dword:00000000
+"1407"=dword:00000000
+"1601"=dword:00000000
+"1604"=dword:00000000
+"1605"=dword:00000000
+"1606"=dword:00000000
+"1607"=dword:00000000
+"1608"=dword:00000000
+"1609"=dword:00000001
+"1800"=dword:00000000
+"1802"=dword:00000000
+"1803"=dword:00000000
+"1804"=dword:00000000
+"1805"=dword:00000000
+"1A00"=dword:00000000
+"1A02"=dword:00000000
+"1A03"=dword:00000000
+"1A04"=dword:00000000
+"1A05"=dword:00000000
+"1A06"=dword:00000000
+"1A10"=dword:00000000
+"1C00"=dword:00030000
+"1E05"=dword:00030000
+"CurrentLevel"=dword:00010000
+"Description"="This zone contains Web sites that you trust not to damage your computer or data."
+"DisplayName"="Trusted sites"
+"Flags"=dword:00000047
+"Icon"="inetcpl.cpl#00004480"
+"MinLevel"=dword:00010000
+"RecommendedLevel"=dword:00010000
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Zones\\3] 1464050643
+@=""
+"1001"=dword:00000001
+"1004"=dword:00000003
+"1200"=dword:00000000
+"1201"=dword:00000003
+"1400"=dword:00000000
+"1402"=dword:00000000
+"1405"=dword:00000000
+"1406"=dword:00000003
+"1407"=dword:00000000
+"1601"=dword:00000001
+"1604"=dword:00000000
+"1605"=dword:00000000
+"1606"=dword:00000000
+"1607"=dword:00000000
+"1608"=dword:00000000
+"1609"=dword:00000001
+"1800"=dword:00000001
+"1802"=dword:00000000
+"1803"=dword:00000000
+"1804"=dword:00000001
+"1805"=dword:00000001
+"1A00"=dword:00020000
+"1A02"=dword:00000000
+"1A03"=dword:00000000
+"1A04"=dword:00000003
+"1A05"=dword:00000001
+"1A06"=dword:00000000
+"1A10"=dword:00000001
+"1C00"=dword:00010000
+"1E05"=dword:00020000
+"CurrentLevel"=dword:00011000
+"Description"="This zone contains all Web sites you haven't placed in other zones"
+"DisplayName"="Internet"
+"Flags"=dword:00000001
+"Icon"="inetcpl.cpl#001313"
+"MinLevel"=dword:00011000
+"RecommendedLevel"=dword:00011000
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Zones\\4] 1464050643
+@=""
+"1001"=dword:00000003
+"1004"=dword:00000003
+"1200"=dword:00000003
+"1201"=dword:00000003
+"1400"=dword:00000003
+"1402"=dword:00000003
+"1405"=dword:00000003
+"1406"=dword:00000003
+"1407"=dword:00000003
+"1601"=dword:00000001
+"1604"=dword:00000001
+"1605"=dword:00000000
+"1606"=dword:00000003
+"1607"=dword:00000003
+"1608"=dword:00000003
+"1609"=dword:00000001
+"1800"=dword:00000003
+"1802"=dword:00000001
+"1803"=dword:00000003
+"1804"=dword:00000003
+"1805"=dword:00000001
+"1A00"=dword:00010000
+"1A02"=dword:00000003
+"1A03"=dword:00000003
+"1A04"=dword:00000003
+"1A05"=dword:00000003
+"1A06"=dword:00000003
+"1A10"=dword:00000003
+"1C00"=dword:00000000
+"1E05"=dword:00010000
+"CurrentLevel"=dword:00012000
+"Description"="This zone contains Web sites that could potentially damage your computer or data."
+"DisplayName"="Restricted sites"
+"Flags"=dword:00000003
+"Icon"="inetcpl.cpl#00004481"
+"MinLevel"=dword:00012000
+"RecommendedLevel"=dword:00012000
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Run] 1464050643
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\pywin32-py3.4] 1464053142
+"DisplayName"="Python 3.4 pywin32-218"
+"UninstallString"="\"C:\\Python34\\Removepywin32.exe\" -u \"C:\\Python34\\pywin32-wininst.log\""
+
+[Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{50F37472-CBAB-47C6-A318-4C2BAE04D8EB}] 1464051289
+"DisplayIcon"="C:\\Python34\\python.exe"
+
+[Software\\Microsoft\\Windows NT\\CurrentVersion\\Devices] 1464050628
+"Deskjet-F4200-series"="wineps.drv,CUPS:Deskjet-F4200-series"
+
+[Software\\Microsoft\\Windows NT\\CurrentVersion\\PrinterPorts] 1464050628
+"Deskjet-F4200-series"="wineps.drv,CUPS:Deskjet-F4200-series,15,45"
+
+[Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows] 1464050628
+"device"="Deskjet-F4200-series,wineps.drv,CUPS:Deskjet-F4200-series"
+
+[Software\\Python\\PythonCore\\3.4\\Help\\Main Python Documentation] 1464051289
+@="C:\\Python34\\Doc\\python344.chm"
+
+[Software\\Python\\PythonCore\\3.4\\InstallPath] 1464051289
+@="C:\\Python34\\"
+
+[Software\\Python\\PythonCore\\3.4\\InstallPath\\InstallGroup] 1464051289
+@="Python 3.4"
+
+[Software\\Python\\PythonCore\\3.4\\Modules] 1464051289
+
+[Software\\Python\\PythonCore\\3.4\\PythonPath] 1464051289
+@="C:\\Python34\\Lib;C:\\Python34\\DLLs"
+
+[Software\\Wine\\Debug] 1464050643
+"RelayExclude"="ntdll.RtlEnterCriticalSection;ntdll.RtlLeaveCriticalSection;kernel32.48;kernel32.49;kernel32.94;kernel32.95;kernel32.96;kernel32.97;kernel32.98;kernel32.TlsGetValue;kernel32.TlsSetValue;kernel32.FlsGetValue;kernel32.FlsSetValue;kernel32.SetLastError"
+"RelayFromExclude"="winex11.drv;winemac.drv;user32;gdi32;advapi32;kernel32"
+
+[Software\\Wine\\FileOpenAssociations\\.chm] 1464050980
+"AppName"="hh"
+"DesktopFile"="/home/krame505/.local/share/applications/wine-extension-chm.desktop"
+"MimeType"="application/vnd.ms-htmlhelp"
+"OpenWithIcon"="A35F_hh.0"
+"ProgID"="chm.file"
+
+[Software\\Wine\\FileOpenAssociations\\.gif] 1464050980
+"AppName"="Wine Internet Explorer"
+"DesktopFile"="/home/krame505/.local/share/applications/wine-extension-gif.desktop"
+"MimeType"="image/gif"
+"OpenWithIcon"="7596_iexplore.0"
+"ProgID"="giffile"
+
+[Software\\Wine\\FileOpenAssociations\\.hlp] 1464050980
+"AppName"="winhlp32"
+"DesktopFile"="/home/krame505/.local/share/applications/wine-extension-hlp.desktop"
+"MimeType"="application/winhlp"
+"OpenWithIcon"="4137_winhlp32.0"
+"ProgID"="hlpfile"
+
+[Software\\Wine\\FileOpenAssociations\\.htm] 1464050980
+"AppName"="winebrowser"
+"DesktopFile"="/home/krame505/.local/share/applications/wine-extension-htm.desktop"
+"MimeType"="text/html"
+"OpenWithIcon"="7765_winebrowser.0"
+"ProgID"="htmlfile"
+
+[Software\\Wine\\FileOpenAssociations\\.ini] 1464050980
+"AppName"="notepad"
+"DesktopFile"="/home/krame505/.local/share/applications/wine-extension-ini.desktop"
+"MimeType"="application/x-wine-extension-ini"
+"OpenWithIcon"="1E64_notepad.0"
+"ProgID"="inifile"
+
+[Software\\Wine\\FileOpenAssociations\\.jfif] 1464050980
+"AppName"="Wine Internet Explorer"
+"DesktopFile"="/home/krame505/.local/share/applications/wine-extension-jfif.desktop"
+"MimeType"="image/jpeg"
+"OpenWithIcon"="7596_iexplore.0"
+"ProgID"="pjpegfile"
+
+[Software\\Wine\\FileOpenAssociations\\.jpe] 1464050980
+"AppName"="Wine Internet Explorer"
+"DesktopFile"="/home/krame505/.local/share/applications/wine-extension-jpe.desktop"
+"MimeType"="image/jpeg"
+"OpenWithIcon"="7596_iexplore.0"
+"ProgID"="jpegfile"
+
+[Software\\Wine\\FileOpenAssociations\\.msp] 1464050980
+"AppName"="A Wine application"
+"DesktopFile"="/home/krame505/.local/share/applications/wine-extension-msp.desktop"
+"MimeType"="application/x-wine-extension-msp"
+"ProgID"="Msi.Patch"
+
+[Software\\Wine\\FileOpenAssociations\\.png] 1464050980
+"AppName"="Wine Internet Explorer"
+"DesktopFile"="/home/krame505/.local/share/applications/wine-extension-png.desktop"
+"MimeType"="image/png"
+"OpenWithIcon"="7596_iexplore.0"
+"ProgID"="pngfile"
+
+[Software\\Wine\\FileOpenAssociations\\.rtf] 1464050980
+"AppName"="wordpad"
+"DesktopFile"="/home/krame505/.local/share/applications/wine-extension-rtf.desktop"
+"MimeType"="application/rtf"
+"OpenWithIcon"="2EF4_wordpad.0"
+"ProgID"="rtffile"
+
+[Software\\Wine\\FileOpenAssociations\\.txt] 1464050980
+"AppName"="notepad"
+"DesktopFile"="/home/krame505/.local/share/applications/wine-extension-txt.desktop"
+"MimeType"="text/plain"
+"OpenWithIcon"="1E64_notepad.0"
+"ProgID"="txtfile"
+
+[Software\\Wine\\FileOpenAssociations\\.url] 1464050980
+"AppName"="rundll32"
+"DesktopFile"="/home/krame505/.local/share/applications/wine-extension-url.desktop"
+"MimeType"="application/x-mswinurl"
+"OpenWithIcon"="1CD8_rundll32.0"
+"ProgID"="InternetShortcut"
+
+[Software\\Wine\\FileOpenAssociations\\.vbs] 1464050980
+"AppName"="A Wine application"
+"DesktopFile"="/home/krame505/.local/share/applications/wine-extension-vbs.desktop"
+"MimeType"="application/x-wine-extension-vbs"
+"ProgID"="VBSFile"
+
+[Software\\Wine\\FileOpenAssociations\\.wri] 1464050980
+"AppName"="wordpad"
+"DesktopFile"="/home/krame505/.local/share/applications/wine-extension-wri.desktop"
+"MimeType"="application/x-mswrite"
+"OpenWithIcon"="2EF4_wordpad.0"
+"ProgID"="wrifile"
+
+[Software\\Wine\\FileOpenAssociations\\.xml] 1464050980
+"AppName"="winebrowser"
+"DesktopFile"="/home/krame505/.local/share/applications/wine-extension-xml.desktop"
+"MimeType"="application/xml"
+"OpenWithIcon"="7765_winebrowser.0"
+"ProgID"="xmlfile"
+
+[Software\\Wine\\Fonts] 1464119707
+"Codepages"="1252,437"
+"LogPixels"=dword:00000060
+
+[Software\\Wine\\Fonts\\External Fonts] 1464119707
+"@Droid Sans Fallback"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSansFallbackFull.ttf"
+"@TakaoPGothic"="Z:\\usr\\share\\fonts\\truetype\\fonts-japanese-gothic.ttf"
+"@Ume P Gothic"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pgo4.ttf"
+"@Ume P Gothic C4"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pgc4.ttf"
+"@Ume P Gothic C5"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pgc5.ttf"
+"@Ume P Gothic O5"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pgo5.ttf"
+"@Ume P Gothic S4"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pgs4.ttf"
+"@Ume P Gothic S5"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pgs5.ttf"
+"@Ume P Mincho"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pmo3.ttf"
+"@Ume P Mincho S3"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pms3.ttf"
+"@Ume UI Gothic"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-ugo4.ttf"
+"@Ume UI Gothic O5"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-ugo5.ttf"
+"@Un Batang"="Z:\\usr\\share\\fonts\\truetype\\unfonts-core\\UnBatang.ttf"
+"@Un Batang Bold"="Z:\\usr\\share\\fonts\\truetype\\unfonts-core\\UnBatangBold.ttf"
+"@WenQuanYi Micro Hei"="Z:\\usr\\share\\fonts\\truetype\\wqy\\wqy-microhei.ttc"
+"@WenQuanYi Micro Hei Mono"="Z:\\usr\\share\\fonts\\truetype\\wqy\\wqy-microhei.ttc"
+"Abyssinica SIL"="Z:\\usr\\share\\fonts\\truetype\\abyssinica\\AbyssinicaSIL-R.ttf"
+"Andale Mono"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\andalemo.ttf"
+"Arial"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Arial.ttf"
+"Arial Black"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Arial_Black.ttf"
+"Arial Bold"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Arial_Bold.ttf"
+"Arial Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\arialbi.ttf"
+"Arial Italic"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\ariali.ttf"
+"cmex10"="Z:\\usr\\share\\fonts\\truetype\\lyx\\cmex10.ttf"
+"cmmi10"="Z:\\usr\\share\\fonts\\truetype\\lyx\\cmmi10.ttf"
+"cmr10"="Z:\\usr\\share\\fonts\\truetype\\lyx\\cmr10.ttf"
+"cmsy10"="Z:\\usr\\share\\fonts\\truetype\\lyx\\cmsy10.ttf"
+"Comic Sans MS"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Comic_Sans_MS.ttf"
+"Comic Sans MS Bold"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\comicbd.ttf"
+"Courier New"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Courier_New.ttf"
+"Courier New Bold"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\courbd.ttf"
+"Courier New Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Courier_New_Bold_Italic.ttf"
+"Courier New Italic"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Courier_New_Italic.ttf"
+"DejaVu Sans"="Z:\\usr\\share\\fonts\\truetype\\dejavu\\DejaVuSans.ttf"
+"DejaVu Sans Bold"="Z:\\usr\\share\\fonts\\truetype\\ttf-dejavu\\DejaVuSans-Bold.ttf"
+"DejaVu Sans Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\ttf-dejavu\\DejaVuSans-BoldOblique.ttf"
+"DejaVu Sans Condensed"="Z:\\usr\\share\\fonts\\truetype\\ttf-dejavu\\DejaVuSansCondensed.ttf"
+"DejaVu Sans Condensed Bold"="Z:\\usr\\share\\fonts\\truetype\\ttf-dejavu\\DejaVuSansCondensed-Bold.ttf"
+"DejaVu Sans Condensed Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\ttf-dejavu\\DejaVuSansCondensed-BoldOblique.ttf"
+"DejaVu Sans Condensed Oblique"="Z:\\usr\\share\\fonts\\truetype\\dejavu\\DejaVuSansCondensed-Oblique.ttf"
+"DejaVu Sans ExtraLight"="Z:\\usr\\share\\fonts\\truetype\\ttf-dejavu\\DejaVuSans-ExtraLight.ttf"
+"DejaVu Sans Mono"="Z:\\usr\\share\\fonts\\truetype\\ttf-dejavu\\DejaVuSansMono.ttf"
+"DejaVu Sans Mono Bold"="Z:\\usr\\share\\fonts\\truetype\\ttf-dejavu\\DejaVuSansMono-Bold.ttf"
+"DejaVu Sans Mono Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\ttf-dejavu\\DejaVuSansMono-BoldOblique.ttf"
+"DejaVu Sans Mono Oblique"="Z:\\usr\\share\\fonts\\truetype\\dejavu\\DejaVuSansMono-Oblique.ttf"
+"DejaVu Sans Oblique"="Z:\\usr\\share\\fonts\\truetype\\dejavu\\DejaVuSans-Oblique.ttf"
+"DejaVu Serif"="Z:\\usr\\share\\fonts\\truetype\\dejavu\\DejaVuSerif.ttf"
+"DejaVu Serif Bold"="Z:\\usr\\share\\fonts\\truetype\\ttf-dejavu\\DejaVuSerif-Bold.ttf"
+"DejaVu Serif Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\dejavu\\DejaVuSerif-BoldItalic.ttf"
+"DejaVu Serif Condensed"="Z:\\usr\\share\\fonts\\truetype\\dejavu\\DejaVuSerifCondensed.ttf"
+"DejaVu Serif Condensed Bold"="Z:\\usr\\share\\fonts\\truetype\\ttf-dejavu\\DejaVuSerifCondensed-Bold.ttf"
+"DejaVu Serif Condensed Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\dejavu\\DejaVuSerifCondensed-BoldItalic.ttf"
+"DejaVu Serif Condensed Italic"="Z:\\usr\\share\\fonts\\truetype\\dejavu\\DejaVuSerifCondensed-Italic.ttf"
+"DejaVu Serif Italic"="Z:\\usr\\share\\fonts\\truetype\\dejavu\\DejaVuSerif-Italic.ttf"
+"Droid Arabic Naskh"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidNaskh-Regular.ttf"
+"Droid Arabic Naskh Bold"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidNaskh-Bold.ttf"
+"Droid Sans"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSans.ttf"
+"Droid Sans Armenian"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSansArmenian.ttf"
+"Droid Sans Bold"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSans-Bold.ttf"
+"Droid Sans Ethiopic"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSansEthiopic-Regular.ttf"
+"Droid Sans Ethiopic Bold"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSansEthiopic-Bold.ttf"
+"Droid Sans Fallback"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSansFallbackFull.ttf"
+"Droid Sans Georgian"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSansGeorgian.ttf"
+"Droid Sans Hebrew"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSansHebrew-Regular.ttf"
+"Droid Sans Hebrew Bold"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSansHebrew-Bold.ttf"
+"Droid Sans Japanese"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSansJapanese.ttf"
+"Droid Sans Mono"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSansMono.ttf"
+"Droid Sans Thai"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSansThai.ttf"
+"Droid Serif"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSerif-Regular.ttf"
+"Droid Serif Bold"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSerif-Bold.ttf"
+"Droid Serif Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSerif-BoldItalic.ttf"
+"Droid Serif Italic"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSerif-Italic.ttf"
+"esint10"="Z:\\usr\\share\\fonts\\truetype\\lyx\\esint10.ttf"
+"eufm10"="Z:\\usr\\share\\fonts\\truetype\\lyx\\eufm10.ttf"
+"FreeMono"="Z:\\usr\\share\\fonts\\truetype\\freefont\\FreeMono.ttf"
+"FreeMono Bold"="Z:\\usr\\share\\fonts\\truetype\\freefont\\FreeMonoBold.ttf"
+"FreeMono Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\freefont\\FreeMonoBoldOblique.ttf"
+"FreeMono Oblique"="Z:\\usr\\share\\fonts\\truetype\\freefont\\FreeMonoOblique.ttf"
+"FreeSans"="Z:\\usr\\share\\fonts\\truetype\\freefont\\FreeSans.ttf"
+"FreeSans Bold"="Z:\\usr\\share\\fonts\\truetype\\freefont\\FreeSansBold.ttf"
+"FreeSans Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\freefont\\FreeSansBoldOblique.ttf"
+"FreeSans Oblique"="Z:\\usr\\share\\fonts\\truetype\\freefont\\FreeSansOblique.ttf"
+"FreeSerif"="Z:\\usr\\share\\fonts\\truetype\\freefont\\FreeSerif.ttf"
+"FreeSerif Bold"="Z:\\usr\\share\\fonts\\truetype\\freefont\\FreeSerifBold.ttf"
+"FreeSerif Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\freefont\\FreeSerifBoldItalic.ttf"
+"FreeSerif Italic"="Z:\\usr\\share\\fonts\\truetype\\freefont\\FreeSerifItalic.ttf"
+"gargi"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\gargi.ttf"
+"Garuda"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Garuda.ttf"
+"Garuda Bold"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Garuda-Bold.ttf"
+"Garuda Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Garuda-BoldOblique.ttf"
+"Garuda Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Garuda-Oblique.ttf"
+"Georgia"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Georgia.ttf"
+"Georgia Bold"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Georgia_Bold.ttf"
+"Georgia Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\georgiaz.ttf"
+"Georgia Italic"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Georgia_Italic.ttf"
+"Impact"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Impact.ttf"
+"KacstArt"="Z:\\usr\\share\\fonts\\truetype\\kacst\\KacstArt.ttf"
+"KacstBook"="Z:\\usr\\share\\fonts\\truetype\\kacst\\KacstBook.ttf"
+"KacstDecorative"="Z:\\usr\\share\\fonts\\truetype\\kacst\\KacstDecorative.ttf"
+"KacstDigital"="Z:\\usr\\share\\fonts\\truetype\\kacst\\KacstDigital.ttf"
+"KacstFarsi"="Z:\\usr\\share\\fonts\\truetype\\kacst\\KacstFarsi.ttf"
+"KacstLetter"="Z:\\usr\\share\\fonts\\truetype\\kacst\\KacstLetter.ttf"
+"KacstNaskh"="Z:\\usr\\share\\fonts\\truetype\\kacst\\KacstNaskh.ttf"
+"KacstOffice"="Z:\\usr\\share\\fonts\\truetype\\kacst\\KacstOffice.ttf"
+"KacstOne"="Z:\\usr\\share\\fonts\\truetype\\kacst-one\\KacstOne.ttf"
+"KacstOne Bold"="Z:\\usr\\share\\fonts\\truetype\\kacst-one\\KacstOne-Bold.ttf"
+"KacstPen"="Z:\\usr\\share\\fonts\\truetype\\kacst\\KacstPen.ttf"
+"KacstPoster"="Z:\\usr\\share\\fonts\\truetype\\kacst\\KacstPoster.ttf"
+"KacstQurn"="Z:\\usr\\share\\fonts\\truetype\\kacst\\KacstQurn.ttf"
+"KacstScreen"="Z:\\usr\\share\\fonts\\truetype\\kacst\\KacstScreen.ttf"
+"KacstTitle"="Z:\\usr\\share\\fonts\\truetype\\kacst\\KacstTitle.ttf"
+"KacstTitleL"="Z:\\usr\\share\\fonts\\truetype\\kacst\\KacstTitleL.ttf"
+"Kedage Bold"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\Kedage-b.ttf"
+"Kedage Normal"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\Kedage-n.ttf"
+"Khmer OS"="Z:\\usr\\share\\fonts\\truetype\\ttf-khmeros-core\\KhmerOS.ttf"
+"Khmer OS System"="Z:\\usr\\share\\fonts\\truetype\\ttf-khmeros-core\\KhmerOSsys.ttf"
+"Kinnari"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Kinnari.ttf"
+"Kinnari Bold"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Kinnari-Bold.ttf"
+"Kinnari Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Kinnari-BoldItalic.ttf"
+"Kinnari Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Kinnari-BoldOblique.ttf"
+"Kinnari Italic"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Kinnari-Italic.ttf"
+"Kinnari Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Kinnari-Oblique.ttf"
+"Liberation Mono"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationMono-Regular.ttf"
+"Liberation Mono Bold"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationMono-Bold.ttf"
+"Liberation Mono Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationMono-BoldItalic.ttf"
+"Liberation Mono Italic"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationMono-Italic.ttf"
+"Liberation Sans"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationSans-Regular.ttf"
+"Liberation Sans Bold"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationSans-Bold.ttf"
+"Liberation Sans Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationSans-BoldItalic.ttf"
+"Liberation Sans Italic"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationSans-Italic.ttf"
+"Liberation Sans Narrow"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationSansNarrow-Regular.ttf"
+"Liberation Sans Narrow Bold"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationSansNarrow-Bold.ttf"
+"Liberation Sans Narrow Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationSansNarrow-BoldItalic.ttf"
+"Liberation Sans Narrow Italic"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationSansNarrow-Italic.ttf"
+"Liberation Serif"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationSerif-Regular.ttf"
+"Liberation Serif Bold"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationSerif-Bold.ttf"
+"Liberation Serif Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationSerif-BoldItalic.ttf"
+"Liberation Serif Italic"="Z:\\usr\\share\\fonts\\truetype\\liberation\\LiberationSerif-Italic.ttf"
+"LKLUG"="Z:\\usr\\share\\fonts\\truetype\\sinhala\\lklug.ttf"
+"LMMono10-Italic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmono10-italic.otf"
+"LMMono10-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmono10-regular.otf"
+"LMMono12-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmono12-regular.otf"
+"LMMono8-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmono8-regular.otf"
+"LMMono9-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmono9-regular.otf"
+"LMMonoCaps10-Oblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmonocaps10-oblique.otf"
+"LMMonoCaps10-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmonocaps10-regular.otf"
+"LMMonoLt10-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmonolt10-bold.otf"
+"LMMonoLt10-BoldOblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmonolt10-boldoblique.otf"
+"LMMonoLt10-Oblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmonolt10-oblique.otf"
+"LMMonoLt10-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmonolt10-regular.otf"
+"LMMonoLtCond10-Oblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmonoltcond10-oblique.otf"
+"LMMonoLtCond10-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmonoltcond10-regular.otf"
+"LMMonoProp10-Oblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmonoprop10-oblique.otf"
+"LMMonoProp10-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmonoprop10-regular.otf"
+"LMMonoPropLt10-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmonoproplt10-bold.otf"
+"LMMonoPropLt10-BoldOblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmonoproplt10-boldoblique.otf"
+"LMMonoPropLt10-Oblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmonoproplt10-oblique.otf"
+"LMMonoPropLt10-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmonoproplt10-regular.otf"
+"LMMonoSlant10-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmmonoslant10-regular.otf"
+"LModernMath-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm-math\\latinmodernmath-regular.otf"
+"LMRoman10-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman10-bold.otf"
+"LMRoman10-BoldItalic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman10-bolditalic.otf"
+"LMRoman10-Italic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman10-italic.otf"
+"LMRoman10-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman10-regular.otf"
+"LMRoman12-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman12-bold.otf"
+"LMRoman12-Italic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman12-italic.otf"
+"LMRoman12-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman12-regular.otf"
+"LMRoman17-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman17-regular.otf"
+"LMRoman5-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman5-bold.otf"
+"LMRoman5-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman5-regular.otf"
+"LMRoman6-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman6-bold.otf"
+"LMRoman6-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman6-regular.otf"
+"LMRoman7-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman7-bold.otf"
+"LMRoman7-Italic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman7-italic.otf"
+"LMRoman7-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman7-regular.otf"
+"LMRoman8-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman8-bold.otf"
+"LMRoman8-Italic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman8-italic.otf"
+"LMRoman8-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman8-regular.otf"
+"LMRoman9-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman9-bold.otf"
+"LMRoman9-Italic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman9-italic.otf"
+"LMRoman9-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmroman9-regular.otf"
+"LMRomanCaps10-Oblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmromancaps10-oblique.otf"
+"LMRomanCaps10-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmromancaps10-regular.otf"
+"LMRomanDemi10-Oblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmromandemi10-oblique.otf"
+"LMRomanDemi10-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmromandemi10-regular.otf"
+"LMRomanDunh10-Oblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmromandunh10-oblique.otf"
+"LMRomanDunh10-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmromandunh10-regular.otf"
+"LMRomanSlant10-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmromanslant10-bold.otf"
+"LMRomanSlant10-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmromanslant10-regular.otf"
+"LMRomanSlant12-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmromanslant12-regular.otf"
+"LMRomanSlant17-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmromanslant17-regular.otf"
+"LMRomanSlant8-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmromanslant8-regular.otf"
+"LMRomanSlant9-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmromanslant9-regular.otf"
+"LMRomanUnsl10-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmromanunsl10-regular.otf"
+"LMSans10-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsans10-bold.otf"
+"LMSans10-BoldOblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsans10-boldoblique.otf"
+"LMSans10-Oblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsans10-oblique.otf"
+"LMSans10-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsans10-regular.otf"
+"LMSans12-Oblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsans12-oblique.otf"
+"LMSans12-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsans12-regular.otf"
+"LMSans17-Oblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsans17-oblique.otf"
+"LMSans17-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsans17-regular.otf"
+"LMSans8-Oblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsans8-oblique.otf"
+"LMSans8-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsans8-regular.otf"
+"LMSans9-Oblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsans9-oblique.otf"
+"LMSans9-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsans9-regular.otf"
+"LMSansDemiCond10-Oblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsansdemicond10-oblique.otf"
+"LMSansDemiCond10-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsansdemicond10-regular.otf"
+"LMSansQuot8-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsansquot8-bold.otf"
+"LMSansQuot8-BoldOblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsansquot8-boldoblique.otf"
+"LMSansQuot8-Oblique"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsansquot8-oblique.otf"
+"LMSansQuot8-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\lm\\lmsansquot8-regular.otf"
+"Lohit Bengali"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\lohit_bn.ttf"
+"Lohit Devanagari"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\lohit_hi.ttf"
+"Lohit Gujarati"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\lohit_gu.ttf"
+"Lohit Punjabi"="Z:\\usr\\share\\fonts\\truetype\\ttf-punjabi-fonts\\lohit_pa.ttf"
+"Lohit Tamil"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\lohit_ta.ttf"
+"Loma"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Loma.ttf"
+"Loma Bold"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Loma-Bold.ttf"
+"Loma Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Loma-BoldOblique.ttf"
+"Loma Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Loma-Oblique.ttf"
+"Mallige Bold"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\Malige-b.ttf"
+"Mallige Normal"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\Malige-n.ttf"
+"Marlett"="Z:\\usr\\bin\\..\\share\\wine\\fonts\\\\marlett.ttf"
+"Meera"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\Meera_04.ttf"
+"mry_KacstQurn"="Z:\\usr\\share\\fonts\\truetype\\kacst\\mry_KacstQurn.ttf"
+"msam10"="Z:\\usr\\share\\fonts\\truetype\\lyx\\msam10.ttf"
+"msbm10"="Z:\\usr\\share\\fonts\\truetype\\lyx\\msbm10.ttf"
+"Mukti Narrow"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\MuktiNarrow.ttf"
+"Mukti Narrow Bold"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\MuktiNarrowBold.ttf"
+"NanumBarunGothic"="Z:\\usr\\share\\fonts\\truetype\\nanum\\NanumBarunGothic.ttf"
+"NanumBarunGothic Bold"="Z:\\usr\\share\\fonts\\truetype\\nanum\\NanumBarunGothicBold.ttf"
+"NanumGothic"="Z:\\usr\\share\\fonts\\truetype\\nanum\\NanumGothic.ttf"
+"NanumGothicBold"="Z:\\usr\\share\\fonts\\truetype\\nanum\\NanumGothicBold.ttf"
+"NanumMyeongjo"="Z:\\usr\\share\\fonts\\truetype\\nanum\\NanumMyeongjo.ttf"
+"NanumMyeongjoBold"="Z:\\usr\\share\\fonts\\truetype\\nanum\\NanumMyeongjoBold.ttf"
+"Norasi"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Norasi.ttf"
+"Norasi Bold"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Norasi-Bold.ttf"
+"Norasi Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Norasi-BoldItalic.ttf"
+"Norasi Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Norasi-BoldOblique.ttf"
+"Norasi Italic"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Norasi-Italic.ttf"
+"Norasi Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Norasi-Oblique.ttf"
+"OpenSymbol"="Z:\\usr\\share\\fonts\\truetype\\openoffice\\opens___.ttf"
+"Padauk"="Z:\\usr\\share\\fonts\\truetype\\padauk\\Padauk.ttf"
+"Padauk Bold"="Z:\\usr\\share\\fonts\\truetype\\padauk\\Padauk-bold.ttf"
+"Padauk Book"="Z:\\usr\\share\\fonts\\truetype\\padauk\\Padauk-book.ttf"
+"Padauk Book Bold"="Z:\\usr\\share\\fonts\\truetype\\padauk\\Padauk-bookbold.ttf"
+"Phetsarath OT"="Z:\\usr\\share\\fonts\\truetype\\lao\\Phetsarath_OT.ttf"
+"Pothana2000"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\Pothana2000.ttf"
+"Purisa"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Purisa.ttf"
+"Purisa Bold"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Purisa-Bold.ttf"
+"Purisa Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Purisa-BoldOblique.ttf"
+"Purisa Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Purisa-Oblique.ttf"
+"Rachana"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\Rachana_04.ttf"
+"Rekha"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\Rekha.ttf"
+"rsfs10"="Z:\\usr\\share\\fonts\\truetype\\lyx\\rsfs10.ttf"
+"Saab"="Z:\\usr\\share\\fonts\\truetype\\ttf-punjabi-fonts\\Saab.ttf"
+"Sawasdee"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Sawasdee.ttf"
+"Sawasdee Bold"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Sawasdee-Bold.ttf"
+"Sawasdee Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Sawasdee-BoldOblique.ttf"
+"Sawasdee Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Sawasdee-Oblique.ttf"
+"Symbol"="Z:\\usr\\bin\\..\\share\\wine\\fonts\\\\symbol.ttf"
+"Tahoma"="Z:\\usr\\bin\\..\\share\\wine\\fonts\\\\tahoma.ttf"
+"Tahoma Bold"="Z:\\usr\\bin\\..\\share\\wine\\fonts\\\\tahomabd.ttf"
+"TakaoPGothic"="Z:\\usr\\share\\fonts\\truetype\\fonts-japanese-gothic.ttf"
+"TeXGyreAdventor-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreadventor-bold.otf"
+"TeXGyreAdventor-BoldItalic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreadventor-bolditalic.otf"
+"TeXGyreAdventor-Italic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreadventor-italic.otf"
+"TeXGyreAdventor-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreadventor-regular.otf"
+"TeXGyreBonum-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyrebonum-bold.otf"
+"TeXGyreBonum-BoldItalic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyrebonum-bolditalic.otf"
+"TeXGyreBonum-Italic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyrebonum-italic.otf"
+"TeXGyreBonum-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyrebonum-regular.otf"
+"TeXGyreChorus-MediumItalic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyrechorus-mediumitalic.otf"
+"TeXGyreCursor-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyrecursor-bold.otf"
+"TeXGyreCursor-BoldItalic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyrecursor-bolditalic.otf"
+"TeXGyreCursor-Italic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyrecursor-italic.otf"
+"TeXGyreCursor-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyrecursor-regular.otf"
+"TeXGyreHeros-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreheros-bold.otf"
+"TeXGyreHeros-BoldItalic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreheros-bolditalic.otf"
+"TeXGyreHeros-Italic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreheros-italic.otf"
+"TeXGyreHeros-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreheros-regular.otf"
+"TeXGyreHerosCondensed-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreheroscn-bold.otf"
+"TeXGyreHerosCondensed-BoldItalic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreheroscn-bolditalic.otf"
+"TeXGyreHerosCondensed-Italic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreheroscn-italic.otf"
+"TeXGyreHerosCondensed-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreheroscn-regular.otf"
+"TeXGyrePagella-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyrepagella-bold.otf"
+"TeXGyrePagella-BoldItalic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyrepagella-bolditalic.otf"
+"TeXGyrePagella-Italic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyrepagella-italic.otf"
+"TeXGyrePagella-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyrepagella-regular.otf"
+"TeXGyreSchola-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreschola-bold.otf"
+"TeXGyreSchola-BoldItalic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreschola-bolditalic.otf"
+"TeXGyreSchola-Italic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreschola-italic.otf"
+"TeXGyreSchola-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyreschola-regular.otf"
+"TeXGyreTermes-Bold"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyretermes-bold.otf"
+"TeXGyreTermes-BoldItalic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyretermes-bolditalic.otf"
+"TeXGyreTermes-Italic"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyretermes-italic.otf"
+"TeXGyreTermes-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre\\texgyretermes-regular.otf"
+"TGPagellaMath-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre-math\\texgyrepagella-math.otf"
+"TGTermesMath-Regular"="Z:\\usr\\share\\texmf\\fonts\\opentype\\public\\tex-gyre-math\\texgyretermes-math.otf"
+"Tibetan_Machine_Uni"="Z:\\usr\\share\\fonts\\truetype\\tibetan-machine\\TibetanMachineUni.ttf"
+"Times New Roman"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\times.ttf"
+"Times New Roman Bold"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Times_New_Roman_Bold.ttf"
+"Times New Roman Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Times_New_Roman_Bold_Italic.ttf"
+"Times New Roman Italic"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Times_New_Roman_Italic.ttf"
+"Tlwg Mono"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgMono.ttf"
+"Tlwg Mono Bold"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgMono-Bold.ttf"
+"Tlwg Mono Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgMono-BoldOblique.ttf"
+"Tlwg Mono Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgMono-Oblique.ttf"
+"Tlwg Typewriter"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgTypewriter.ttf"
+"Tlwg Typewriter Bold"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgTypewriter-Bold.ttf"
+"Tlwg Typewriter Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgTypewriter-BoldOblique.ttf"
+"Tlwg Typewriter Mono Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgTypewriter-Oblique.ttf"
+"Tlwg Typist"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgTypist.ttf"
+"Tlwg Typist Bold"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgTypist-Bold.ttf"
+"Tlwg Typist Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgTypist-BoldOblique.ttf"
+"Tlwg Typist Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgTypist-Oblique.ttf"
+"Tlwg Typo"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgTypo.ttf"
+"Tlwg Typo Bold"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgTypo-Bold.ttf"
+"Tlwg Typo Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgTypo-BoldOblique.ttf"
+"Tlwg Typo Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\TlwgTypo-Oblique.ttf"
+"Trebuchet MS"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\trebuc.ttf"
+"Trebuchet MS Bold"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\trebucbd.ttf"
+"Trebuchet MS Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\trebucbi.ttf"
+"Trebuchet MS Italic"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Trebuchet_MS_Italic.ttf"
+"Ubuntu"="Z:\\usr\\share\\fonts\\truetype\\ubuntu-font-family\\Ubuntu-R.ttf"
+"Ubuntu Bold"="Z:\\usr\\share\\fonts\\truetype\\ubuntu-font-family\\Ubuntu-B.ttf"
+"Ubuntu Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\ubuntu-font-family\\Ubuntu-BI.ttf"
+"Ubuntu Condensed"="Z:\\usr\\share\\fonts\\truetype\\ubuntu-font-family\\Ubuntu-C.ttf"
+"Ubuntu Italic"="Z:\\usr\\share\\fonts\\truetype\\ubuntu-font-family\\Ubuntu-RI.ttf"
+"Ubuntu Light"="Z:\\usr\\share\\fonts\\truetype\\ubuntu-font-family\\Ubuntu-L.ttf"
+"Ubuntu Light Italic"="Z:\\usr\\share\\fonts\\truetype\\ubuntu-font-family\\Ubuntu-LI.ttf"
+"Ubuntu Medium"="Z:\\usr\\share\\fonts\\truetype\\ubuntu-font-family\\Ubuntu-M.ttf"
+"Ubuntu Medium Italic"="Z:\\usr\\share\\fonts\\truetype\\ubuntu-font-family\\Ubuntu-MI.ttf"
+"Ubuntu Mono"="Z:\\usr\\share\\fonts\\truetype\\ubuntu-font-family\\UbuntuMono-R.ttf"
+"Ubuntu Mono Bold"="Z:\\usr\\share\\fonts\\truetype\\ubuntu-font-family\\UbuntuMono-B.ttf"
+"Ubuntu Mono Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\ubuntu-font-family\\UbuntuMono-BI.ttf"
+"Ubuntu Mono Italic"="Z:\\usr\\share\\fonts\\truetype\\ubuntu-font-family\\UbuntuMono-RI.ttf"
+"Ume Gothic"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-tgo4.ttf"
+"Ume Gothic C4"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-tgc4.ttf"
+"Ume Gothic C5"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-tgc5.ttf"
+"Ume Gothic O5"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-tgo5.ttf"
+"Ume Gothic S4"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-tgs4.ttf"
+"Ume Gothic S5"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-tgs5.ttf"
+"Ume Mincho"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-tmo3.ttf"
+"Ume Mincho S3"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-tms3.ttf"
+"Ume P Gothic"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pgo4.ttf"
+"Ume P Gothic C4"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pgc4.ttf"
+"Ume P Gothic C5"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pgc5.ttf"
+"Ume P Gothic O5"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pgo5.ttf"
+"Ume P Gothic S4"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pgs4.ttf"
+"Ume P Gothic S5"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pgs5.ttf"
+"Ume P Mincho"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pmo3.ttf"
+"Ume P Mincho S3"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pms3.ttf"
+"Ume UI Gothic"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-ugo4.ttf"
+"Ume UI Gothic O5"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-ugo5.ttf"
+"Umpush"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Umpush.ttf"
+"Umpush Bold"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Umpush-Bold.ttf"
+"Umpush Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Umpush-BoldOblique.ttf"
+"Umpush Light"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Umpush-Light.ttf"
+"Umpush Light Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Umpush-LightOblique.ttf"
+"Umpush Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Umpush-Oblique.ttf"
+"Un Batang"="Z:\\usr\\share\\fonts\\truetype\\unfonts-core\\UnBatang.ttf"
+"Un Batang Bold"="Z:\\usr\\share\\fonts\\truetype\\unfonts-core\\UnBatangBold.ttf"
+"Un Dinaru"="Z:\\usr\\share\\fonts\\truetype\\unfonts-core\\UnDinaru.ttf"
+"Un Dinaru Bold"="Z:\\usr\\share\\fonts\\truetype\\unfonts-core\\UnDinaruBold.ttf"
+"Un Dinaru Light"="Z:\\usr\\share\\fonts\\truetype\\unfonts-core\\UnDinaruLight.ttf"
+"Un Dotum"="Z:\\usr\\share\\fonts\\truetype\\unfonts-core\\UnDotum.ttf"
+"Un Dotum Bold"="Z:\\usr\\share\\fonts\\truetype\\unfonts-core\\UnDotumBold.ttf"
+"Un Graphic"="Z:\\usr\\share\\fonts\\truetype\\unfonts-core\\UnGraphic.ttf"
+"Un Graphic Bold"="Z:\\usr\\share\\fonts\\truetype\\unfonts-core\\UnGraphicBold.ttf"
+"Un Gungseo"="Z:\\usr\\share\\fonts\\truetype\\unfonts-core\\UnGungseo.ttf"
+"Un Pilgi"="Z:\\usr\\share\\fonts\\truetype\\unfonts-core\\UnPilgi.ttf"
+"Un Pilgi Bold"="Z:\\usr\\share\\fonts\\truetype\\unfonts-core\\UnPilgiBold.ttf"
+"utkal medium"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\utkal.ttf"
+"Vemana2000"="Z:\\usr\\share\\fonts\\truetype\\ttf-indic-fonts-core\\Vemana.ttf"
+"Verdana"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Verdana.ttf"
+"Verdana Bold"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\verdanab.ttf"
+"Verdana Bold Italic"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Verdana_Bold_Italic.ttf"
+"Verdana Italic"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Verdana_Italic.ttf"
+"Waree"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Waree.ttf"
+"Waree Bold"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Waree-Bold.ttf"
+"Waree Bold Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Waree-BoldOblique.ttf"
+"Waree Oblique"="Z:\\usr\\share\\fonts\\truetype\\tlwg\\Waree-Oblique.ttf"
+"wasy10"="Z:\\usr\\share\\fonts\\truetype\\lyx\\wasy10.ttf"
+"Webdings"="Z:\\usr\\share\\fonts\\truetype\\msttcorefonts\\Webdings.ttf"
+"WenQuanYi Micro Hei"="Z:\\usr\\share\\fonts\\truetype\\wqy\\wqy-microhei.ttc"
+"WenQuanYi Micro Hei Mono"="Z:\\usr\\share\\fonts\\truetype\\wqy\\wqy-microhei.ttc"
+"Wingdings"="Z:\\usr\\bin\\..\\share\\wine\\fonts\\\\wingding.ttf"
+
+[Software\\Wine\\Fonts\\Replacements] 1464050643
+"Arial Unicode MS"="Droid Sans Fallback"
+"Batang"="UnBatang"
+"Dotum"="UnDotum"
+"Gulim"="UnDotum"
+"MS Gothic"="Ume Gothic"
+"MS Mincho"="Ume Mincho"
+"MS PGothic"="Ume P Gothic"
+"MS PMincho"="Ume P Mincho"
+"MS UI Gothic"="Ume UI Gothic"
+"PMingLiU"="WenQuanYi Micro Hei"
+"SimSun"="WenQuanYi Micro Hei"
+"\x5b8b\x4f53"="WenQuanYi Micro Hei"
+"\x65b0\x7d30\x660e\x9ad4"="WenQuanYi Micro Hei"
+"\xff2d\xff33\xff30\x30b4\x30b7\x30c3\x30af"="Ume P Gothic"
+
+[Software\\Wine\\MenuFiles] 1464051221
+"/home/krame505/.config/menus/applications-merged/wine-Programs-Python 3.4-IDLE (Python 3.4 GUI - 32 bit).menu"="/media/shared/lrk/U_of_M/Research/LPRD/Telemetry-display/build_tools/wine_venv/dosdevices/c:/users/krame505/Start Menu/Programs/Python 3.4/IDLE (Python 3.4 GUI - 32 bit).lnk"
+"/home/krame505/.config/menus/applications-merged/wine-Programs-Python 3.4-Python 3.4 (command line - 32 bit).menu"="/media/shared/lrk/U_of_M/Research/LPRD/Telemetry-display/build_tools/wine_venv/dosdevices/c:/users/krame505/Start Menu/Programs/Python 3.4/Python 3.4 (command line - 32 bit).lnk"
+"/home/krame505/.config/menus/applications-merged/wine-Programs-Python 3.4-Python 3.4 Docs Server (pydoc - 32 bit).menu"="/media/shared/lrk/U_of_M/Research/LPRD/Telemetry-display/build_tools/wine_venv/dosdevices/c:/users/krame505/Start Menu/Programs/Python 3.4/Python 3.4 Docs Server (pydoc - 32 bit).lnk"
+"/home/krame505/.config/menus/applications-merged/wine-Programs-Python 3.4-Python 3.4 Manuals.menu"="/media/shared/lrk/U_of_M/Research/LPRD/Telemetry-display/build_tools/wine_venv/dosdevices/c:/users/krame505/Start Menu/Programs/Python 3.4/Python 3.4 Manuals.lnk"
+"/home/krame505/.config/menus/applications-merged/wine-Programs-Python 3.4-Uninstall Python 3.4 (32 bit).menu"="/media/shared/lrk/U_of_M/Research/LPRD/Telemetry-display/build_tools/wine_venv/dosdevices/c:/users/krame505/Start Menu/Programs/Python 3.4/Uninstall Python 3.4 (32 bit).lnk"
+"/home/krame505/.local/share/applications/wine/Programs/Python 3.4/IDLE (Python 3.4 GUI - 32 bit).desktop"="/media/shared/lrk/U_of_M/Research/LPRD/Telemetry-display/build_tools/wine_venv/dosdevices/c:/users/krame505/Start Menu/Programs/Python 3.4/IDLE (Python 3.4 GUI - 32 bit).lnk"
+"/home/krame505/.local/share/applications/wine/Programs/Python 3.4/Python 3.4 (command line - 32 bit).desktop"="/media/shared/lrk/U_of_M/Research/LPRD/Telemetry-display/build_tools/wine_venv/dosdevices/c:/users/krame505/Start Menu/Programs/Python 3.4/Python 3.4 (command line - 32 bit).lnk"
+"/home/krame505/.local/share/applications/wine/Programs/Python 3.4/Python 3.4 Docs Server (pydoc - 32 bit).desktop"="/media/shared/lrk/U_of_M/Research/LPRD/Telemetry-display/build_tools/wine_venv/dosdevices/c:/users/krame505/Start Menu/Programs/Python 3.4/Python 3.4 Docs Server (pydoc - 32 bit).lnk"
+"/home/krame505/.local/share/applications/wine/Programs/Python 3.4/Python 3.4 Manuals.desktop"="/media/shared/lrk/U_of_M/Research/LPRD/Telemetry-display/build_tools/wine_venv/dosdevices/c:/users/krame505/Start Menu/Programs/Python 3.4/Python 3.4 Manuals.lnk"
+"/home/krame505/.local/share/applications/wine/Programs/Python 3.4/Uninstall Python 3.4 (32 bit).desktop"="/media/shared/lrk/U_of_M/Research/LPRD/Telemetry-display/build_tools/wine_venv/dosdevices/c:/users/krame505/Start Menu/Programs/Python 3.4/Uninstall Python 3.4 (32 bit).lnk"

@@ -1,0 +1,96 @@
+# -*- mode: sh -*-
+# This file must be used with "source bin/activate" *from bash*
+# you cannot run it directly
+#
+# This file is part of `vwine`.
+#
+# Copyright 2011-2012 by Hartmut Goebel <h.goebel@goebel-consult.de>
+# Licence: GNU General Public License version 3 (GPL v3)
+# Version: 0.1
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# Based on work
+#  Copyright (c) 2007 Ian Bicking and Contributors
+#  Copyright (c) 2009 Ian Bicking, The Open Planning Project
+#  Copyright (c) 2011 The virtualenv developers
+# licensed under an MIT-style permissive license, see 
+# https://raw.github.com/pypa/virtualenv/master/LICENSE.txt
+#
+
+if [ "$0" = "$BASH_SOURCE" ] ; then
+    echo >&2 "This file has to be sourced!"
+    exit 2
+fi
+
+deactivate () {
+    # reset old environment variables
+    if [ -n "$_OLD_VIRTUALWINE_PATH" ] ; then
+        PATH="$_OLD_VIRTUALWINE_PATH"
+        export PATH
+        unset _OLD_VIRTUALWINE_PATH
+    fi
+
+    # This should detect bash and zsh, which have a hash command that must
+    # be called to get it to forget past commands.  Without forgetting
+    # past commands the $PATH changes we made may not be respected
+    if [ -n "$BASH" -o -n "$ZSH_VERSION" ] ; then
+        hash -r
+    fi
+
+    if [ -n "$_OLD_VIRTUALWINE_PS1" ] ; then
+        PS1="$_OLD_VIRTUALWINE_PS1"
+        export PS1
+        unset _OLD_VIRTUALWINE_PS1
+    fi
+
+    unset WINEPREFIX
+    if [ ! "$1" = "nondestructive" ] ; then
+        # Self destruct!
+        unset -f deactivate
+    fi
+}
+
+# unset irrelavent variables
+deactivate nondestructive
+
+WINEPREFIX=$( readlink -fn '/media/shared/lrk/U_of_M/Research/LPRD/Telemetry-display/build_tools/wine_venv/')
+export WINEPREFIX
+
+_OLD_VIRTUALWINE_PATH="$PATH"
+PATH="$WINEPREFIX/bin:$PATH"
+export PATH
+
+if [ -z "$WINEPREFIX_DISABLE_PROMPT" ] ; then
+    _OLD_VIRTUALWINE_PS1="$PS1"
+    if [ "x" != x ] ; then
+	PS1="$PS1"
+    else
+    if [ "`basename \"$WINEPREFIX\"`" = "__" ] ; then
+        # special case for Aspen magic directories
+        # see http://www.zetadev.com/software/aspen/
+        PS1="[`basename \`dirname \"$WINEPREFIX\"\``] $PS1"
+    else
+        PS1="(`basename \"$WINEPREFIX\"`)$PS1"
+    fi
+    fi
+    export PS1
+fi
+
+# This should detect bash and zsh, which have a hash command that must
+# be called to get it to forget past commands.  Without forgetting
+# past commands the $PATH changes we made may not be respected
+if [ -n "$BASH" -o -n "$ZSH_VERSION" ] ; then
+    hash -r
+fi

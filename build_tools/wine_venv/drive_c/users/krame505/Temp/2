@@ -1,0 +1,11 @@
+Copied pythoncom34.dll to C:\windows\syswow64\pythoncom34.dll
+Copied pywintypes34.dll to C:\windows\syswow64\pywintypes34.dll
+Registered: Python.Interpreter 
+Registered: Python.Dictionary 
+Registered: Python 
+-> Software\Python\PythonCore\3.4\Help[None]=None
+-> Software\Python\PythonCore\3.4\Help\Pythonwin Reference[None]='C:\\Python34\\Lib\\site-packages\\PyWin32.chm'
+Pythonwin has been registered in context menu
+Creating directory C:\Python34\Lib\site-packages\win32com\gen_py
+Can't install shortcuts - 'C:\\users\\Public\\Start Menu\\Programs\\Python 3.4' is not a folder
+The pywin32 extensions were successfully installed.
