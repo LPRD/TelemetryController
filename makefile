@@ -2,6 +2,8 @@ SOURCES=src/*.py
 
 PYINSTALLER_PATH=build_tools/pyinstaller/pyinstaller.py
 PY_VENV_ACTIVATE=build_tools/linux_venv/bin/activate
+WINE_VENV_ACTIVATE=build_tools/wine_venv/bin/activate
+NATIVE_WINE=0
 
 EXCLUDE_MODULES=
 PYINSTALLER_FLAGS=-F --windowed --specpath build
@@ -15,12 +17,16 @@ EXE_TARGETS=$(addsuffix .exe, $(BIN_TARGETS))
 ifeq ($(OS),Windows_NT)
   ALL_TARGETS=$(EXE_TARGETS)
 else
-  WINE_CHECK:=$(shell wine python -c 'import matplotlib; import serial' 2>/dev/null; echo $$?)
-  ifeq (0,$(WINE_CHECK))
+  ifeq (1,$(NATIVE_WINE))
     ALL_TARGETS=$(BIN_TARGETS) $(EXE_TARGETS)
   else
-    $(warning wine does not appear to be set up correctly, exe build is disabled)
-    ALL_TARGETS=$(BIN_TARGETS)
+    WINE_CHECK:=$(shell . $(WINE_VENV_ACTIVATE); wine python -c 'import matplotlib; import serial; import pywintypes' 2>/dev/null; echo $$?)
+    ifeq (0,$(WINE_CHECK))
+      ALL_TARGETS=$(BIN_TARGETS) $(EXE_TARGETS)
+    else
+      $(warning wine does not appear to be set up correctly, exe build is disabled)
+      ALL_TARGETS=$(BIN_TARGETS)
+    endif
   endif
 endif
 
@@ -35,9 +41,13 @@ setup:
 
 dist/%.exe: src/%.py setup $(SOURCES)
 ifeq ($(OS),Windows_NT)
-	python $(PYINSTALLER_PATH) $(PYINSTALLER_FLAGS) $<
+	. $(PY_VENV_ACTIVATE); python $(PYINSTALLER_PATH) $(PYINSTALLER_FLAGS) $<
 else
+  ifeq (1,$(NATIVE_WINE))
 	wine python $(PYINSTALLER_PATH) $(PYINSTALLER_FLAGS) $<
+  else
+	. $(WINE_VENV_ACTIVATE); wine python $(PYINSTALLER_PATH) $(PYINSTALLER_FLAGS) $<
+  endif
 endif
 	@if [ `du -k $@ | cut -f1` -ge $(MAX_SIZE) ]; then echo "Error: $@ is larger than the github limit of 100 MB"; rm $@; exit 1; fi
 

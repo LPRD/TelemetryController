@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# This file is part of `vwine`.
+#
+# Copyright 2011-2012 by Hartmut Goebel <h.goebel@goebel-consult.de>
+# Licence: GNU General Public License version 3 (GPL v3)
+# Version: 0.1
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+exe=$(basename "$0")
+WINEPREFIX=$(readlink -fn '/media/shared/lrk/U_of_M/Research/LPRD/Telemetry-display/build_tools/wine_venv/')
+export WINEPREFIX
+
+/usr/bin/$exe "$@"
