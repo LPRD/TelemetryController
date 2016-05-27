@@ -232,49 +232,15 @@ class Application(Frame):
         self.canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.fig, master=self)
         width = int(math.ceil(math.sqrt(len(self.plots))))
         height = width - 1 if width * (width - 1) >= len(self.plots) else width
-        subplots = {}
-        lines = {}
-        update = {(plot, y): ([], []) for plot in self.plots for y in plot.ys}
         for i, plot in enumerate(self.plots):
-            subplots[plot] = self.fig.add_subplot(width, height, i + 1)
-            if plot.name:
-                subplots[plot].set_title(plot.name)
-            if plot.x == 'time':
-                subplots[plot].set_xlabel("time (sec)")
-            else:
-                subplots[plot].set_xlabel(plot.x +
-                                          (" (" + self.dispatcher.data_types[plot.x].units + ")"
-                                           if self.dispatcher.data_types[plot.x].units else ""))
-            ys_units = [self.dispatcher.data_types[y].units for y in plot.ys]
-            assert len(set(ys_units)) <= 1 # All units must be the same, if included
-            if ys_units[0]:
-                subplots[plot].set_ylabel(ys_units[0])
-            for y in plot.ys:
-                if plot.style:
-                    lines[plot, y], = subplots[plot].plot([], [], plot.style, label=y)
-                else:
-                    lines[plot, y], = subplots[plot].plot([], [], label=y)
-            if len(plot.ys) > 1:
-               subplots[plot].legend(loc='lower right')
-
-            plot.setup_listeners(self.manager, update)
+            plot.create(self.manager, self.fig, width, height, i)
         
         if self.plots:
             self.fig.tight_layout(pad=2)
 
         def animate(i):
-            for plot, sp in subplots.items():
-                updated = False
-                for y in plot.ys:
-                    if update[plot, y]:
-                        x_data, y_data = update[plot, y]
-                        update[plot, y] = None
-                        lines[plot, y].set_xdata(x_data)
-                        lines[plot, y].set_ydata(y_data)
-                        updated = True
-                if updated:
-                    subplots[plot].relim()
-                    subplots[plot].autoscale_view(None, True, True)
+            for plot in self.plots:
+                plot.animate()
 
         ani = FuncAnimation(self.fig, animate, interval=200)
 

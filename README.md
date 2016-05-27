@@ -77,7 +77,6 @@ The exit code should be 0.
 * Get CSV parsing working
 
 ### Low priority
-* Migrate a lot of the plotting code to plot.py
 * Nice setup configuration modes (What did I mean by this?)
 
 ## Known issues

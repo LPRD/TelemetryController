@@ -10,7 +10,32 @@ class Plot:
         self.name = name
         self.style = style
 
-    def setup_listeners(self, manager, update):
+        self.update = {y: ([], []) for y in self.ys}
+        self.lines = {y: None for y in self.ys}
+
+    def create(self, manager, fig, width, height, i):
+        data_types = manager.dispatcher.data_types
+        self.subplot = fig.add_subplot(width, height, i + 1)
+        if self.name:
+            self.subplot.set_title(self.name)
+        if self.x == 'time':
+            self.subplot.set_xlabel("time (sec)")
+        else:
+            self.subplot.set_xlabel(self.x + (" (" + data_types[self.x].units + ")" if data_types[self.x].units else ""))
+
+        ys_units = [data_types[y].units for y in self.ys]
+        assert len(set(ys_units)) <= 1 # All units must be the same, if included
+        if ys_units[0]:
+            self.subplot.set_ylabel(ys_units[0])
+        for y in self.ys:
+            if self.style:
+                self.lines[y], = self.subplot.plot([], [], self.style, label=y)
+            else:
+                self.lines[y], = self.subplot.plot([], [], label=y)
+        if len(self.ys) > 1:
+           self.subplot.legend(loc='lower right')
+
+        # Set up listeners
         max_points = 1000
         for y in self.ys:
             def fn(x_data, y_data, y=y):
@@ -52,6 +77,20 @@ class Plot:
                 indices = range(0, len(x_data), max(len(x_data) // max_points, 1))
                 x_data = [x_data[i] for i in indices]
                 y_data = [y_data[i] for i in indices]
-                update[self, y] = x_data, y_data
+                self.update[y] = x_data, y_data
 
             manager.add_listener(y, fn)
+
+    def animate(self):
+        updated = False
+        for y in self.ys:
+            if self.update[y]:
+                x_data, y_data = self.update[y]
+                print("update", self.x, y, x_data, y_data)
+                self.update[y] = None
+                self.lines[y].set_xdata(x_data)
+                self.lines[y].set_ydata(y_data)
+                updated = True
+        if updated:
+            self.subplot.relim()
+            self.subplot.autoscale_view(None, True, True)
