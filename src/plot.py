@@ -86,7 +86,6 @@ class Plot:
         for y in self.ys:
             if self.update[y]:
                 x_data, y_data = self.update[y]
-                print("update", self.x, y, x_data, y_data)
                 self.update[y] = None
                 self.lines[y].set_xdata(x_data)
                 self.lines[y].set_ydata(y_data)
