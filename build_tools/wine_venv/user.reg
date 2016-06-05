@@ -321,6 +321,32 @@ WINE REGISTRY Version 2
 [Software\\Microsoft\\Internet Explorer\\Settings] 1464050643
 "Text Color"="0,0,0"
 
+[Software\\Microsoft\\Notepad] 1465005630
+"fWrap"=dword:00000001
+"iMarginBottom"=dword:000009c4
+"iMarginLeft"=dword:000007d0
+"iMarginRight"=dword:000007d0
+"iMarginTop"=dword:000009c4
+"iPointSize"=dword:0000005a
+"iWindowPosDX"=dword:000002d9
+"iWindowPosDY"=dword:00000222
+"iWindowPosX"=dword:00000000
+"iWindowPosY"=dword:0000001d
+"lfCharSet"=dword:00000001
+"lfClipPrecision"=dword:00000000
+"lfEscapement"=dword:00000000
+"lfFaceName"="System"
+"lfItalic"=dword:00000000
+"lfOrientation"=dword:00000000
+"lfOutPrecision"=dword:00000000
+"lfPitchAndFamily"=dword:00000001
+"lfQuality"=dword:00000000
+"lfStrikeOut"=dword:00000000
+"lfUnderline"=dword:00000000
+"lfWeight"=dword:00000190
+"szHeader"="&f"
+"szTrailer"="Page &p"
+
 [Software\\Microsoft\\Protected Storage System Provider] 1464050643
 
 [Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Python.exe] 1464051289
@@ -733,11 +759,11 @@ WINE REGISTRY Version 2
 "OpenWithIcon"="7765_winebrowser.0"
 "ProgID"="xmlfile"
 
-[Software\\Wine\\Fonts] 1464119707
+[Software\\Wine\\Fonts] 1465090383
 "Codepages"="1252,437"
 "LogPixels"=dword:00000060
 
-[Software\\Wine\\Fonts\\External Fonts] 1464119707
+[Software\\Wine\\Fonts\\External Fonts] 1465090383
 "@Droid Sans Fallback"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSansFallbackFull.ttf"
 "@TakaoPGothic"="Z:\\usr\\share\\fonts\\truetype\\fonts-japanese-gothic.ttf"
 "@Ume P Gothic"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pgo4.ttf"
