@@ -32116,7 +32116,7 @@ WINE REGISTRY Version 2
 "CommonPictures"=str(2):"%ALLUSERSPROFILE%\\Pictures"
 "CommonVideo"=str(2):"%ALLUSERSPROFILE%\\Videos"
 
-[Software\\Microsoft\\Windows\\CurrentVersion\\Fonts] 1464119707
+[Software\\Microsoft\\Windows\\CurrentVersion\\Fonts] 1465090383
 "@Droid Sans Fallback"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSansFallbackFull.ttf"
 "@TakaoPGothic"="Z:\\usr\\share\\fonts\\truetype\\fonts-japanese-gothic.ttf"
 "@Ume P Gothic"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pgo4.ttf"
@@ -36702,7 +36702,7 @@ WINE REGISTRY Version 2
 
 [Software\\Microsoft\\Windows NT\\CurrentVersion\\FontMapper] 1464050643
 
-[Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts] 1464119707
+[Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts] 1465090383
 "@Droid Sans Fallback"="Z:\\usr\\share\\fonts\\truetype\\droid\\DroidSansFallbackFull.ttf"
 "@TakaoPGothic"="Z:\\usr\\share\\fonts\\truetype\\fonts-japanese-gothic.ttf"
 "@Ume P Gothic"="Z:\\usr\\share\\fonts\\truetype\\horai-umefont\\ume-pgo4.ttf"
@@ -41727,7 +41727,7 @@ WINE REGISTRY Version 2
 [System\\CurrentControlSet\\Control\\Print\\Printers] 1464050643
 "DefaultSpoolDirectory"="C:\\windows\\system32\\spool\\printers"
 
-[System\\CurrentControlSet\\Control\\Print\\Printers\\Deskjet-F4200-series] 1464119844
+[System\\CurrentControlSet\\Control\\Print\\Printers\\Deskjet-F4200-series] 1465090569
 "Attributes"=dword:00000000
 "Datatype"="RAW"
 "Default DevMode"=hex:44,65,73,6b,6a,65,74,2d,46,34,32,30,30,2d,73,65,72,69,65,\
