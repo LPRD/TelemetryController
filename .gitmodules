@@ -1,0 +1,3 @@
+[submodule "build_tools"]
+	path = build_tools
+	url = https://github.com/LPRD/build_tools.git
