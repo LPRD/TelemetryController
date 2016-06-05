@@ -62,4 +62,4 @@ commit: all
 clean:
 	rm -rf dist build
 
-.PHONY: all bin exe setup clean
+.PHONY: all bin exe setup commit clean
