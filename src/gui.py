@@ -15,6 +15,7 @@ from matplotlib.animation import FuncAnimation
 import argparse
 import math
 import sys
+import traceback
 
 # Helper class that has a write method that is provided to the constructor
 class FnWriteableStream:
@@ -36,7 +37,8 @@ class Application(Frame):
                      'show_send_value': True,
                      'full_screen': False,
                      'backup_log': ".temp_log.json",
-                     'serial_console_height': 15}
+                     'serial_console_height': 15,
+                     'default_baud': 9600}
         new_flags.update(flags)
         self.flags = new_flags
 
@@ -66,6 +68,9 @@ class Application(Frame):
         # Start reading from Serial
         self.serialManager = None
         self.checkSerial()
+        self.baud.set(str(self.flags['default_baud']))
+        self.serialPort.trace('w', self.changeSerial)
+        self.baud.trace('w', self.changeSerial)
         ports = serialmanager.serial_ports()
         if args.port:
             if args.port in ports:
@@ -74,10 +79,6 @@ class Application(Frame):
                 parser.error("Invalid serial port " + args.port)
         elif ports:
             self.serialPort.set(ports[0])
-        if ports:
-            self.serialManager = serialmanager.SerialManager(self.dispatcher, self.serialPort.get())
-            self.baud.set(self.serialManager.baud)
-            self.startSerial()
 
         self.startListeners()
 
@@ -124,16 +125,10 @@ class Application(Frame):
         serialControls = Frame(serial)
 
         self.serialPort = StringVar(self)
-        # TODO: Make this work on windows
-        if not sys.platform.startswith('win'):
-            self.serialPort.trace('w', self.changeSerial)
         self.serialSelect = OptionMenu(serialControls, self.serialPort, [])
         self.serialSelect.pack(side=LEFT)
 
         self.baud = StringVar(self)
-        # TODO: Make this work on windows
-        if not sys.platform.startswith('win'):
-            self.baud.trace('w', self.changeSerial)
         self.baudSelect = OptionMenu(serialControls, self.baud, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200)
         self.baudSelect.pack(side=LEFT)
 
@@ -330,14 +325,19 @@ class Application(Frame):
 
     # Handler for changing the serial port
     def changeSerial(self, *args):
-        #print("Selected port", self.serialPort.get())
-        self.serialOut.config(state=NORMAL)
-        self.serialOut.delete(1.0, 'end')
-        self.serialOut.config(state=DISABLED)
-        self.valuesList.delete(0, END)
-        self.reset()
-        self.serialManager = serialmanager.SerialManager(self.dispatcher, self.serialPort.get())#, int(self.baud.get()))
-        self.startSerial()
+        # Try-catch needed b/c error messages in tracebacks on Windows are buggy
+        try:
+            #print("Selected port", self.serialPort.get())
+            self.serialOut.config(state=NORMAL)
+            self.serialOut.delete(1.0, 'end')
+            self.serialOut.config(state=DISABLED)
+            self.valuesList.delete(0, END)
+            self.reset()
+            self.serialManager = serialmanager.SerialManager(self.dispatcher, self.serialPort.get(), int(self.baud.get()))
+            self.startSerial()
+        except:
+            if not sys.platform.startswith('win'):
+                traceback.print_exc()
 
     # Handler for checking the available serial ports
     def checkSerial(self):

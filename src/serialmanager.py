@@ -5,20 +5,27 @@ import time
 
 # Manages recieving data from a serial port and passes it to a Dispatcher
 class SerialManager:
+    ports = {}
     def __init__(self, dispatcher, port='/dev/ttyACM0', baud=9600):
         self.dispatcher = dispatcher
         self.baud = baud
-        if sys.platform.startswith('win'):
+        
+        # Prevent opening a port more than once on windows
+        try:
             self.ser = serial.Serial(port, baud)
-        else:
-            self.ser = serial.Serial(port, baud)
+            SerialManager.ports[port] = self.ser
+        except (OSError, serial.SerialException) as e:
+            if port in SerialManager.ports:
+                self.ser = SerialManager.ports[port]
+            else:
+                raise e
         
         self.paused = False
 
         self.dispatcher.reset()
 
-    #def __del__(self):
-    #    self.ser.close()
+    def __del__(self):
+        self.ser.close()
 
     def handleInput(self, txtout=sys.stdout, errout=sys.stderr):
         while self.paused:
@@ -59,12 +66,10 @@ def serial_ports():
     result = []
     for port in ports:
         try:
-            if sys.platform.startswith('win'):
-                s = serial.Serial(port)
-            else:
-                s = serial.Serial(port)
+            s = serial.Serial(port)
             s.close()
             result.append(port)
         except (OSError, serial.SerialException):
-            pass
+            if port in SerialManager.ports and SerialManager.ports[port].isOpen():
+                result.append(port)
     return result
