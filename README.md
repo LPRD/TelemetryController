@@ -13,7 +13,7 @@ simply run
 ```> source build_tools/linux_venv/bin/activate```  
 from your shell.  This will load the enclosed instance of python along with the needed libraries.  Then you can simply run the gui scripts directly  
 ```> src/static_test_gui```  
-Note that any python libraries installed via pip with the virtual env activated will be installed to the virtual env.  
+Note that any python libraries installed via pip with the virtual env activated will be installed to the virtual env. 
 
 #### Windows
 **Note**: It should be possible to use the virtual python env for development on Windows, but I haven't gotten a chance to test this yet.
