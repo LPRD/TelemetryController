@@ -202,11 +202,7 @@ class Application(Frame):
             self.valuesList.insert(0, str(xdata) if xdata else "")
         self.dispatcher.add_listener('sys time', fn, 100)
         for i, ty in enumerate(shown_data_types):
-            if ty.units:
-                full_name = ty.name + " (" + ty.units + ")"
-            else:
-                full_name = ty.name
-            self.namesList.insert(i + 1, full_name)
+            self.namesList.insert(i + 1, ty.full_name)
             self.valuesList.insert(i + 1, "")
             def fn(xdata, ydata, i = i):
                 self.valuesList.delete(i + 1)

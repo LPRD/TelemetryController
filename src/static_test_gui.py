@@ -8,19 +8,20 @@ import gui
 import plot
 import time
 
-dts = [manager.DataType('force', float, units='Newtons'),
-       manager.DataType('temperature', float, units='deg C'),
-       manager.DataType('x', float, units='Gs'),
-       manager.DataType('y', float, units='Gs'),
-       manager.DataType('z', float, units='Gs'),
-       manager.DataType('run_time', int, units='ms', show=False),
+dts = [manager.DataType('force', float, units="Newtons"),
+       manager.DataType('inlet_temperature', float, units="deg C"),
+       manager.DataType('outlet_temperature', float, units="deg C"),
+       manager.DataType('x', float, units="Gs"),
+       manager.DataType('y', float, units="Gs"),
+       manager.DataType('z', float, units="Gs"),
+       manager.DataType('run_time', int, units="ms", show=False),
        manager.DataType('status', str, show=False),
        manager.DataType('fuel_control', int, show=False),
        manager.DataType('oxy_control', int, show=False),
        manager.DataType('fuel_safety', bool, show=False),
        manager.DataType('oxy_safety', bool, show=False)]
 plots = [plot.Plot('time', 'force'),
-         plot.Plot('time', 'temperature'),
+         plot.Plot('time', ['inlet_temperature', 'outlet_temperature'], "coolant temperature"),
          plot.Plot('time', ['x', 'y', 'z'], "acceleration")]
 dispatcher = manager.Dispatcher(*dts)
 manager = manager.DataManager(dispatcher)

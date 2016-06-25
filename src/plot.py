@@ -29,9 +29,9 @@ class Plot:
             self.subplot.set_ylabel(ys_units[0])
         for y in self.ys:
             if self.style:
-                self.lines[y], = self.subplot.plot([], [], self.style, label=y)
+                self.lines[y], = self.subplot.plot([], [], self.style, label=data_types[y].full_name)
             else:
-                self.lines[y], = self.subplot.plot([], [], label=y)
+                self.lines[y], = self.subplot.plot([], [], label=data_types[y].full_name)
         if len(self.ys) > 1:
            self.subplot.legend(loc='lower right')
 
