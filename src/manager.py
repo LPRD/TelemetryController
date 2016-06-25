@@ -16,6 +16,10 @@ class DataType:
         self.export_csv = export_csv
         self.units = units
 
+        self.full_name = self.name.replace("_", " ")
+        if self.units:
+            self.full_name += " (" + self.units + ")"
+
 # Manages parsing incoming serial packets, recieving data in given data types, and passes it to
 # handlers.  Also tracks system data and time.  
 class Dispatcher:
