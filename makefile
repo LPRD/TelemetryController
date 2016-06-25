@@ -1,6 +1,6 @@
 SOURCES=src/*.py
 
-PYINSTALLER_PATH=build_tools/pyinstaller/pyinstaller.py
+PYINSTALLER=build_tools/pyinstaller/pyinstaller.py
 PY_VENV_ACTIVATE=build_tools/linux_venv/bin/activate
 WINE_VENV_ACTIVATE=build_tools/wine_venv/bin/activate
 NATIVE_WINE=0
@@ -20,50 +20,30 @@ else
   ALL_TARGETS=$(BIN_TARGETS) $(EXE_TARGETS)
 endif
 
-all: $(ALL_TARGETS)
-bin: $(BIN_TARGETS)
-exe: $(EXE_TARGETS)
+all: setup $(ALL_TARGETS)
+bin: setup $(BIN_TARGETS)
+exe: setup $(EXE_TARGETS)
 
-setup:
+setup: build_tools
 # Needed b/c pyinstaller sometimes chokes when this already exists
 	rm -rf build/*/cycler*.egg 
 	@echo "Building $(ALL_TARGETS)"
 
-.init_wine:
-ifneq ($(shell . $(WINE_VENV_ACTIVATE); wine python -c 'import matplotlib; import serial; import pywintypes' 2>/dev/null; echo $?), 0)
-	@echo ". $(WINE_VENV_ACTIVATE)" > $@;
-	@echo "Building with virtual WINE env";
-else ifneq ($(shell wine python -c 'import matplotlib; import serial; import pywintypes' 2>/dev/null; echo $?), 0)
-	@echo ":" > $@;
-	@echo "Building with native WINE env";
-else
-	@echo "Error: build_tools appears to be missing, did you clone with --recursive?  You can fix this with git submodule update --recursive --init"
-	@exit 1
-endif
-
-.init_python:
-ifneq ($(shell . $(PY_VENV_ACTIVATE); python3 -c 'import matplotlib; import serial; import pywintypes' 2>/dev/null; echo $?), 0)
-	@echo ". $(PY_VENV_ACTIVATE)" > $@
-	@echo "Building with virtual python env"
-else ifneq ($(shell python3 -c 'import matplotlib; import serial; import pywintypes' 2>/dev/null; echo $?), 0)
-	@echo ":" > $@;
-	@echo "Building with native python env";
-else
-	@echo "Error: build_tools appears to be missing, did you clone with --recursive?  You can fix this with git submodule update --recursive --init"
-	@exit 1
-endif
+# These only get built when missing
+$(PYINSTALLER) $(PY_VENV_ACTIVATE) $(WINE_VENV_ACTIVATE):
+	$(error Error: $@ appears to be missing, did you clone with --recursive?  You can fix this with "git submodule update --recursive --init")
 
 ifeq ($(OS),Windows_NT)
-dist/%.exe: src/%.py setup $(SOURCES) .init_python $(PYINSTALLER_PATH)
-	`cat .init_python`; python $(PYINSTALLER_PATH) $(PYINSTALLER_FLAGS) $<
+dist/%.exe: src/%.py setup $(SOURCES) $(PY_VENV_ACTIVATE) $(PYINSTALLER)
+	. $(PY_VENV_ACTIVATE); python $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
 	@if [ `du -k $< | cut -f1` -ge $(MAX_SIZE) ]; then\
 	  rm $<;\
 	  echo "Error: $< is larger than the github limit of 100 MB";\
 	  exit 1;\
 	fi
 else
-dist/%.exe: src/%.py setup $(SOURCES) .init_wine $(PYINSTALLER_PATH)
-	`cat .init_wine`; wine python $(PYINSTALLER_PATH) $(PYINSTALLER_FLAGS) $<
+dist/%.exe: src/%.py setup $(SOURCES) $(PY_VENV_ACTIVATE) $(PYINSTALLER)
+	. $(WINE_VENV_ACTIVATE); wine python $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
 	@if [ `du -k $< | cut -f1` -ge $(MAX_SIZE) ]; then\
 	  rm $<;\
 	  echo "Error: $< is larger than the github limit of 100 MB";\
@@ -71,8 +51,8 @@ dist/%.exe: src/%.py setup $(SOURCES) .init_wine $(PYINSTALLER_PATH)
 	fi
 endif
 
-dist/%: src/%.py setup $(SOURCES) .init_python $(PYINSTALLER_PATH)
-	`cat .init_python`; python3 $(PYINSTALLER_PATH) $(PYINSTALLER_FLAGS) $<
+dist/%: src/%.py setup $(SOURCES) $(PY_VENV_ACTIVATE) $(PYINSTALLER)
+	. $(PY_VENV_ACTIVATE); python3 $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
 	@if [ `du -k $< | cut -f1` -ge $(MAX_SIZE) ]; then\
 	  rm $<;\
 	  echo "Error: $< is larger than the github limit of 100 MB";\
