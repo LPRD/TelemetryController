@@ -85,9 +85,9 @@ class Application(Frame):
         # Open a file if requested from command line
         if args.filename:
             extension = args.filename.split(".")[-1]
-            if extension not in ["json", "log"]:#, "csv"]:
+            if extension not in ["json", "log", "csv"]:
                 parser.error("Invalid file extension \"." + extension + "\"\n" +
-                             "Legal formats are json, log")#, csv")
+                             "Legal formats are json, log, csv")
             else:
                 self.reset()
                 try:
@@ -373,9 +373,9 @@ class Application(Frame):
         filename = askopenfilename()
         if filename:
             extension = filename.split(".")[-1]
-            if extension not in ["json", "log"]:#, "csv"]:
+            if extension not in ["json", "log", "csv"]:
                 showerror("Error", "Invalid file extension \"." + extension + "\"\n" +
-                          "Legal formats are json, log")#, csv")
+                          "Legal formats are json, log, csv")
             else:
                 self.reset()
                 if self.manager.load(extension, open(filename).read(), self, self.colorStreams['red']):

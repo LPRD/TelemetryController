@@ -169,15 +169,12 @@ class DataManager:
                         if time not in data:
                             data[time] = {}
                         data[time][name] = value
-            current_vals = {name: None for name in self.dispatcher.data_names}
+            current_vals = {name: "" for name in self.dispatcher.data_names}
             for time, updates in sorted(data.items()):
                 for name, update in updates.items():
                     current_vals[name] = update
-                result += (str(time) +
-                           "," +
-                           ",".join(str(current_vals[n])
-                                    if current_vals[n] != None
-                                    else "" for n in self.dispatcher.data_names) + "\n")
+                result += (str(time) + "," +
+                           ",".join(str(current_vals[n]) for n in self.dispatcher.data_names) + "\n")
             return result
         elif format == 'json':
             return json.dumps(list(self.data.items()))
@@ -195,20 +192,18 @@ class DataManager:
                 return False
             else:
                 self.data = data
-        elif format == 'csv': # TODO: in progress
+        elif format == 'csv':
             rows = [row.split(',') for row in text.split('\n')]
-            data = [(name, ([], [])) for name in rows[0]]
-            last_row = ["" for elem in rows[0]]
+            data = [(name, ([], [])) for name in rows[0][1:]]
+            last_row = ["" for elem in rows[0][1:]]
             for row in rows[1:]:
-                for i, elem in enumerate(row):
-                    if elem != last_row[i]:
-                        if data[i][0] not in ['abs time', 'sys data', 'sys time']:
-                            elem = self.dispatcher.data_types[data[i][0]].type(elem)
-                        if data[i][0] != 'abs time':
-                            data[i][1][0].append(int(row[0]))
-                            data[i][1][1].append(elem)
-                last_row = row
-            data = OrderedDict(data)
+                for elem, last_elem, (name, (time_elems, data_elems)) in zip(row[1:], last_row, data):
+                    if elem != last_elem:
+                        elem = self.dispatcher.data_types[name].type(elem)
+                        time_elems.append(int(row[0]))
+                        data_elems.append(elem)
+                last_row = row[1:]
+            self.data = OrderedDict(data)
         elif format == 'log':
             self.reset()
             self.start()
