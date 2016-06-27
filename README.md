@@ -72,12 +72,5 @@ This should print the python version and start the python REPL.
 The exit code should be 0.  
 
 ## TODO items
-### High priority
-* Fix bugs
-
-### Low priority
-* Nice setup configuration modes (What did I mean by this?)
-
-## Known issues
-* Can't select a serial port on Windows
-* No automatic restart after port change, need to start/stop/reset (check if resolved?)
+### Known issues
+* Serial ports under WINE act like Linux serial ports, preventing testing

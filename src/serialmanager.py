@@ -54,6 +54,16 @@ def serial_ports():
             A list of the serial ports available on the system
     """
     if sys.platform.startswith('win'):
+#        # Check if running on WINE
+#        import winreg
+#        reg = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
+#        try:
+#            k = winreg.OpenKey(reg, "SOFTWARE\Wine")
+#            # Regestry opened, so we are on WINE
+#            ports = glob.glob('/dev/tty[A-Za-z]*')
+#        except:
+#            # On Windows
+#            ports = ['COM%s' % (i + 1) for i in range(256)]
         ports = ['COM%s' % (i + 1) for i in range(256)]
     elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
         # this excludes your current terminal "/dev/tty"
