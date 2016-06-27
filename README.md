@@ -74,7 +74,6 @@ The exit code should be 0.
 ## TODO items
 ### High priority
 * Fix bugs
-* Get CSV parsing working
 
 ### Low priority
 * Nice setup configuration modes (What did I mean by this?)
