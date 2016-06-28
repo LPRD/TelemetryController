@@ -28,7 +28,8 @@ manager = manager.DataManager(dispatcher)
 root = Tk()
 app = gui.Application(dispatcher, manager, plots, master=root,
                       show_send_value=False,
-                      serial_console_height=5)
+                      serial_console_height=5,
+                      default_baud=230400)
 running = False
 def start_abort_handler():
     global start_time, running
