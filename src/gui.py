@@ -129,7 +129,7 @@ class Application(Frame):
         self.serialSelect.pack(side=LEFT)
 
         self.baud = StringVar(self)
-        self.baudSelect = OptionMenu(serialControls, self.baud, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200)
+        self.baudSelect = OptionMenu(serialControls, self.baud, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200, 230400, 250000)
         self.baudSelect.pack(side=LEFT)
 
         self.refreshPortButton = Button(serialControls, text="Refresh", command=self.checkSerial)
