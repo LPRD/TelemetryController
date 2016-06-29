@@ -21,7 +21,7 @@ class DataType:
             self.full_name += " (" + self.units + ")"
 
 # Manages parsing incoming serial packets, recieving data in given data types, and passes it to
-# handlers.  Also tracks system data and time.  
+# listeners.  Also tracks system date and time.  
 class Dispatcher:
     def __init__(self, *data_types):
         data_types = (DataType('sys date', str, False),
@@ -52,9 +52,14 @@ class Dispatcher:
             line = line.strip("\r")
             if line.startswith("@@@@@") and line.endswith("&&&&&"):
                 try:
-                    abs_time, name, value = line[5:][:-5].split(':')
-                    abs_time = int(abs_time) if abs_time != "" else None
-                    self.accept(name, abs_time, value, errout)
+                    data = OrderedDict([entry.split(':') for entry in line[5:][:-5].split(';')])
+                    if '_time' in data and data['_time'] != "":
+                        abs_time = int(data['_time'])
+                    else:
+                        abs_time = None
+                    for name, value in data.items():
+                        if name != '_time':
+                            self.accept(name, abs_time, value, errout)
                     self.accept("sys date", abs_time, time.strftime("%d/%m/%Y"))
                     self.accept("sys time", abs_time, time.strftime("%H:%M:%S"))
                 except ValueError:
@@ -98,7 +103,7 @@ class Dispatcher:
         return self.time[name], self.data[name]
 
 # Manages the data for a spesific run.  Attatches handlers to a Dispatcher, logs the data when
-# running, can save or load data runs in various formats.  Handlers can be attatched that trigger
+# running, can save or load data runs in various formats.  Listeners can be attatched that trigger
 # on new data when there is an active run
 class DataManager:
     def __init__(self, dispatcher):
@@ -161,20 +166,21 @@ class DataManager:
 
     def dump(self, format):
         if format == 'csv':
-            result = "abs time," + ",".join(self.dispatcher.data_names) + "\n"
-            data = {}
+            data_names = [name
+                          for name in self.dispatcher.data_names
+                          if self.dispatcher.data_types[name].export_csv]
+            result = "abs time," + ",".join(data_names) + "\n"
+            data = OrderedDict()
             for name, (times, values) in self.data.items():
-                if self.dispatcher.data_types[name].export_csv:
+                if name in data_names:
                     for time, value in zip(times, values):
                         if time not in data:
                             data[time] = {}
                         data[time][name] = value
-            current_vals = {name: "" for name in self.dispatcher.data_names}
-            for time, updates in sorted(data.items()):
-                for name, update in updates.items():
-                    current_vals[name] = update
+            for time, updates in data.items():
                 result += (str(time) + "," +
-                           ",".join(str(current_vals[n]) for n in self.dispatcher.data_names) + "\n")
+                           ",".join(str(updates[n]) if n in updates else ""
+                                    for n in data_names) + "\n")
             return result
         elif format == 'json':
             return json.dumps(list(self.data.items()))
@@ -195,14 +201,12 @@ class DataManager:
         elif format == 'csv':
             rows = [row.split(',') for row in text.split('\n')]
             data = [(name, ([], [])) for name in rows[0][1:]]
-            last_row = ["" for elem in rows[0][1:]]
             for row in rows[1:]:
-                for elem, last_elem, (name, (time_elems, data_elems)) in zip(row[1:], last_row, data):
-                    if elem != last_elem:
+                for elem, (name, (time_elems, data_elems)) in zip(row[1:], data):
+                    if elem != "":
                         elem = self.dispatcher.data_types[name].type(elem)
                         time_elems.append(int(row[0]))
                         data_elems.append(elem)
-                last_row = row[1:]
             self.data = OrderedDict(data)
         elif format == 'log':
             self.reset()
