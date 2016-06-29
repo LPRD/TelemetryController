@@ -309,7 +309,7 @@ class Application(Frame):
     # Send a formatted packet
     def sendValue(self, name, value=""):
         if self.serialManager:
-            self.serialManager.write("@@@@@:" + name + ":" + value + "&&&&&\r\n")
+            self.serialManager.write("@@@@@" + name + ":" + value + "&&&&&\r\n")
             return True
         else:
             showerror("Error", "No serial port selected")
@@ -360,7 +360,7 @@ class Application(Frame):
                 self.serialManager = None
                 self.checkSerial()
 
-    # Write the current run data log to the backup file
+    # Write the current run data log to the backup file once per second while collecting data
     # TODO: use self.after(...)
     last_update_time = ""
     def saveBackup(self, times, values):
