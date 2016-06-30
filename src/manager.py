@@ -6,13 +6,19 @@ import sys
 
 # Representation of a data value category, with various properties
 class DataType:
-    def __init__(self, name, type=float, show=True, export_csv=True, units=None):
+    def __init__(self, name,
+                 type=float,
+                 show=True,
+                 one_line=True,
+                 export_csv=False,
+                 units=None):
         # bool doesn't actually parse the value, just checks whether string is empty
         if type == bool:
             type = lambda x: x == "1" or x == "True"
         self.name = name
         self.type = type
         self.show = show
+        self.one_line = one_line
         self.export_csv = export_csv
         self.units = units
 
@@ -29,7 +35,7 @@ class Dispatcher:
                       DataType('log', str, False, False)) + data_types
 
         self.data_names = [d.name for d in data_types]
-        self.data_types = {d.name: d for d in data_types}
+        self.data_types = OrderedDict((d.name, d) for d in data_types)
         self.data = {name: None for name in self.data_names}
         self.time = {name: None for name in self.data_names}
         self.listeners = {name: [] for name in self.data_names}
@@ -164,24 +170,27 @@ class DataManager:
         self.running = False
         self.update_all_listeners(True)
 
+    def dump_csv(self, data_names):
+        result = "abs time," + ",".join(data_names) + "\n"
+        data = OrderedDict()
+        for name, (times, values) in self.data.items():
+            if name in data_names:
+                for time, value in zip(times, values):
+                    if time not in data:
+                        data[time] = {}
+                    data[time][name] = value
+        for time, updates in data.items():
+            result += (str(time) + "," +
+                       ",".join(str(updates[n]) if n in updates else ""
+                                for n in data_names) + "\n")
+        return result
+
     def dump(self, format):
         if format == 'csv':
             data_names = [name
                           for name in self.dispatcher.data_names
-                          if self.dispatcher.data_types[name].export_csv]
-            result = "abs time," + ",".join(data_names) + "\n"
-            data = OrderedDict()
-            for name, (times, values) in self.data.items():
-                if name in data_names:
-                    for time, value in zip(times, values):
-                        if time not in data:
-                            data[time] = {}
-                        data[time][name] = value
-            for time, updates in data.items():
-                result += (str(time) + "," +
-                           ",".join(str(updates[n]) if n in updates else ""
-                                    for n in data_names) + "\n")
-            return result
+                          if self.dispatcher.data_types[name].one_line]
+            return self.dump_csv(data_names)
         elif format == 'json':
             return json.dumps(list(self.data.items()))
         elif format == 'log':
@@ -200,14 +209,18 @@ class DataManager:
                 self.data = data
         elif format == 'csv':
             rows = [row.split(',') for row in text.split('\n')]
-            data = [(name, ([], [])) for name in rows[0][1:]]
+            for name in rows[0][1:]:
+                if name not in self.dispatcher.data_names:
+                    return False
+            data = OrderedDict([(name, ([], [])) for name in rows[0][1:]])
             for row in rows[1:]:
-                for elem, (name, (time_elems, data_elems)) in zip(row[1:], data):
+                for elem, (name, (time_elems, data_elems)) in zip(row[1:], data.items()):
                     if elem != "":
                         elem = self.dispatcher.data_types[name].type(elem)
                         time_elems.append(int(row[0]))
                         data_elems.append(elem)
-            self.data = OrderedDict(data)
+            self.data = OrderedDict([(name, data[name] if name in data else ([], []))
+                                      for name in self.dispatcher.data_names])
         elif format == 'log':
             self.reset()
             self.start()

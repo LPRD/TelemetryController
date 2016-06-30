@@ -12,6 +12,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.figure import Figure
 from matplotlib.animation import FuncAnimation
 
+from collections import OrderedDict
 import argparse
 import math
 import sys
@@ -115,6 +116,9 @@ class Application(Frame):
 
         self.saveButton = Button(buttons, text="Save as...", command=self.saveFile)
         self.saveButton.pack(side=LEFT)
+
+        self.exportButton = Button(buttons, text="Export csv...", command=self.exportCSV)
+        self.exportButton.pack(side=LEFT)
         
         buttons.pack()
 
@@ -372,10 +376,14 @@ class Application(Frame):
     def openFile(self):
         filename = askopenfilename()
         if filename:
-            extension = filename.split(".")[-1]
+            extension = filename.split(".")[-1] if "." in filename else ""
             if extension not in ["json", "log", "csv"]:
-                showerror("Error", "Invalid file extension \"." + extension + "\"\n" +
-                          "Legal formats are json, log, csv")
+                if extension:
+                    showerror("Error", "Invalid file extension \"" + extension + "\"\n" +
+                              "Legal formats are json, log, csv")
+                else:
+                    showerror("Error", "Missing file extension\n" +
+                              "Legal formats are json, log, csv")
             else:
                 self.reset()
                 if self.manager.load(extension, open(filename).read(), self, self.colorStreams['red']):
@@ -388,11 +396,15 @@ class Application(Frame):
     def saveFile(self):
         filename = asksaveasfilename()
         if filename:
-            extension = filename.split(".")[-1]
+            extension = filename.split(".")[-1] if "." in filename else ""
             if extension not in ["json", "csv", "log", # Data formats
                                  "eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"]: # Image formats
-                showerror("Error", "Invalid file extension \"." + extension + "\"\n"
-                          "Legal formats are json, csv, log, eps, pdf, pgf, png, ps, raw, rgba, svg, svgz")
+                if extension:
+                    showerror("Error", "Invalid file extension \"" + extension + "\"\n"
+                              "Legal formats are json, csv, log, eps, pdf, pgf, png, ps, raw, rgba, svg, svgz")
+                else:
+                    showerror("Error", "Missing file extension\n" +
+                              "Legal formats are json, csv, log, eps, pdf, pgf, png, ps, raw, rgba, svg, svgz")
             else:
                 if extension in ["json", "csv", "log"]:
                     if self.serialManager:
@@ -403,3 +415,40 @@ class Application(Frame):
                 else:
                     self.fig.savefig(filename)
 
+    # Handler to export as a CSV file
+    def exportCSV(self):
+        filename = asksaveasfilename()
+        if filename:
+            if filename.split(".")[-1] != "csv":
+                filename += ".csv"
+            
+            # Create a popup window to ask what items to include
+            exportWindow = Toplevel(self)
+            exportWindow.title("Export fields")
+            names = OrderedDict()
+            i = 0
+            for name in self.dispatcher.data_types.values():
+                if name.one_line:
+                    v = IntVar()
+                    v.set(name.export_csv)
+                    cb = Checkbutton(exportWindow, text=name.name, variable=v)
+                    cb.grid(row=i % 10, column=i // 10, sticky=W)
+                    names[name.name] = v
+                    i += 1
+
+            ok = True
+            def cancel():
+                nonlocal ok
+                ok = False
+                exportWindow.destroy()
+
+            exportButton = Button(exportWindow, text='Export', command=exportWindow.destroy)
+            exportButton.grid(row=11, column=0, sticky=E)
+            cancelButton = Button(exportWindow, text='Cancel', command=cancel)
+            cancelButton.grid(row=11, column=1, sticky=W)
+
+            self.wait_window(exportWindow)
+            
+            if ok:
+                selected_names = [name for name, v in names.items() if v.get()]
+                open(filename, 'w').write(self.manager.dump_csv(selected_names))
