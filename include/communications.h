@@ -3,16 +3,38 @@
 
 // This just works, OK?
 
-#define SEND(field, value) {\
-  Serial.print("@@@@@");    \
-  Serial.print(millis());   \
-  Serial.print(":");        \
-  Serial.print(#field);     \
-  Serial.print(":");        \
-  Serial.print(value);      \
-  Serial.println("&&&&&");  \
-  Serial.flush();           \
+#include <avr/pgmspace.h>
+
+#define BEGIN_SEND {              \
+  Serial.print(F("@@@@@_time:")); \
+  Serial.print(millis());
+  
+#define SEND_ITEM(field, value) \
+  Serial.print(F(";"));         \
+  Serial.print(F(#field));      \
+  Serial.print(F(":"));         \
+  Serial.print(value);
+  
+#define SEND_ITEM_NAME(field, value)\
+  Serial.print(F(";"));         \
+  Serial.print(F(field));       \
+  Serial.print(F(":"));         \
+  Serial.print(value);
+
+#define END_SEND                \
+  Serial.println(F("&&&&&"));   \
+  Serial.flush();               \
 }
+
+#define SEND(field, value)      \
+  BEGIN_SEND                    \
+  SEND_ITEM(field, value)       \
+  END_SEND
+
+#define SEND_NAME(field, value) \
+  BEGIN_SEND                    \
+  SEND_ITEM_NAME(field, value)  \
+  END_SEND
 
 #define READ_BUFFER_SIZE 50
 char _buffer[READ_BUFFER_SIZE];
@@ -22,7 +44,7 @@ char _data[READ_BUFFER_SIZE - 10];
   if (!Serial.available()) {          \
     delay(100);                       \
     if (!Serial.available()) {        \
-      Serial.println("READ timeout"); \
+      Serial.println(F("READ timeout")); \
       goto L_ENDREAD;                 \
     }                                 \
   }                                   \
@@ -34,7 +56,7 @@ char _data[READ_BUFFER_SIZE - 10];
     int _i;                                 \
     for (_i = 0; _c != '\n'; _i++) {        \
       if (_i == READ_BUFFER_SIZE) {         \
-        Serial.println("READ buffer overflow");\
+        Serial.println(F("READ buffer overflow"));\
         while (Serial.available() && Serial.read() != '\n')\
           CHECK_SERIAL_AVAIL                \
         goto L_ENDREAD;                     \
@@ -45,19 +67,22 @@ char _data[READ_BUFFER_SIZE - 10];
       if (_c == '\r') _i--;                 \
     }                                       \
     _buffer[_i] = '\0';                     \
-    if (!sscanf(_buffer, "@@@@@:%[^&]&&&&&\n", _data)) {\
-      Serial.println("READ packet error");  \
+    if (!sscanf(_buffer, "@@@@@%[^&]&&&&&\n", _data)) {\
+      Serial.println(F("READ packet error"));  \
       goto L_ENDREAD;                       \
     }                                       \
     if (0);
+/*
+    char *_item;                            \
+    while ((_item = strsep((char**)&_data, ";")) != NULL) {\*/
 
 #define READ_FIELD(field, spec)   \
-  else if (sscanf(_data, #field":"spec, &field))
+  else if (sscanf(_data, F(#field":"spec), &field))
 
 #define READ_FLAG(field)          \
-  else if (!strcmp(_data, #field":"))
+  else if (!strcmp(_data, F(#field":")))
 
 #define READ_DEFAULT(field_name, field) \
-  else if (sscanf(_data, "%[^:]:%s", &field_name, &field))
+  else if (sscanf(_data, F("%[^:]:%s"), &field_name, &field))
 
 #define END_READ } L_ENDREAD:;
