@@ -10,7 +10,7 @@ PYINSTALLER_FLAGS=-F --windowed --specpath build
 
 MAX_SIZE=100000
 
-TARGETS=flight_test_gui static_test_gui
+TARGETS=flight_gui static_test_gui
 BIN_TARGETS=$(addprefix dist/, $(TARGETS))
 EXE_TARGETS=$(addsuffix .exe, $(BIN_TARGETS))
 
