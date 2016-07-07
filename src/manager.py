@@ -12,11 +12,13 @@ class DataType:
                  one_line=True,
                  export_csv=False,
                  units=None):
-        # bool doesn't actually parse the value, just checks whether string is empty
-        if type == bool:
-            type = lambda x: x == "1" or x == "True"
         self.name = name
         self.type = type
+        # bool doesn't actually parse the value, just checks whether string is empty
+        if type == bool:
+            self.parse = lambda x: x == "1" or x == "True"
+        else:
+            self.parse = type
         self.show = show
         self.one_line = one_line
         self.export_csv = export_csv
@@ -92,7 +94,7 @@ class Dispatcher:
                 else:
                     time -= self.start_time
             try:
-                self.data[name] = self.data_types[name].type(value)
+                self.data[name] = self.data_types[name].parse(value)
                 self.time[name] = time
             except ValueError:
                 print("Invalid value for", name, "recieved:", value, file=errout)
@@ -216,7 +218,7 @@ class DataManager:
             for row in rows[1:]:
                 for elem, (name, (time_elems, data_elems)) in zip(row[1:], data.items()):
                     if elem != "":
-                        elem = self.dispatcher.data_types[name].type(elem)
+                        elem = self.dispatcher.data_types[name].parse(elem)
                         time_elems.append(int(row[0]))
                         data_elems.append(elem)
             self.data = OrderedDict([(name, data[name] if name in data else ([], []))

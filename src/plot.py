@@ -1,10 +1,10 @@
 
-
 # Representation of a group of plotted data values
 class Plot:
-    def __init__(self, x, ys, name=None, style=None):
+    def __init__(self, x, ys, name=None, ys_names=None, style=None):
         self.x = x
         self.ys = [ys] if type(ys) == str else ys
+        self.ys_names = ys_names if ys_names else None
         if len(self.ys) == 1 and name == None:
             name = self.ys[0]
         self.name = name
@@ -23,15 +23,21 @@ class Plot:
         else:
             self.subplot.set_xlabel(self.x + (" (" + data_types[self.x].units + ")" if data_types[self.x].units else ""))
 
+        # Check plot datatypes are in manager datatypes
+        for y in self.ys:
+            if y not in data_types:
+                raise AssertionError(y + " not in datatypes: " + str(data_types))
+
         ys_units = [data_types[y].units for y in self.ys]
         assert len(set(ys_units)) <= 1 # All units must be the same, if included
         if ys_units[0]:
             self.subplot.set_ylabel(ys_units[0])
-        for y in self.ys:
+        for i, y in enumerate(self.ys):
+            y_name = self.ys_names[i] if self.ys_names and self.ys_names[i] else data_types[y].full_name
             if self.style:
-                self.lines[y], = self.subplot.plot([], [], self.style, label=data_types[y].full_name)
+                self.lines[y], = self.subplot.plot([], [], self.style, label=y_name)
             else:
-                self.lines[y], = self.subplot.plot([], [], label=data_types[y].full_name)
+                self.lines[y], = self.subplot.plot([], [], label=y_name)
         if len(self.ys) > 1:
            self.subplot.legend(loc='lower right')
 
