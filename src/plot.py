@@ -7,23 +7,23 @@ class Plot:
 
         # Find a common suffix, if any, of the ys names
         suffix = ""
-        for cs in reversed(list(zip(*ys))):
+        for cs in zip(*map(reversed, self.ys)):
             # All chars are the same
             if cs[1:] == cs[:-1]:
                 suffix = cs[0] + suffix
             else:
                 break
         suffix = suffix.replace("_", " ")
-        if suffix[0] != " ":
-            suffix = None
+        if " " in suffix:
+            suffix = suffix[suffix.index(" "):]
         
         if ys_names:
             self.ys_names = ys_names
         elif suffix:
             # If the suffix exists, remove it from all ys names
-            self.ys_names = [y[:len(y) - len(suffix)].replace("_", " ") for y in ys]
+            self.ys_names = [y[:len(y) - len(suffix)].replace("_", " ") for y in self.ys]
         else:
-            self.ys_names = [y.replace("_", " ") for y in ys]
+            self.ys_names = [y.replace("_", " ") for y in self.ys]
 
         if name != None:
             self.name = name
