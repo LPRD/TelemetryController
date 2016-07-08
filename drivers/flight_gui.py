@@ -14,7 +14,7 @@ def vector_DataType(name, *args, **kwd_args):
 def vector_Plot(x, y, name=None, *args, **kwd_args):
     if name == None:
         name = y.replace("_", " ")
-    return plot.Plot(x, [d + "_" + y for d in ['x', 'y', 'z']], name, ['x', 'y', 'z'], *args, **kwd_args)
+    return plot.Plot(x, [d + "_" + y for d in ['x', 'y', 'z']], *args, **kwd_args)
 
 dts = ([manager.DataType('temperature', float, units='deg C'),
         manager.DataType('missed_deadlines', int)] +
