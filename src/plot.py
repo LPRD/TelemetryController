@@ -4,10 +4,35 @@ class Plot:
     def __init__(self, x, ys, name=None, ys_names=None, style=None):
         self.x = x
         self.ys = [ys] if type(ys) == str else ys
-        self.ys_names = ys_names if ys_names else None
-        if len(self.ys) == 1 and name == None:
-            name = self.ys[0]
-        self.name = name
+
+        # Find a common suffix, if any, of the ys names
+        suffix = ""
+        for cs in reversed(list(zip(*ys))):
+            # All chars are the same
+            if cs[1:] == cs[:-1]:
+                suffix = cs[0] + suffix
+            else:
+                break
+        suffix = suffix.replace("_", " ")
+        if suffix[0] != " ":
+            suffix = None
+        
+        if ys_names:
+            self.ys_names = ys_names
+        elif suffix:
+            # If the suffix exists, remove it from all ys names
+            self.ys_names = [y[:len(y) - len(suffix)].replace("_", " ") for y in ys]
+        else:
+            self.ys_names = [y.replace("_", " ") for y in ys]
+
+        if name != None:
+            self.name = name
+        elif len(self.ys) == 1:
+            self.name = self.ys[0]
+        elif suffix:
+            self.name = suffix[1:]
+        else:
+            self.name = None
         self.style = style
 
         self.update = {y: ([], []) for y in self.ys}
@@ -33,7 +58,7 @@ class Plot:
         if ys_units[0]:
             self.subplot.set_ylabel(ys_units[0])
         for i, y in enumerate(self.ys):
-            y_name = self.ys_names[i] if self.ys_names and self.ys_names[i] else data_types[y].full_name
+            y_name = self.ys_names[i] if self.ys_names[i] else data_types[y].full_name
             if self.style:
                 self.lines[y], = self.subplot.plot([], [], self.style, label=y_name)
             else:
