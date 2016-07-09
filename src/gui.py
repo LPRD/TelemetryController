@@ -202,14 +202,12 @@ class Application(Frame):
         self.namesList = Listbox(valuesTable, width=15, height=len(shown_data_types) + 1, yscrollcommand=valuesScrollbar.set)
         self.valuesList = Listbox(valuesTable, width=35, height=len(shown_data_types) + 1, yscrollcommand=valuesScrollbar.set)
         self.namesList.insert(0, "abs time (ms)")
-        self.valuesList.insert(0, "")
         def fn(xdata, ydata):
             self.valuesList.delete(0)
             self.valuesList.insert(0, str(xdata) if xdata else "")
         self.dispatcher.add_listener('sys time', fn, 100)
         for i, ty in enumerate(shown_data_types):
             self.namesList.insert(i + 1, ty.full_name)
-            self.valuesList.insert(i + 1, str(i + 1))
             def fn(xdata, ydata, i = i):
                 self.valuesList.delete(i + 1)
                 self.valuesList.insert(i + 1, str(ydata))
