@@ -32,7 +32,7 @@ manager = manager.DataManager(dispatcher)
 root = Tk()
 app = gui.Application(dispatcher, manager, plots, master=root,
                       serial_console_height=10,
-                      default_baud=38400)
+                      default_baud=57600)
 
 if __name__ == '__main__':
     app.mainloop()
