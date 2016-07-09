@@ -72,5 +72,9 @@ This should print the python version and start the python REPL.
 The exit code should be 0.  
 
 ## TODO items
+### Enhancments
+* Change default icon
+
 ### Known issues
 * Serial ports under WINE act like Linux serial ports, preventing testing
+* Fix weird start up behaviour of value readout

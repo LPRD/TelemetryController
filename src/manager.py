@@ -84,7 +84,7 @@ class Dispatcher:
         
     def accept(self, name, time, value, errout=sys.stderr):
         if name not in self.data_types:
-            print("Received unrecognized data type", name)
+            print("Received unrecognized data type", name, file=errout)
             return False
         else:
             if time != None:
