@@ -14,9 +14,9 @@ import time
 dts = [manager.DataType('force', float, units="Newtons", export_csv=True),
        manager.DataType('inlet_temperature', float, units="deg C", export_csv=False),
        manager.DataType('outlet_temperature', float, units="deg C", export_csv=False),
-       manager.DataType('x', float, units="Gs", export_csv=True),
-       manager.DataType('y', float, units="Gs", export_csv=True),
-       manager.DataType('z', float, units="Gs", export_csv=True),
+       manager.DataType('x_acceleration', float, units="Gs", export_csv=True),
+       manager.DataType('y_acceleration', float, units="Gs", export_csv=True),
+       manager.DataType('z_acceleration', float, units="Gs", export_csv=True),
        manager.DataType('run_time', int, units="ms", show=False),
        manager.DataType('status', str, show=False),
        manager.DataType('fuel_control', int, show=False),
@@ -25,7 +25,7 @@ dts = [manager.DataType('force', float, units="Newtons", export_csv=True),
        manager.DataType('oxy_safety', bool, show=False)]
 plots = [plot.Plot('time', 'force'),
          plot.Plot('time', ['inlet_temperature', 'outlet_temperature'], "coolant temperature"),
-         plot.Plot('time', ['x', 'y', 'z'], "acceleration")]
+         plot.Plot('time', ['x_acceleration', 'y_acceleration', 'z_acceleration'])]
 dispatcher = manager.Dispatcher(*dts)
 manager = manager.DataManager(dispatcher)
 root = Tk()
