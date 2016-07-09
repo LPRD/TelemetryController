@@ -60,6 +60,7 @@ class Application(Frame):
         # Init gui
         Frame.__init__(self, master)
         self.pack()
+        #master.iconbitmap('telemetry.png')
         master.attributes("-fullscreen", self.flags['full_screen'])
         master.bind('<Escape>', self.unmaximize)
         master.wm_title("Telemetry monitor")
@@ -197,8 +198,9 @@ class Application(Frame):
         shown_data_types = [self.dispatcher.data_types[name]
                             for name in self.dispatcher.data_names
                             if self.dispatcher.data_types[name].show]
-        self.namesList = Listbox(valuesTable, width=15, height=len(shown_data_types) + 1)
-        self.valuesList = Listbox(valuesTable, width=35, height=len(shown_data_types) + 1)
+        valuesScrollbar = Scrollbar(valuesTable, orient=VERTICAL)
+        self.namesList = Listbox(valuesTable, width=15, height=len(shown_data_types) + 1, yscrollcommand=valuesScrollbar.set)
+        self.valuesList = Listbox(valuesTable, width=35, height=len(shown_data_types) + 1, yscrollcommand=valuesScrollbar.set)
         self.namesList.insert(0, "abs time (ms)")
         self.valuesList.insert(0, "")
         def fn(xdata, ydata):
@@ -207,14 +209,20 @@ class Application(Frame):
         self.dispatcher.add_listener('sys time', fn, 100)
         for i, ty in enumerate(shown_data_types):
             self.namesList.insert(i + 1, ty.full_name)
-            self.valuesList.insert(i + 1, "")
+            self.valuesList.insert(i + 1, str(i + 1))
             def fn(xdata, ydata, i = i):
                 self.valuesList.delete(i + 1)
                 self.valuesList.insert(i + 1, str(ydata))
             self.dispatcher.add_listener(ty.name, fn, 100)
 
-        self.namesList.pack(side=LEFT)
-        self.valuesList.pack()
+        def yview(*args):
+            self.namesList.yview(*args)
+            self.valuesList.yview(*args)
+        valuesScrollbar.config(command=yview)
+        valuesScrollbar.pack(side=RIGHT, fill=Y)
+
+        self.namesList.pack(side=LEFT, fill=BOTH, expand=1)
+        self.valuesList.pack(side=LEFT, fill=BOTH, expand=1)
 
         if self.flags['show_current_values']:
             valuesTable.pack()
