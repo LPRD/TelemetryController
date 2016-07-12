@@ -94,7 +94,6 @@ class Application(Frame):
                 self.reset()
                 try:
                     if self.manager.load(extension, open(args.filename).read(), self, self.colorStreams['red']):
-                        self.valuesList.delete(0, END)
                         self.controlButton.config(text="Reset", bg="grey", command=self.reset)
                     else:
                         parser.error("Invalid data file")
@@ -274,11 +273,9 @@ class Application(Frame):
     # Start a run
     def start(self):
         if self.serialManager:
+            self.resetValuesList()
             self.manager.start()
             self.controlButton.config(text="Stop", bg="red", command=self.stop)
-
-            for i in range(len(self.dispatcher.data_names)):
-                self.valuesList.insert(i, "")
             return True
         else:
             showerror("Error", "No serial port selected")
@@ -291,6 +288,7 @@ class Application(Frame):
     
     # Reset for the next run
     def reset(self):
+        self.resetValuesList()
         self.manager.reset()
         self.controlButton.config(text="Start", bg="lime green", command=self.start)
         
@@ -329,6 +327,16 @@ class Application(Frame):
     def unmaximize(self, _):
         self.master.attributes("-fullscreen", False)
 
+    # Clear the values list after a reset or changing ports
+    def resetValuesList(self):
+        shown_data_types = [self.dispatcher.data_types[name]
+                            for name in self.dispatcher.data_names
+                            if self.dispatcher.data_types[name].show]
+        self.valuesList.delete(0, END)
+        for i in range(len(shown_data_types) + 1):
+            self.valuesList.insert(i, "")
+        
+
     # Handler for changing the serial port
     def changeSerial(self, *args):
         # Try-catch needed b/c error messages in tracebacks on Windows are buggy
@@ -337,7 +345,6 @@ class Application(Frame):
             self.serialOut.config(state=NORMAL)
             self.serialOut.delete(1.0, 'end')
             self.serialOut.config(state=DISABLED)
-            self.valuesList.delete(0, END)
             self.reset()
             self.serialManager = serialmanager.SerialManager(self.dispatcher, self.serialPort.get(), int(self.baud.get()))
             self.startSerial()
@@ -393,7 +400,6 @@ class Application(Frame):
             else:
                 self.reset()
                 if self.manager.load(extension, open(filename).read(), self, self.colorStreams['red']):
-                    self.valuesList.delete(0, END)
                     self.controlButton.config(text="Reset", bg="grey", command=self.reset)
                 else:
                     showerror("Error", "Invalid data file")
