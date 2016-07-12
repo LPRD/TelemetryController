@@ -74,7 +74,12 @@ The exit code should be 0.
 ## TODO items
 ### Enhancments
 * Change default icon
+* Better control over plot sizes and placements
+* Create new folder from save dialogue
+* Hide value readout scrollbar when unneeded
 
 ### Known issues
+* Slowdown when plotting has been running for a while
+* Large numbers of invalid packets until restart after certain disruptions (reproduce?)
 * Serial ports under WINE act like Linux serial ports, preventing testing
-* Fix weird start up behaviour of value readout
+* Fix glitchy scrollbar on value readout
