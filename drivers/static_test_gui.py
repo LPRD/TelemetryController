@@ -23,7 +23,7 @@ dts = [manager.DataType('force', float, units="Newtons", export_csv=True),
        manager.DataType('oxy_control', int, show=False),
        manager.DataType('fuel_safety', bool, show=False),
        manager.DataType('oxy_safety', bool, show=False)]
-plots = [plot.Plot('time', 'force'),
+plots = [plot.Plot('time', 'force', width=2),
          plot.Plot('time', ['inlet_temperature', 'outlet_temperature'], "coolant temperature"),
          plot.Plot('time', ['x_acceleration', 'y_acceleration', 'z_acceleration'])]
 dispatcher = manager.Dispatcher(*dts)

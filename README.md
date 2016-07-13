@@ -74,7 +74,7 @@ The exit code should be 0.
 ## TODO items
 ### Enhancments
 * Change default icon
-* Better control over plot sizes and placements
+* Access to advanced plot features (axis sharing in plots?)
 * Create new folder from save dialogue
 * Hide value readout scrollbar when unneeded
 

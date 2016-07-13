@@ -1,7 +1,12 @@
+import math
+import sys
+from itertools import *
+
+from matplotlib.gridspec import GridSpec
 
 # Representation of a group of plotted data values
 class Plot:
-    def __init__(self, x, ys, name=None, ys_names=None, style=None):
+    def __init__(self, x, ys, name=None, ys_names=None, width=1, height=1, style=None):
         self.x = x
         self.ys = [ys] if type(ys) == str else ys
 
@@ -33,14 +38,17 @@ class Plot:
             self.name = suffix[1:]
         else:
             self.name = None
+
+        self.width = width
+        self.height = height
         self.style = style
 
         self.update = {y: ([], []) for y in self.ys}
         self.lines = {y: None for y in self.ys}
 
-    def create(self, manager, fig, width, height, i):
+    def create(self, manager, fig, gs):
         data_types = manager.dispatcher.data_types
-        self.subplot = fig.add_subplot(width, height, i + 1)
+        self.subplot = fig.add_subplot(gs)
         if self.name:
             self.subplot.set_title(self.name)
         if self.x == 'time':
@@ -124,3 +132,45 @@ class Plot:
         if updated:
             self.subplot.relim()
             self.subplot.autoscale_view(None, True, True)
+
+# Generate a layout for the given plots
+def gen_layout(plots):
+    # Minimum possible size based on number of plots
+    for width in count(int(math.ceil(math.sqrt(len(plots))))):
+        for height in [width - 1, width]:
+            # Table of open grid locations
+            available = {(i, j): True
+                         for i in range(width)
+                         for j in range(height)}
+            
+            # List of info for each plot
+            layout = []
+
+            # Attempt to place each plot
+            for plot in plots:
+                # Attempt to find a location for the plot, breaking when successful
+                for y, x in product(range(0, height - plot.height + 1), range(0, width - plot.width + 1)):
+                    if all(available[i, j]
+                           for i in range(x, x + plot.width)
+                           for j in range(y, y + plot.height)):
+                        break
+                # No valid location, try the next grid size
+                else:
+                    break
+                layout.append((x, x + plot.width, y, y + plot.height))
+                for i in range(x, x + plot.width):
+                    for j in range(y, y + plot.height):
+                        available[i, j] = False
+            # All plots were placed successfully (loop did not break)
+            else:
+                return width, height, layout
+
+def setup(plots, fig, manager):
+    width, height, layout = gen_layout(plots)
+    gridspec = GridSpec(height, width)
+
+    for plot, (x1, x2, y1, y2) in zip(plots, layout):
+        plot.create(manager, fig, gridspec[y1:y2, x1:x2])
+
+    if plots:
+        fig.tight_layout(pad=2)

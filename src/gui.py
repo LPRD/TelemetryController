@@ -230,13 +230,8 @@ class Application(Frame):
     def setupPlots(self):
         self.fig = matplotlib.figure.Figure(figsize=(10,10),dpi=100)
         self.canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.fig, master=self)
-        width = int(math.ceil(math.sqrt(len(self.plots))))
-        height = width - 1 if width * (width - 1) >= len(self.plots) else width
-        for i, plot in enumerate(self.plots):
-            plot.create(self.manager, self.fig, width, height, i)
         
-        if self.plots:
-            self.fig.tight_layout(pad=2)
+        plot.setup(self.plots, self.fig, self.manager)
 
         def animate(i):
             for plot in self.plots:
@@ -257,7 +252,7 @@ class Application(Frame):
                                  icon='warning')
             if result == 'yes':
                 sys.exit(0)
-        else:  
+        else:
             sys.exit(0)
 
     # Write text to the serial console
