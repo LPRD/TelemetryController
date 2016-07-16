@@ -21,7 +21,7 @@ dts = ([manager.DataType('temperature', float, units='deg C'),
        vector_DataType('magnetometer', float) + # TODO: units
        vector_DataType('gyro', float) + # TODO: units
        vector_DataType('euler_angle', float, units='degrees') +
-       vector_DataType('acceleration', float, units='Gs'))
+       vector_DataType('acceleration', float, units='m/sec^2'))
 plots = [#plot.Plot('time', 'temperature'),
          vector_Plot('time', 'magnetometer'),
          vector_Plot('time', 'gyro'),
@@ -32,7 +32,7 @@ manager = manager.DataManager(dispatcher)
 root = Tk()
 app = gui.Application(dispatcher, manager, plots, master=root,
                       serial_console_height=10,
-                      default_baud=57600)
+                      default_baud=38400)
 
 if __name__ == '__main__':
     app.mainloop()
