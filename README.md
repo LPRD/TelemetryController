@@ -77,9 +77,11 @@ The exit code should be 0.
 * Access to advanced plot features (axis sharing in plots?)
 * Create new folder from save dialogue
 * Hide value readout scrollbar when unneeded
+* Check if saved before exiting
 
 ### Known issues
 * Slowdown when plotting has been running for a while
 * Large numbers of invalid packets until restart after certain disruptions (reproduce?)
 * Serial ports under WINE act like Linux serial ports, preventing testing
 * Fix glitchy scrollbar on value readout
+* Fix CSV export tool
