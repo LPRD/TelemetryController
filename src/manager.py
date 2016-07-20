@@ -174,14 +174,14 @@ class DataManager:
 
     def dump_csv(self, data_names):
         result = "abs time," + ",".join(data_names) + "\n"
-        data = OrderedDict()
+        data = {}
         for name, (times, values) in self.data.items():
             if name in data_names:
                 for time, value in zip(times, values):
                     if time not in data:
                         data[time] = {}
                     data[time][name] = value
-        for time, updates in data.items():
+        for time, updates in sorted(data.items()):
             result += (str(time) + "," +
                        ",".join(str(updates[n]) if n in updates else ""
                                 for n in data_names) + "\n")
