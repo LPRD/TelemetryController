@@ -11,13 +11,13 @@ import gui
 import plot
 import time
 
-dts = [manager.DataType('force', float, units="Newtons", export_csv=True),
-       manager.DataType('inlet_temperature', float, units="deg C", export_csv=False),
-       manager.DataType('outlet_temperature', float, units="deg C", export_csv=False),
+dts = [manager.DataType('run_time', int, units="ms", show=False, export_csv=False),
+       manager.DataType('force', float, units="Newtons", export_csv=True),
+       manager.DataType('inlet_temperature', float, units="deg C", export_csv=True),
+       manager.DataType('outlet_temperature', float, units="deg C", export_csv=True),
        manager.DataType('x_acceleration', float, units="Gs", export_csv=True),
        manager.DataType('y_acceleration', float, units="Gs", export_csv=True),
        manager.DataType('z_acceleration', float, units="Gs", export_csv=True),
-       manager.DataType('run_time', int, units="ms", show=False),
        manager.DataType('status', str, show=False),
        manager.DataType('fuel_control', int, show=False),
        manager.DataType('oxy_control', int, show=False),
