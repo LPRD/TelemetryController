@@ -427,20 +427,21 @@ class Application(Frame):
         filename = asksaveasfilename()
         if filename:
             if filename.split(".")[-1] != "csv":
-                filename += ".csv"
+                showerror("Error", "Invalid file extension\n" +
+                          "Filename must end in .csv")
             
             # Create a popup window to ask what items to include
             exportWindow = Toplevel(self)
             exportWindow.title("Export fields")
             names = OrderedDict()
             i = 0
-            for name in self.dispatcher.data_types.values():
-                if name.one_line:
-                    v = IntVar()
-                    v.set(name.export_csv)
-                    cb = Checkbutton(exportWindow, text=name.name, variable=v)
+            for data in self.dispatcher.data_types.values():
+                if data.one_line:
+                    var = IntVar()
+                    var.set(data.export_csv)
+                    cb = Checkbutton(exportWindow, text=data.name, variable=var)
                     cb.grid(row=i % 10, column=i // 10, sticky=W)
-                    names[name.name] = v
+                    names[data.name] = var
                     i += 1
 
             ok = True
@@ -457,5 +458,7 @@ class Application(Frame):
             self.wait_window(exportWindow)
             
             if ok:
-                selected_names = [name for name, v in names.items() if v.get()]
-                open(filename, 'w').write(self.manager.dump_csv(selected_names))
+                selected_data = [name for name, var in names.items() if var.get()]
+                for data, (name, var) in zip(self.dispatcher.data_types.values(), names.items()):
+                    data.export_csv = bool(var.get())
+                open(filename, 'w').write(self.manager.dump_csv(selected_data))
