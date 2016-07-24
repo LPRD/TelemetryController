@@ -198,7 +198,7 @@ class DataManager:
         elif format == 'log':
             return "".join(self.request('log')[1])
         else:
-            sys.exit("Unsupported format" + format)
+            sys.exit("Unsupported format " + format)
 
     # txtout is stream to write non-packet text when loading a log
     def load(self, format, text, txtout=sys.stdout, errout=sys.stderr):

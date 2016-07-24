@@ -86,7 +86,7 @@ class Application(Frame):
 
         # Open a file if requested from command line
         if args.filename:
-            extension = args.filename.split(".")[-1]
+            extension = args.filename.split(".")[-1].lower()
             if extension not in ["json", "log", "csv"]:
                 parser.error("Invalid file extension \"." + extension + "\"\n" +
                              "Legal formats are json, log, csv")
@@ -384,7 +384,7 @@ class Application(Frame):
     def openFile(self):
         filename = askopenfilename()
         if filename:
-            extension = filename.split(".")[-1] if "." in filename else ""
+            extension = filename.split(".")[-1].lower() if "." in filename else ""
             if extension not in ["json", "log", "csv"]:
                 if extension:
                     showerror("Error", "Invalid file extension \"" + extension + "\"\n" +
@@ -404,7 +404,7 @@ class Application(Frame):
         filename = asksaveasfilename()
         if filename:
             extension = filename.split(".")[-1] if "." in filename else ""
-            if extension not in ["json", "csv", "log", # Data formats
+            if extension not in ["json", "log", "csv", # Data formats
                                  "eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"]: # Image formats
                 if extension:
                     showerror("Error", "Invalid file extension \"" + extension + "\"\n"
@@ -413,7 +413,7 @@ class Application(Frame):
                     showerror("Error", "Missing file extension\n" +
                               "Legal formats are json, csv, log, eps, pdf, pgf, png, ps, raw, rgba, svg, svgz")
             else:
-                if extension in ["json", "csv", "log"]:
+                if extension in ["json", "log", "csv"]:
                     if self.serialManager:
                         self.serialManager.paused = True
                     open(filename, 'w').write(self.manager.dump(extension))

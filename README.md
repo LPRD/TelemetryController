@@ -77,7 +77,8 @@ The exit code should be 0.
 * Access to advanced plot features (axis sharing in plots?)
 * Create new folder from save dialogue
 * Hide value readout scrollbar when unneeded
-* Check if saved before exiting
+* Check if saved before exiting?
+* Better error messages for CSV parse failure
 
 ### Known issues
 * Slowdown when plotting has been running for a while
