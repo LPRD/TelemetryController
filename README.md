@@ -75,7 +75,6 @@ The exit code should be 0.
 ### Enhancments
 * Change default icon
 * Access to advanced plot features (axis sharing in plots?)
-* Create new folder from save dialogue
 * Hide value readout scrollbar when unneeded
 * Check if saved before exiting?
 * Better error messages for CSV parse failure
@@ -85,3 +84,7 @@ The exit code should be 0.
 * Large numbers of invalid packets until restart after certain disruptions (reproduce?)
 * Serial ports under WINE act like Linux serial ports, preventing testing
 * Fix glitchy scrollbar on value readout
+
+### Fix later
+* Create new folder from save dialogue
+  * Not easily possible with tk file dialogs
