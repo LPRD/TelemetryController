@@ -23,9 +23,9 @@ dts = [manager.DataType('run_time', int, units="ms", show=False, export_csv=Fals
        manager.DataType('oxy_control', int, show=False),
        manager.DataType('fuel_safety', bool, show=False),
        manager.DataType('oxy_safety', bool, show=False)]
-plots = [plot.Plot('time', 'force', width=2),
-         plot.Plot('time', ['inlet_temperature', 'outlet_temperature'], "coolant temperature"),
-         plot.Plot('time', ['x_acceleration', 'y_acceleration', 'z_acceleration'])]
+plots = [plot.Plot('time', 'force', width=3, show_x_label=False),
+         plot.Plot('time', ['inlet_temperature', 'outlet_temperature'], "coolant temperature", width=3, show_x_label=False),
+         plot.Plot('time', ['x_acceleration', 'y_acceleration', 'z_acceleration'], width=3)]
 dispatcher = manager.Dispatcher(*dts)
 manager = manager.DataManager(dispatcher)
 root = Tk()

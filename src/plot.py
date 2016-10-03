@@ -6,7 +6,7 @@ from matplotlib.gridspec import GridSpec
 
 # Representation of a group of plotted data values
 class Plot:
-    def __init__(self, x, ys, name=None, ys_names=None, width=1, height=1, style=None):
+    def __init__(self, x, ys, name=None, ys_names=None, width=1, height=1, style=None, legend='best', show_x_label=True):
         self.x = x
         self.ys = [ys] if type(ys) == str else ys
 
@@ -42,6 +42,8 @@ class Plot:
         self.width = width
         self.height = height
         self.style = style
+        self.legend = legend
+        self.show_x_label = show_x_label
 
         self.update = {y: ([], []) for y in self.ys}
         self.lines = {y: None for y in self.ys}
@@ -51,10 +53,11 @@ class Plot:
         self.subplot = fig.add_subplot(gs)
         if self.name:
             self.subplot.set_title(self.name)
-        if self.x == 'time':
-            self.subplot.set_xlabel("time (sec)")
-        else:
-            self.subplot.set_xlabel(self.x + (" (" + data_types[self.x].units + ")" if data_types[self.x].units else ""))
+        if self.show_x_label:
+            if self.x == 'time':
+                self.subplot.set_xlabel("time (sec)")
+            else:
+                self.subplot.set_xlabel(self.x + (" (" + data_types[self.x].units + ")" if data_types[self.x].units else ""))
 
         # Check plot datatypes are in manager datatypes
         for y in self.ys:
@@ -71,8 +74,8 @@ class Plot:
                 self.lines[y], = self.subplot.plot([], [], self.style, label=y_name)
             else:
                 self.lines[y], = self.subplot.plot([], [], label=y_name)
-        if len(self.ys) > 1:
-           self.subplot.legend(loc='lower right')
+        if len(self.ys) > 1 and self.legend:
+           self.subplot.legend(loc=self.legend)
 
         # Set up listeners
         max_points = 1000
