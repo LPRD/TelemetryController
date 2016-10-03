@@ -80,6 +80,7 @@ The exit code should be 0.
 * Better error messages for CSV parse failure
 
 ### Known issues
+* Fix CSV exporter dialog behavior on failure to select a file name
 * Slowdown when plotting has been running for a while
 * Large numbers of invalid packets until restart after certain disruptions (reproduce?)
 * Serial ports under WINE act like Linux serial ports, preventing testing
