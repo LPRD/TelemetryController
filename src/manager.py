@@ -28,14 +28,22 @@ class DataType:
         if self.units:
             self.full_name += " (" + self.units + ")"
 
+# Representation of a serial packet that contains multiple data types
+class PacketSpec:
+    def __init__(self, name, *data_types):
+        self.name = name
+        self.data_types = data_types
+
 # Manages parsing incoming serial packets, recieving data in given data types, and passes it to
 # listeners.  Also tracks system date and time.  
 class Dispatcher:
-    def __init__(self, *data_types):
-        data_types = (DataType('sys date', str, False),
-                      DataType('sys time', str, False),
-                      DataType('log', str, False, False)) + data_types
+    def __init__(self, *specs):
+        specs += (DataType('sys date', str, False),
+                  DataType('sys time', str, False),
+                  DataType('log', str, False, False))
+        data_types = tuple(s for s in specs if isinstance(s, DataType))
 
+        self.packet_specs = OrderedDict((s.name, s) for s in specs)
         self.data_names = [d.name for d in data_types]
         self.data_types = OrderedDict((d.name, d) for d in data_types)
         self.data = {name: None for name in self.data_names}
@@ -54,58 +62,89 @@ class Dispatcher:
         self.listeners[name].append([delay, 0, fn])
 
     def acceptText(self, text, txtout=sys.stdout, errout=sys.stderr):
+        # Split the unparsed text from previously with the new text into lines
         lines = (self.current_line + text).split("\n")
+
+        # Parse each line as a packet or text output
         abs_time = None
         for line in lines[:-1]:
             line = line.strip("\r")
+
+            # If line is a packet, parse it as such
             if line.startswith("@@@@@") and line.endswith("&&&&&"):
                 try:
-                    data = OrderedDict([entry.split(':') for entry in line[5:][:-5].split(';')])
-                    if '_time' in data and data['_time'] != "":
-                        abs_time = int(data['_time'])
+                    entries = (entry.split(':') for entry in line[5:][:-5].split(';'))
+                    data = OrderedDict(((entry[0], entry[1].split(',')) for entry in entries))
+                    if '_time' in data and data['_time'][0] != "":
+                        abs_time = int(data['_time'][0])
                     else:
                         abs_time = None
                     for name, value in data.items():
                         if name != '_time':
                             self.accept(name, abs_time, value, errout)
-                    self.accept("sys date", abs_time, time.strftime("%d/%m/%Y"))
-                    self.accept("sys time", abs_time, time.strftime("%H:%M:%S"))
-                except ValueError:
+                    self.accept('sys date', abs_time, [time.strftime("%d/%m/%Y")])
+                    self.accept('sys time', abs_time, [time.strftime("%H:%M:%S")])
+                except (ValueError, IndexError):
                     print("Invalid packet", line, file=errout)
+                    
+            # Otherwise print the line
             else:
                 print(line, file=txtout)
+        
+        # Print the last line if it isn't the start of an incomplete packet
         if lines[-1].startswith("@"):
             self.current_line = lines[-1]
         else:
             print(lines[-1], end='', file=txtout)
             self.current_line = ""
-        # Always update log, even if parse failed
-        self.accept('log', abs_time, text, errout)
         
-    def accept(self, name, time, value, errout=sys.stderr):
-        if name not in self.data_types:
+        # Always update log, even if parse failed
+        self.accept('log', abs_time, [text], errout)
+        
+    def accept(self, name, time, data, errout=sys.stderr):
+        # Check that name is a valid packet format
+        if name not in self.packet_specs:
             print("Received unrecognized data type", name, file=errout)
             return False
-        else:
-            if time != None:
-                if self.start_time == None:
-                    self.start_time = time
-                    time = 0
-                else:
-                    time -= self.start_time
-            try:
-                self.data[name] = self.data_types[name].parse(value)
-                self.time[name] = time
-            except ValueError:
-                print("Invalid value for", name, "recieved:", value, file=errout)
 
-            for l in self.listeners[name]:
-                delay, last, listener = l
-                if time == None or time - last > delay or time < last:
-                    listener(*self.request(name))
-                    if time != None:
-                        l[1] = time
-            return True
+        # If a time was recieved, update it and the start time if needed
+        if time != None:
+            if self.start_time == None:
+                self.start_time = time
+                time = 0
+            else:
+                time -= self.start_time
+
+        # Figure out if the spec is a data type or a compund packet spec
+        # and generate the list of data types
+        spec = self.packet_specs[name]
+        if isinstance(spec, DataType):
+            data_types = [spec]
+        elif isinstance(spec, PacketSpec):
+            data_types = spec.data_types
+        else:
+            raise ValueError("Invalid data spec class")
+
+        if len(data_types) != len(data):
+            print("Received invalid number of packet elements for", name, file=errout)
+
+        for data_type, value in zip(data_types, data):
+            # Parse each data type and update the stored data
+            self.time[data_type.name] = time
+            try:
+                self.data[data_type.name] = data_type.parse(value)
+            except ValueError:
+                print("Invalid value for", data_type.name, "recieved:", value, file=errout)
+            else:
+                # If successful, update the listeners
+                for l in self.listeners[data_type.name]:
+                    delay, last, listener = l
+                    if time == None or time - last >= delay or time < last:
+                        listener(*self.request(data_type.name))
+                        if time != None:
+                            l[1] = time
+
+        return True
 
     def request(self, name):
         return self.time[name], self.data[name]

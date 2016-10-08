@@ -10,7 +10,9 @@ import gui
 import plot
 
 def vector_DataType(name, *args, **kwd_args):
-    return [manager.DataType(d + "_" + name, *args, **kwd_args) for d in ['x', 'y', 'z']]
+    data_types = [manager.DataType(d + "_" + name, *args, **kwd_args) for d in ['x', 'y', 'z']]
+    data_types.append(manager.PacketSpec(name, *data_types))
+    return data_types
 def vector_Plot(x, y, name=None, *args, **kwd_args):
     if name == None:
         name = y.replace("_", " ")
