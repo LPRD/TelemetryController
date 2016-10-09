@@ -1,16 +1,21 @@
 NATIVE_WINE=0
+NATIVE_PYTHON=0
 
 SOURCES=src/*.py
 PYINSTALLER_SOURCE=build_tools/pyinstaller
-LINUX_VENV=build_tools/linux_venv
 WINE_VENV=build_tools/wine_venv
+LINUX_VENV=build_tools/linux_venv
 
 PYINSTALLER=$(PYINSTALLER_SOURCE)/pyinstaller.py
-PY_VENV_ACTIVATE=$(LINUX_VENV)/bin/activate
 ifeq ($(NATIVE_WINE), 0)
 WINE=$(WINE_VENV)/bin/wine
 else
 WINE:=$(shell which wine)
+endif
+ifeq ($(NATIVE_PYTHON), 0)
+PYTHON=$(LINUX_VENV)/bin/python3
+else
+PYTHON:=$(shell which python3)
 endif
 
 EXCLUDE_MODULES=
@@ -51,13 +56,13 @@ endif
 # Needed b/c pyinstaller sometimes chokes when this already exists
 	rm -rf build/$*/cycler*.egg 
 ifeq ($(OS),Windows_NT)
-	. $(PY_VENV_ACTIVATE); python $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
+	python $(PYINSTALLER) $(PYINSTALLER_FLAGS) $< # TODO: Use a virtualenv on windows
 else
 	$(WINE) python $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
 endif
-	@if [ `du -k $< | cut -f1` -ge $(MAX_SIZE) ]; then\
-	  rm $<;\
-	  echo "Error: $< is larger than the github limit of 100 MB";\
+	@if [ `du -k $@ | cut -f1` -ge $(MAX_SIZE) ]; then\
+	  rm $@;\
+	  echo "Error: $@ is larger than the github limit of 100 MB";\
 	  exit 1;\
 	fi
 
@@ -65,10 +70,10 @@ dist/%: drivers/%.py $(SOURCES) $(PYINSTALLER_SOURCE) | $(PY_VENV)
 	@echo "Building $@"
 # Needed b/c pyinstaller sometimes chokes when this already exists
 	rm -rf build/$*/cycler*.egg 
-	. $(PY_VENV_ACTIVATE); python3 $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
-	@if [ `du -k $< | cut -f1` -ge $(MAX_SIZE) ]; then\
-	  rm $<;\
-	  echo "Error: $< is larger than the github limit of 100 MB";\
+	$(PYTHON) $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
+	@if [ `du -k $@ | cut -f1` -ge $(MAX_SIZE) ]; then\
+	  rm $@;\
+	  echo "Error: $@ is larger than the github limit of 100 MB";\
 	  exit 1;\
 	fi
 
