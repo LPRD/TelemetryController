@@ -1,7 +1,10 @@
 # Telemetry-display
 Python matplotlib-based graphical viewer for telemetry streams
 
-## Setup instructions
+## Arduino setup instructions
+To communicate in the standard packet format, a basic arduino library containing some utility macros is provided.  To install, download libs/Telemetry.  In the arduino software, select Sketch->Include Library->Add .ZIP Library... and select to the downloaded zip file.  
+
+## GUI setup instructions
 ### Method 1 - run-only, no development
 Do this if you only want to run the program and won't need to make any changes to the source.  
 You can simply download the packaged executables under dist, which should run with no extra dependencies.  Use the .exe binaries on Windows, or the binaries with no extension on Mac and Linux
