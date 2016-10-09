@@ -75,7 +75,8 @@ This should print the python version and start the python REPL.
 The exit code should be 0.  
 
 ## TODO items
-### Enhancments
+### Enhancements
+* Proper support for shared x axis
 * Change default icon
 * Access to advanced plot features (axis sharing in plots?)
 * Hide value readout scrollbar when unneeded
