@@ -11,18 +11,22 @@ import gui
 import plot
 import time
 
-dts = [manager.DataType('run_time', int, units="ms", show=False, export_csv=False),
-       manager.DataType('force', float, units="Newtons", export_csv=True),
-       manager.DataType('inlet_temperature', float, units="deg C", export_csv=True),
-       manager.DataType('outlet_temperature', float, units="deg C", export_csv=True),
-       manager.DataType('x_acceleration', float, units="Gs", export_csv=True),
-       manager.DataType('y_acceleration', float, units="Gs", export_csv=True),
-       manager.DataType('z_acceleration', float, units="Gs", export_csv=True),
-       manager.DataType('status', str, show=False),
-       manager.DataType('fuel_control', int, show=False),
-       manager.DataType('oxy_control', int, show=False),
-       manager.DataType('fuel_safety', bool, show=False),
-       manager.DataType('oxy_safety', bool, show=False)]
+def vector_DataType(name, *args, **kwd_args):
+    data_types = [manager.DataType(d + "_" + name, *args, **kwd_args) for d in ['x', 'y', 'z']]
+    data_types.append(manager.PacketSpec(name, *data_types))
+    return data_types
+
+dts =\
+    [manager.DataType('run_time', int, units="ms", show=False, export_csv=False),
+     manager.DataType('force', float, units="Newtons", export_csv=True),
+     manager.DataType('inlet_temperature', float, units="deg C", export_csv=True),
+     manager.DataType('outlet_temperature', float, units="deg C", export_csv=True)] +\
+    vector_DataType('acceleration', float, units="Gs", export_csv=True) +\
+    [manager.DataType('status', str, show=False),
+     manager.DataType('fuel_control', int, show=False),
+     manager.DataType('oxy_control', int, show=False),
+     manager.DataType('fuel_safety', bool, show=False),
+     manager.DataType('oxy_safety', bool, show=False)]
 plots = [plot.Plot('time', 'force', width=3, show_x_label=False),
          plot.Plot('time', ['inlet_temperature', 'outlet_temperature'], "coolant temperature", width=3, show_x_label=False),
          plot.Plot('time', ['x_acceleration', 'y_acceleration', 'z_acceleration'], width=3)]
