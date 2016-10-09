@@ -1,9 +1,17 @@
-SOURCES=src/*.py
-
-PYINSTALLER=build_tools/pyinstaller/pyinstaller.py
-PY_VENV_ACTIVATE=build_tools/linux_venv/bin/activate
-WINE_VENV_ACTIVATE=build_tools/wine_venv/bin/activate
 NATIVE_WINE=0
+
+SOURCES=src/*.py
+PYINSTALLER_SOURCE=build_tools/pyinstaller
+LINUX_VENV=build_tools/linux_venv
+WINE_VENV=build_tools/wine_venv
+
+PYINSTALLER=$(PYINSTALLER_SOURCE)/pyinstaller.py
+PY_VENV_ACTIVATE=$(LINUX_VENV)/bin/activate
+ifeq ($(NATIVE_WINE), 0)
+WINE=$(WINE_VENV)/bin/wine
+else
+WINE:=$(shell which wine)
+endif
 
 EXCLUDE_MODULES=
 PYINSTALLER_FLAGS=-p src -F --windowed --specpath build
@@ -11,29 +19,33 @@ PYINSTALLER_FLAGS=-p src -F --windowed --specpath build
 MAX_SIZE=100000
 
 TARGETS=flight_gui static_test_gui
+LIBS=Telemetry
 BIN_TARGETS=$(addprefix dist/, $(TARGETS))
 EXE_TARGETS=$(addsuffix .exe, $(BIN_TARGETS))
+LIB_TARGETS=$(addsuffix .zip, $(addprefix libs/, $(LIBS)))
 
+# TODO: Figure out WSL build of linux binary on windows
 ifeq ($(OS),Windows_NT)
-  ALL_TARGETS=$(EXE_TARGETS)
+  ALL_TARGETS=$(EXE_TARGETS) $(LIB_TARGETS)
 else
-  ALL_TARGETS=$(BIN_TARGETS) $(EXE_TARGETS)
+  ALL_TARGETS=$(BIN_TARGETS) $(EXE_TARGETS) $(LIB_TARGETS)
 endif
 
 all: $(ALL_TARGETS)
 bin: $(BIN_TARGETS)
 exe: $(EXE_TARGETS)
+lib: $(LIB_TARGETS)
 
 # Raise an error if anything in build_tools is missing or modified
 # These only get built when missing
-$(PYINSTALLER) $(PY_VENV_ACTIVATE) $(WINE_VENV_ACTIVATE):
+$(PYINSTALLER_SOURCE) $(LINUX_VENV) $(WINE_VENV):
 	$(error Error: $@ appears to be missing, did you clone with --recursive?  You can fix this with "git submodule update --recursive --init")
 
-# TODO: make sure this can work on Windows
+# TODO: make this actually works on Windows
 ifeq ($(OS),Windows_NT)
-dist/%.exe: drivers/%.py $(SOURCES) $(PY_VENV_ACTIVATE) $(PYINSTALLER)
+dist/%.exe: drivers/%.py $(SOURCES) $(PYINSTALLER_SOURCE) | $(PY_VENV)
 else
-dist/%.exe: drivers/%.py $(SOURCES) $(WINE_VENV_ACTIVATE) $(PYINSTALLER)
+dist/%.exe: drivers/%.py $(SOURCES) $(PYINSTALLER_SOURCE) | $(WINE_VENV)
 endif
 	@echo "Building $@"
 # Needed b/c pyinstaller sometimes chokes when this already exists
@@ -41,7 +53,7 @@ endif
 ifeq ($(OS),Windows_NT)
 	. $(PY_VENV_ACTIVATE); python $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
 else
-	. $(WINE_VENV_ACTIVATE); wine python $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
+	$(WINE) python $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
 endif
 	@if [ `du -k $< | cut -f1` -ge $(MAX_SIZE) ]; then\
 	  rm $<;\
@@ -49,7 +61,7 @@ endif
 	  exit 1;\
 	fi
 
-dist/%: drivers/%.py $(SOURCES) $(PY_VENV_ACTIVATE) $(PYINSTALLER)
+dist/%: drivers/%.py $(SOURCES) $(PYINSTALLER_SOURCE) | $(PY_VENV)
 	@echo "Building $@"
 # Needed b/c pyinstaller sometimes chokes when this already exists
 	rm -rf build/$*/cycler*.egg 
@@ -60,11 +72,18 @@ dist/%: drivers/%.py $(SOURCES) $(PY_VENV_ACTIVATE) $(PYINSTALLER)
 	  exit 1;\
 	fi
 
+libs/%.zip: include/% include/%/* | libs
+	@echo "Building $@"
+	cd include && zip -r ../$@ $*
+
+libs:
+	mkdir -p libs
+
 commit: all
 	git add $(ALL_TARGETS)
 	git commit -m "Updated dist files"
 
 clean:
-	rm -rf dist build
+	rm -rf dist build libs
 
-.PHONY: all bin exe setup commit clean
+.PHONY: all bin exe lib setup commit clean
