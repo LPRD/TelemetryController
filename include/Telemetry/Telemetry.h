@@ -68,37 +68,37 @@ char _data[READ_BUFFER_SIZE - 10];
   }
 
 // Sorry about the gotos, only needed because macros.  
-#define BEGIN_READ                                              \
-  if (Serial.available()) {                                     \
-    char _c = '\0';                                             \
-    int _i;                                                     \
-    for (_i = 0; _c != '\n'; _i++) {                            \
-      if (_i == READ_BUFFER_SIZE) {                             \
-        Serial.println(F("READ buffer overflow"));              \
-        while (Serial.available() && Serial.read() != '\n')     \
-          CHECK_SERIAL_AVAIL                                    \
-        goto L_ENDREAD;                                         \
-      }                                                         \
-      CHECK_SERIAL_AVAIL                                        \
-      _c = Serial.read();                                       \
-      _buffer[_i] = _c;                                         \
-      if (_c == '\r') _i--;                                     \
-    }                                                           \
-    _buffer[_i] = '\0';                                         \
-    if (!sscanf(_buffer, F("@@@@@%[^&]&&&&&\n"), _data)) {      \
-      Serial.println(F("READ packet error"));                   \
-      goto L_ENDREAD;                                           \
-    }                                                           \
+#define BEGIN_READ                                                      \
+  if (Serial.available()) {                                             \
+    char _c = '\0';                                                     \
+    int _i;                                                             \
+    for (_i = 0; _c != '\n'; _i++) {                                    \
+      if (_i == READ_BUFFER_SIZE) {                                     \
+        Serial.println(F("READ buffer overflow"));                      \
+        while (Serial.available() && Serial.read() != '\n')             \
+          CHECK_SERIAL_AVAIL                                            \
+        goto L_ENDREAD;                                                 \
+      }                                                                 \
+      CHECK_SERIAL_AVAIL                                                \
+      _c = Serial.read();                                               \
+      _buffer[_i] = _c;                                                 \
+      if (_c == '\r') _i--;                                             \
+    }                                                                   \
+    _buffer[_i] = '\0';                                                 \
+    if (!sscanf(_buffer, (const char*)F("@@@@@%[^&]&&&&&\n"), _data)) { \
+      Serial.println(F("READ packet error"));                           \
+      goto L_ENDREAD;                                                   \
+    }                                                                   \
     if (0);
 
 #define READ_FIELD(field, spec)   \
-  else if (sscanf(_data, F(#field":"spec), &field))
+  else if (sscanf(_data, (const char*)F(#field":"spec), &field))
 
 #define READ_FLAG(field)          \
-  else if (!strcmp(_data, F(#field":")))
+  else if (!strcmp(_data, (const char*)F(#field":")))
 
 #define READ_DEFAULT(field_name, field) \
-  else if (sscanf(_data, F("%[^:]:%s"), &field_name, &field))
+  else if (sscanf(_data, (const char*)F("%[^:]:%s"), &field_name, &field))
 
 #define END_READ } L_ENDREAD:;
 
