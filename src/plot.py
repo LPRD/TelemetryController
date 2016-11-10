@@ -139,8 +139,8 @@ class Plot:
 # Generate a layout for the given plots
 def gen_layout(plots):
     # Minimum possible size based on number of plots
-    for width in count(int(math.ceil(math.sqrt(len(plots))))):
-        for height in [width - 1, width]:
+    for height in count(int(math.ceil(math.sqrt(len(plots))))):
+        for width in (height - 1, height):
             # Table of open grid locations
             available = {(i, j): True
                          for i in range(width)
