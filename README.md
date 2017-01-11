@@ -11,12 +11,14 @@ You can simply download the packaged executables under dist, which should run wi
 
 ### Method 2 - setup for development
 #### Linux and Mac
-**There is now no need to install python or any libraries!**  Everything is included in the virtual python env.  To use it,
+**There is now no need to install python or any libraries!**  Everything should be included in the virtual python env.  To use it,
 simply run  
 ```> source build_tools/linux_venv/bin/activate```
 from your shell.  This will load the enclosed instance of python along with the needed libraries.  Then you can simply run the gui scripts directly  
 ```> src/static_test_gui```  
-Note that any python libraries installed via pip with the virtual env activated will be installed to the virtual env. 
+Note that any python libraries installed via pip with the virtual env activated will be installed to the virtual env.
+
+I recommend that you install UPX (can be found in package upx-ucl on Ubuntu) which will slightly compress executable sizes.  
 
 #### Windows
 **Note**: It should be possible to use the virtual python env for development on Windows, but I haven't gotten a chance to test this yet.
