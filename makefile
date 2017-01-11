@@ -1,7 +1,7 @@
 NATIVE_WINE=0
 NATIVE_PYTHON=0
 
-SOURCES=src/*.py
+SOURCES=$(wildcard src/*.py)
 PYINSTALLER_SOURCE=build_tools/pyinstaller
 WINE_VENV=build_tools/wine_venv
 LINUX_VENV=build_tools/linux_venv
@@ -28,6 +28,7 @@ LIBS=Telemetry
 BIN_TARGETS=$(addprefix dist/, $(TARGETS))
 EXE_TARGETS=$(addsuffix .exe, $(BIN_TARGETS))
 LIB_TARGETS=$(addsuffix .zip, $(addprefix libs/, $(LIBS)))
+DRIVER_SOURCES=$(addsuffix .py, $(BIN_TARGETS))
 
 # TODO: Figure out WSL build of linux binary on windows
 ifeq ($(OS),Windows_NT)
@@ -84,6 +85,9 @@ libs/%.zip: include/% include/%/* | libs
 libs:
 	mkdir -p libs
 
+typecheck:
+	mypy $(SOURCES) $(TARGET_SOURCES) --silent-imports
+
 commit: all
 	git add $(ALL_TARGETS)
 	git commit -m "Updated dist files"
@@ -91,4 +95,4 @@ commit: all
 clean:
 	rm -rf dist build libs
 
-.PHONY: all bin exe lib setup commit clean
+.PHONY: all bin exe lib setup typecheck commit clean

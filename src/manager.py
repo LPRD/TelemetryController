@@ -4,14 +4,18 @@ import time
 import json
 import sys
 
+from typing import cast, Any, Union, List, Tuple, NamedTuple, Dict, Callable, Iterable, Sequence
+from typing.io import TextIO
+
 # Representation of a data value category, with various properties
 class DataType:
-    def __init__(self, name,
-                 type=float,
-                 show=True,
-                 one_line=True,
-                 export_csv=False,
-                 units=None):
+    def __init__(self,
+                 name:       str,
+                 type:       type = float,
+                 show:       bool = True,
+                 one_line:   bool = True,
+                 export_csv: bool = False,
+                 units:      str = None) -> None:
         self.name = name
         self.type = type
         # bool doesn't actually parse the value, just checks whether string is empty
@@ -30,14 +34,18 @@ class DataType:
 
 # Representation of a serial packet that contains multiple data types
 class PacketSpec:
-    def __init__(self, name, *data_types):
+    def __init__(self, name: str, *data_types: DataType) -> None:
         self.name = name
         self.data_types = data_types
+
+Spec = Union[PacketSpec, DataType]
+Data = Union[int, float, str]
+DispatchListener = Callable[[int, Data], None]
 
 # Manages parsing incoming serial packets, recieving data in given data types, and passes it to
 # listeners.  Also tracks system date and time.  
 class Dispatcher:
-    def __init__(self, *specs):
+    def __init__(self, *specs: Spec) -> None:
         specs += (DataType('sys date', str, False),
                   DataType('sys time', str, False),
                   DataType('log', str, False, False))
@@ -46,10 +54,11 @@ class Dispatcher:
         self.packet_specs = OrderedDict((s.name, s) for s in specs)
         self.data_names = [d.name for d in data_types]
         self.data_types = OrderedDict((d.name, d) for d in data_types)
-        self.data = {name: None for name in self.data_names}
-        self.time = {name: None for name in self.data_names}
-        self.listeners = {name: [] for name in self.data_names}
-        self.start_time = None
+        self.data = {name: None for name in self.data_names} # type: Dict[str, Data]
+        self.time = {name: None for name in self.data_names} # type: Dict[str, int]
+        self.listeners = {name: [] for name in self.data_names} # type: Dict[str, List[Tuple[DispatchListener, int]]]
+        self.listener_last_updates = {name: [] for name in self.data_names} # type: Dict[str, List[int]]
+        self.start_time = None # type: int
         self.current_line = ""
 
     def reset(self):
@@ -58,10 +67,13 @@ class Dispatcher:
             for l in ls:
                 l[1] = 0
 
-    def add_listener(self, name, fn, delay=0):
-        self.listeners[name].append([delay, 0, fn])
+    def add_listener(self, name: str, fn: DispatchListener, period=0):
+        self.listeners[name].append((fn, period))
 
-    def acceptText(self, text, txtout=sys.stdout, errout=sys.stderr):
+    def acceptText(self,
+                   text: str,
+                   txtout: TextIO = sys.stdout,
+                   errout: TextIO = sys.stderr):
         # Split the unparsed text from previously with the new text into lines
         lines = (self.current_line + text).split("\n")
 
@@ -101,7 +113,11 @@ class Dispatcher:
         # Always update log, even if parse failed
         self.accept('log', abs_time, [text], errout)
         
-    def accept(self, name, time, data, errout=sys.stderr):
+    def accept(self,
+               name: str,
+               time: int,
+               data: List[str],
+               errout: TextIO = sys.stderr) -> bool:
         # Check that name is a valid packet format
         if name not in self.packet_specs:
             print("Received unrecognized data type", name, file=errout)
@@ -119,7 +135,7 @@ class Dispatcher:
         # and generate the list of data types
         spec = self.packet_specs[name]
         if isinstance(spec, DataType):
-            data_types = [spec]
+            data_types = [spec] # type: Sequence[DataType]
         elif isinstance(spec, PacketSpec):
             data_types = spec.data_types
         else:
@@ -137,31 +153,33 @@ class Dispatcher:
                 print("Invalid value for", data_type.name, "recieved:", value, file=errout)
             else:
                 # If successful, update the listeners
-                for l in self.listeners[data_type.name]:
-                    delay, last, listener = l
-                    if time == None or time - last >= delay or time < last:
-                        listener(*self.request(data_type.name))
+                for i, (fn, period) in enumerate(self.listeners[data_type.name]):
+                    last = self.listener_last_updates[data_type.name][i]
+                    if time == None or time - last >= period or time < last:
+                        fn(*self.request(data_type.name))
                         if time != None:
-                            l[1] = time
+                            self.listener_last_updates[data_type.name][i] = time
 
         return True
 
-    def request(self, name):
+    def request(self, name: str) -> Tuple[int, Data]:
         return self.time[name], self.data[name]
+
+DataListener = Callable[[List[int], List[Data]], None]
 
 # Manages the data for a spesific run.  Attatches handlers to a Dispatcher, logs the data when
 # running, can save or load data runs in various formats.  Listeners can be attatched that trigger
 # on new data when there is an active run
 class DataManager:
-    def __init__(self, dispatcher):
+    def __init__(self, dispatcher: Dispatcher) -> None:
         self.dispatcher = dispatcher
-        self.data = OrderedDict((name, ([], [])) for name in dispatcher.data_names)
-        self.listeners = {name: [] for name in dispatcher.data_names}
+        self.data = OrderedDict((name, ([], [])) for name in dispatcher.data_names) # type: Dict[str, Tuple[List[int], List[Data]]]
+        self.listeners = {name: [] for name in dispatcher.data_names} # type: Dict[str, List[DataListener]]
         self.needs_update = {name: False for name in dispatcher.data_names}
         self.running = False
 
         for name in dispatcher.data_names:
-            def fn(time, value, name=name):
+            def fn(time: int, value: Data, name=name):
                 if self.running and time != None:
                     # If the time jumps backward (recieved a corrupted timestamp)
                     # overwrite the most recent data point
@@ -175,16 +193,16 @@ class DataManager:
                     self.needs_update[name] = True
             dispatcher.add_listener(name, fn)
 
-    def add_listener(self, name, fn):
+    def add_listener(self, name: str, fn: DataListener) -> None:
         self.listeners[name].append(fn)
 
-    def update_listeners(self, name):
+    def update_listeners(self, name: str) -> None:
         self.needs_update[name] = False
         times, values = self.request(name)
         for listener in self.listeners[name]:
             listener(times, values)
 
-    def update_all_listeners(self, force=False):
+    def update_all_listeners(self, force: bool = False) -> bool:
         updated = False
         for name in self.dispatcher.data_types:
             if self.needs_update[name] or force:
@@ -192,7 +210,7 @@ class DataManager:
                 updated = True
         return updated
 
-    def request(self, name):
+    def request(self, name: str) -> Tuple[List[int], List[Data]]:
         return self.data[name]
 
     def start(self):
@@ -211,9 +229,9 @@ class DataManager:
         self.running = False
         self.update_all_listeners(True)
 
-    def dump_csv(self, data_names):
+    def dump_csv(self, data_names: Iterable[str]) -> str:
         result = "abs time," + ",".join(data_names) + "\n"
-        data = {}
+        data = {} # type: Dict[int, Dict[str, Data]]
         for name, (times, values) in self.data.items():
             if name in data_names:
                 for time, value in zip(times, values):
@@ -226,7 +244,7 @@ class DataManager:
                                 for n in data_names) + "\n")
         return result
 
-    def dump(self, format):
+    def dump(self, format: str) -> str:
         if format == 'csv':
             data_names = [name
                           for name in self.dispatcher.data_names
@@ -235,12 +253,16 @@ class DataManager:
         elif format == 'json':
             return json.dumps(list(self.data.items()))
         elif format == 'log':
-            return "".join(self.request('log')[1])
+            return "".join(cast(List[str], self.request('log')[1]))
         else:
             sys.exit("Unsupported format " + format)
 
     # txtout is stream to write non-packet text when loading a log
-    def load(self, format, text, txtout=sys.stdout, errout=sys.stderr):
+    def load(self,
+             format: str, 
+             text: str, txtout:
+             TextIO = sys.stdout,
+             errout: TextIO = sys.stderr) -> bool:
         if format == 'json':
             data = OrderedDict(json.loads(text))
             if set(self.data.keys()) != set(data.keys()):

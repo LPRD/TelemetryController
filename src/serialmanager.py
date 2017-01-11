@@ -3,10 +3,17 @@ import sys
 import glob
 import time
 
+import typing
+import typing.io
+import manager
+
 # Manages recieving data from a serial port and passes it to a Dispatcher
 class SerialManager:
-    ports = {}
-    def __init__(self, dispatcher, port='/dev/ttyACM0', baud=9600):
+    ports = {} # type: Dict[str, serial.Serial]
+    def __init__(self,
+                 dispatcher: manager.Dispatcher,
+                 port: str = '/dev/ttyACM0',
+                 baud: int = 9600) -> None:
         self.dispatcher = dispatcher
         self.baud = baud
         
@@ -27,7 +34,9 @@ class SerialManager:
     def __del__(self):
         self.ser.close()
 
-    def handleInput(self, txtout=sys.stdout, errout=sys.stderr):
+    def handleInput(self,
+                    txtout: typing.TextIO = sys.stdout,
+                    errout: typing.TextIO = sys.stderr):
         while self.paused:
             time.sleep(100 / 1000) # Sleep 100 ms
         if self.ser.in_waiting:
@@ -40,12 +49,12 @@ class SerialManager:
             return True
         return False
     
-    def write(self, txt):
+    def write(self, txt: typing.Text):
         self.ser.write(txt.encode())
         self.ser.flush()
 
 # Utility function, get the list of all available serial devices
-def serial_ports():
+def serial_ports() -> typing.List[str]:
     """ Lists serial port names
 
         :raises EnvironmentError:

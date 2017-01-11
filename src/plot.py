@@ -4,15 +4,29 @@ from itertools import *
 
 from matplotlib.gridspec import GridSpec
 
+from typing import cast, List, Tuple, Sequence, Iterator, Union, Any
+
+def rev(x: str) -> Iterator[str]:
+    return reversed(x)
+
 # Representation of a group of plotted data values
 class Plot:
-    def __init__(self, x, ys, name=None, ys_names=None, width=1, height=1, style=None, legend='best', show_x_label=True):
+    def __init__(self,
+                 x: str,
+                 ys: Union[str, Sequence[str]],
+                 name: str = None,
+                 ys_names: List[str] = None,
+                 width: int = 1,
+                 height: int = 1,
+                 style: str = None,
+                 legend: str = 'best',
+                 show_x_label: bool = True) -> None:
         self.x = x
-        self.ys = [ys] if type(ys) == str else ys
+        self.ys = [cast(str, ys)] if type(ys) == str else cast(Sequence[str], ys)
 
         # Find a common suffix, if any, of the ys names
         suffix = ""
-        for cs in zip(*map(reversed, self.ys)):
+        for cs in zip(*map(rev, self.ys)):
             # All chars are the same
             if cs[1:] == cs[:-1]:
                 suffix = cs[0] + suffix
@@ -45,8 +59,8 @@ class Plot:
         self.legend = legend
         self.show_x_label = show_x_label
 
-        self.update = {y: ([], []) for y in self.ys}
-        self.lines = {y: None for y in self.ys}
+        self.update = {y: ([], []) for y in self.ys} # type: Dict[str, Tuple[List[float], List[float]]]
+        self.lines = {y: None for y in self.ys} # type: Dict[str, Any] # TODO: type
 
     def create(self, manager, fig, gs):
         data_types = manager.dispatcher.data_types

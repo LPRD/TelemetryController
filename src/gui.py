@@ -18,15 +18,22 @@ import math
 import sys
 import traceback
 
+from typing import List, Iterable, Callable, Any
+
 # Helper class that has a write method that is provided to the constructor
 class FnWriteableStream:
-    def __init__(self, write):
+    def __init__(self, write: Callable[[str], None]) -> None:
         self.write = write
 
 # Main gui application class.  Extends frame so an instance can be extended with additional widgets
 # directly.  
 class Application(Frame):
-    def __init__(self, dispatcher, manager, plots, master=None, **flags):
+    def __init__(self,
+                 dispatcher: manager.Dispatcher,
+                 manager: manager.DataManager,
+                 plots: Iterable[plot.Plot],
+                 master=None,
+                 **flags) -> None:
         self.dispatcher = dispatcher
         self.manager = manager
         self.plots = plots
@@ -68,7 +75,7 @@ class Application(Frame):
         self.manager.add_listener("sys time", self.saveBackup)
 
         # Start reading from Serial
-        self.serialManager = None
+        self.serialManager = None # type: serialmanager.SerialManager
         self.checkSerial()
         self.baud.set(str(self.flags['default_baud']))
         self.serialPort.trace('w', self.changeSerial)
@@ -201,16 +208,16 @@ class Application(Frame):
         self.namesList = Listbox(valuesTable, width=15, height=len(shown_data_types) + 1, yscrollcommand=valuesScrollbar.set)
         self.valuesList = Listbox(valuesTable, width=35, height=len(shown_data_types) + 1, yscrollcommand=valuesScrollbar.set)
         self.namesList.insert(0, "abs time (ms)")
-        def fn(xdata, ydata):
+        def fn1(xdata, ydata):
             self.valuesList.delete(0)
             self.valuesList.insert(0, str(xdata) if xdata else "")
-        self.dispatcher.add_listener('sys time', fn, 100)
+        self.dispatcher.add_listener('sys time', fn1, 100)
         for i, ty in enumerate(shown_data_types):
             self.namesList.insert(i + 1, ty.full_name)
-            def fn(xdata, ydata, i = i):
+            def fn2(xdata: List[float], ydata: List[float], i = i):
                 self.valuesList.delete(i + 1)
                 self.valuesList.insert(i + 1, str(ydata))
-            self.dispatcher.add_listener(ty.name, fn, 100)
+            self.dispatcher.add_listener(ty.name, fn2, 100)
 
         def yview(*args):
             self.namesList.yview(*args)
@@ -256,7 +263,7 @@ class Application(Frame):
             sys.exit(0)
 
     # Write text to the serial console
-    def write(self, txt, color=None):
+    def write(self, txt: str, color: str = None):
         self.serialOut.config(state=NORMAL)
         if color:
             self.serialOut.insert(END, str(txt), color + '_text')
