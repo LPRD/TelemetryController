@@ -13,13 +13,14 @@ You can simply download the packaged executables under dist, which should run wi
 #### Linux and Mac
 **There is now no need to install python or any libraries!**  Everything is included in the virtual python env.  To use it,
 simply run  
-```> source build_tools/linux_venv/bin/activate```  
+```> source build_tools/linux_venv/bin/activate```
 from your shell.  This will load the enclosed instance of python along with the needed libraries.  Then you can simply run the gui scripts directly  
 ```> src/static_test_gui```  
 Note that any python libraries installed via pip with the virtual env activated will be installed to the virtual env. 
 
 #### Windows
 **Note**: It should be possible to use the virtual python env for development on Windows, but I haven't gotten a chance to test this yet.
+
 1. Install a recent (3.4+) version of python for windows.  Make sure to check the box to add python and pip to your path
 2. From cmd, install matplotlib, pyserial and typing, this can be done via pip with  
 ```> pip install matplotlib pyserial typing```
