@@ -21,8 +21,8 @@ Note that any python libraries installed via pip with the virtual env activated 
 #### Windows
 **Note**: It should be possible to use the virtual python env for development on Windows, but I haven't gotten a chance to test this yet.
 1. Install a recent (3.4+) version of python for windows.  Make sure to check the box to add python and pip to your path
-2. From cmd, install matplotlib and pyserial, this can be done via pip with  
-```> pip install matplotlib pyserial```
+2. From cmd, install matplotlib, pyserial and typing, this can be done via pip with  
+```> pip install matplotlib pyserial typing```
 3. Try running it... There may be other dependencies depending on your system that weren’t installed automatically.  If it crashes due to missing imports, the error message should include the name of the missing library which can be installed via pip.  If you run into any of these please tell me (Lucas)
 
 ### Method 3 - setup with manual installation of libraries
@@ -30,7 +30,7 @@ You shouldn't really ever need to do this anymore, unless you are having trouble
 
 #### Linux
 1. Install python3 and python3-pip via apt-get
-2. Install matplotlib and pyserial via pip3
+2. Install matplotlib, pyserial and typing via pip3
 3. Try running it... There may be other dependencies depending on your system that weren’t installed automatically.  If it crashes due to missing imports, the error message should include the name of the missing library which can be installed via pip3.  If you run into any of these please tell me (Lucas)
 
 #### Mac
@@ -66,12 +66,12 @@ This will open a grapical Windows installer window, you should be able to click 
 8. Verify that python is working correctly by running  
 ```> wine python```
 This should print the python version and start the python REPL.
-9. Install pefile (both needed for pyinstaller on Windows), matplotlib and pyserial, this can be done via pip with  
-```> wine python -m pip install -U pefile matplotlib pyserial```
+9. Install pefile (both needed for pyinstaller on Windows), matplotlib, pyserial, and typing, this can be done via pip with  
+```> wine python -m pip install -U pefile matplotlib pyserial typing```
 10. Install pywin32, the excutable installer can be downloaded from https://sourceforge.net/projects/pywin32/ and run with wine
 ```> wine ../pyToExe/pywin32-220.win32-py3.4.exe```
 11. Check that everything is working correctly, run the command
-```> wine python -c 'import matplotlib; import serial; import pywintypes'```
+```> wine python -c 'import matplotlib; import serial; import typing; import pywintypes'```
 The exit code should be 0.  
 
 ## TODO items
