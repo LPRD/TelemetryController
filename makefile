@@ -19,7 +19,7 @@ PYTHON:=$(shell which python3)
 endif
 
 EXCLUDE_MODULES=
-PYINSTALLER_FLAGS=-p src -F --windowed --specpath build
+PYINSTALLER_FLAGS=-p src -F --windowed --workpath $(PYINSTALLER_CONFIG_DIR) --specpath $(PYINSTALLER_CONFIG_DIR)
 
 MAX_SIZE=100000
 
@@ -36,6 +36,9 @@ ifeq ($(OS),Windows_NT)
 else
   ALL_TARGETS=$(BIN_TARGETS) $(EXE_TARGETS) $(LIB_TARGETS)
 endif
+
+dist/%.exe: export PYINSTALLER_CONFIG_DIR = build/windows
+dist/%:     export PYINSTALLER_CONFIG_DIR = build/linux
 
 all: $(ALL_TARGETS)
 bin: $(BIN_TARGETS)
@@ -93,6 +96,9 @@ commit: all
 	git commit -m "Updated dist files"
 
 clean:
+	rm -rf $(ALL_TARGETS) build/
+
+clobber:
 	rm -rf dist build libs
 
 .PHONY: all bin exe lib setup typecheck commit clean
