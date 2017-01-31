@@ -92,7 +92,7 @@ char _data[READ_BUFFER_SIZE - 10];
     if (0);
 
 #define READ_FIELD(field, spec)   \
-  else if (sscanf(_data, (const char*)F(#field":"spec), &field))
+  else if (sscanf(_data, (const char*)F(#field":" spec), &field))
 
 #define READ_FLAG(field)          \
   else if (!strcmp(_data, (const char*)F(#field":")))
