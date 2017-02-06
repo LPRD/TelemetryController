@@ -40,7 +40,8 @@ class Application(Frame):
         self.master = master
 
         # Default values
-        new_flags = {'send_with_newline_default': False,
+        new_flags = {'window_manager_title': "Telemetry monitor",
+                     'send_with_newline_default': False,
                      'show_current_values': True,
                      'show_send_value': True,
                      'full_screen': False,
@@ -70,7 +71,7 @@ class Application(Frame):
         #master.iconbitmap('telemetry.png')
         master.attributes("-fullscreen", self.flags['full_screen'])
         master.bind('<Escape>', self.unmaximize)
-        master.wm_title("Telemetry monitor")
+        master.wm_title(self.flags['window_manager_title'])
         self.createWidgets()
         self.manager.add_listener("sys time", self.saveBackup)
 

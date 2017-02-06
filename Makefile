@@ -21,9 +21,9 @@ endif
 EXCLUDE_MODULES=
 PYINSTALLER_FLAGS=-p src -F --windowed --workpath $(PYINSTALLER_CONFIG_DIR) --specpath $(PYINSTALLER_CONFIG_DIR)
 
-MAX_SIZE=100000
+MAX_DIST_FILE_SIZE=100000
 
-TARGETS=flight_gui static_test_gui pressure_test_gui
+TARGETS=flight_gui demo_static_test_gui mk1_static_test_gui mk2_static_test_gui #pressure_test_gui
 LIBS=Telemetry
 BIN_TARGETS=$(addprefix dist/, $(TARGETS))
 EXE_TARGETS=$(addsuffix .exe, $(BIN_TARGETS))
@@ -64,7 +64,7 @@ ifeq ($(OS),Windows_NT)
 else
 	$(WINE) python $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
 endif
-	@if [ `du -k $@ | cut -f1` -ge $(MAX_SIZE) ]; then\
+	@if [ `du -k $@ | cut -f1` -ge $(MAX_DIST_FILE_SIZE) ]; then\
 	  rm $@;\
 	  echo "Error: $@ is larger than the github limit of 100 MB";\
 	  exit 1;\
@@ -75,7 +75,7 @@ dist/%: drivers/%.py $(SOURCES) $(PYINSTALLER_SOURCE) | $(PY_VENV)
 # Needed b/c pyinstaller sometimes chokes when this already exists
 	rm -rf build/$*/cycler*.egg 
 	$(PYTHON) $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
-	@if [ `du -k $@ | cut -f1` -ge $(MAX_SIZE) ]; then\
+	@if [ `du -k $@ | cut -f1` -ge $(MAX_DIST_FILE_SIZE) ]; then\
 	  rm $@;\
 	  echo "Error: $@ is larger than the github limit of 100 MB";\
 	  exit 1;\
