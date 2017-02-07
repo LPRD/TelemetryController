@@ -63,12 +63,13 @@ class Dispatcher:
 
     def reset(self):
         self.start_time = None
-        for ls in self.listeners.values():
-            for l in ls:
-                l[1] = 0
+        for name in self.data_names:
+            for i in range(len(self.listener_last_updates[name])):
+                self.listener_last_updates[name][i] = 0
 
     def add_listener(self, name: str, fn: DispatchListener, period=0):
         self.listeners[name].append((fn, period))
+        self.listener_last_updates[name].append(0)
 
     def acceptText(self,
                    text: str,

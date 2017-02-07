@@ -140,8 +140,8 @@ def init(config=Config.MK_1):
                                                                                        fg='green' if val else 'red'))
     app.dispatcher.add_listener('fuel_target', lambda time, val: (fuelTarget.delete(0, END), fuelTarget.insert(0, str(val))))
     app.dispatcher.add_listener('oxy_target', lambda time, val: (oxyTarget.delete(0, END), oxyTarget.insert(0, str(val))))
-    app.dispatcher.add_listener('fuel_setting', lambda time, val: fuelSetting.config(text=str(val), fg='green' if val == manager.request('fuel_target') else 'red'))
-    app.dispatcher.add_listener('oxy_setting', lambda time, val: oxySetting.config(text=str(val), fg='green' if val == manager.request('oxy_target') else 'red'))
+    app.dispatcher.add_listener('fuel_setting', lambda time, val: fuelSetting.config(text=str(val), fg='green' if val == data_manager.request('fuel_target') else 'red'))
+    app.dispatcher.add_listener('oxy_setting', lambda time, val: oxySetting.config(text=str(val), fg='green' if val == data_manager.request('oxy_target') else 'red'))
 
     return app
 

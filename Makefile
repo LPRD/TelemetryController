@@ -23,8 +23,11 @@ PYINSTALLER_FLAGS=-p src -F --windowed --workpath $(PYINSTALLER_CONFIG_DIR) --sp
 
 MAX_DIST_FILE_SIZE=100000
 
-TARGETS=flight_gui demo_static_test_gui mk1_static_test_gui mk2_static_test_gui #pressure_test_gui
+STATIC_TEST_GUI_TARGETS=demo_static_test_gui mk1_static_test_gui mk2_static_test_gui # These all depend on static_test_gui.py
+TARGETS=$(STATIC_TEST_GUI_TARGETS) flight_gui #pressure_test_gui
 LIBS=Telemetry
+STATIC_TEST_GUI_BIN_TARGETS=$(addprefix dist/, $(TARGETS))
+STATIC_TEST_GUI_EXE_TARGETS=$(addsuffix .exe, $(STATIC_TEST_GUI_BIN_TARGETS))
 BIN_TARGETS=$(addprefix dist/, $(TARGETS))
 EXE_TARGETS=$(addsuffix .exe, $(BIN_TARGETS))
 LIB_TARGETS=$(addsuffix .zip, $(addprefix libs/, $(LIBS)))
@@ -49,6 +52,9 @@ lib: $(LIB_TARGETS)
 # These only get built when missing
 $(PYINSTALLER_SOURCE) $(LINUX_VENV) $(WINE_VENV):
 	$(error Error: $@ appears to be missing, did you clone with --recursive?  You can fix this with "git submodule update --recursive --init")
+
+# All static test gui varients depend on static_test_gui.py
+$(STATIC_TEST_GUI_BIN_TARGETS) $(STATIC_TEST_GUI_EXE_TARGETS): drivers/static_test_gui.py
 
 # TODO: make this actually works on Windows
 ifeq ($(OS),Windows_NT)
