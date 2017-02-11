@@ -85,20 +85,20 @@ char _data[READ_BUFFER_SIZE - 10];
       if (_c == '\r') _i--;                                             \
     }                                                                   \
     _buffer[_i] = '\0';                                                 \
-    if (!sscanf(_buffer, (const char*)F("@@@@@%[^&]&&&&&\n"), _data)) { \
+    if (!sscanf(_buffer, "@@@@@%[^&]&&&&&", _data)) {                   \
       Serial.println(F("READ packet error"));                           \
       goto L_ENDREAD;                                                   \
     }                                                                   \
     if (0);
 
 #define READ_FIELD(field, spec)   \
-  else if (sscanf(_data, (const char*)F(#field":" spec), &field))
+  else if (sscanf(_data, #field":" spec, &field))
 
 #define READ_FLAG(field)          \
-  else if (!strcmp(_data, (const char*)F(#field":")))
+  else if (!strcmp(_data, #field":"))
 
 #define READ_DEFAULT(field_name, field) \
-  else if (sscanf(_data, (const char*)F("%[^:]:%s"), &field_name, &field))
+  else if (sscanf(_data, "%[^:]:%s", &field_name, &field))
 
 #define END_READ } L_ENDREAD:;
 
