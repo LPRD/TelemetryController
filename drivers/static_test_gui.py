@@ -61,12 +61,12 @@ def init(config=Config.MK_1):
         else:
             app.reset()
             if app.start():
-                running = True
                 app.sendValue("start")
+                running = True
 
     def check_stop(time, status):
         nonlocal running
-        if status == 'MANUAL_CONTROL':
+        if status == 'STAND_BY':
             app.stop()
             running = False
             countdown.config(text="  T-01:00:00")
@@ -129,7 +129,7 @@ def init(config=Config.MK_1):
     start_abort_button.pack(side=LEFT)
     countdown = Label(runFrame, text="  T-01:00:00", fg="red", font=("Helvetica", 20, "bold"))
     countdown.pack()
-    status = Label(runFrame, text="  Manual control", width=15, font=("Helvetica", 17))
+    status = Label(runFrame, text="  Stand by", width=15, font=("Helvetica", 17))
     status.pack()
 
     # Listeners

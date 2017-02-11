@@ -50,7 +50,6 @@ class SerialManager:
         return False
     
     def write(self, txt: typing.Text):
-        print("Writing", txt)
         self.ser.write(txt.encode())
         self.ser.flush()
 
