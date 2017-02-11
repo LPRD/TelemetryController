@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import sys
+sys.path.append("src")
+
 from tkinter import *
 
 import manager
@@ -17,5 +20,5 @@ if __name__ == '__main__':
     dispatcher = manager.Dispatcher(dt1, dt2, dt3, dt4, dt5, dt6, dt7, dt8)
     manager = manager.DataManager(dispatcher)
     root = Tk()
-    app = gui.Application(dispatcher, manager, master=root)
+    app = gui.Application(dispatcher, manager, [], master=root)
     app.mainloop()
