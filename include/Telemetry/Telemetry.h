@@ -91,14 +91,14 @@ char _data[READ_BUFFER_SIZE - 10];
     }                                                                   \
     if (0);
 
-#define READ_FIELD(field, spec)   \
-  else if (sscanf(_data, #field":" spec, &field))
+#define READ_FIELD(field, spec, var)                        \
+  else if (sscanf(_data, #field":" spec, &var))
 
 #define READ_FLAG(field)          \
   else if (!strcmp(_data, #field":"))
 
-#define READ_DEFAULT(field_name, field) \
-  else if (sscanf(_data, "%[^:]:%s", &field_name, &field))
+#define READ_DEFAULT(field_name, var) \
+  else if (sscanf(_data, "%[^:]:%s", &field_name, &var))
 
 #define END_READ } L_ENDREAD:;
 
