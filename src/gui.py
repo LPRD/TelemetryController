@@ -390,7 +390,10 @@ class Application(Frame):
 
     # Handler to open a file
     def openFile(self):
-        filename = askopenfilename()
+        filename = askopenfilename(filetypes=[('All files', '*.*'), 
+                                              ('JSON data file', '*.json'),
+                                              ('Log file', '*.log'),
+                                              ('Comma-seperated values', '*.csv')])
         if filename:
             extension = filename.split(".")[-1].lower() if "." in filename else ""
             if extension not in ["json", "log", "csv"]:
@@ -409,7 +412,19 @@ class Application(Frame):
 
     # Handler to save file
     def saveFile(self):
-        filename = asksaveasfilename()
+        filename = asksaveasfilename(defaultextension='.json',
+                                     filetypes=[('JSON data file (recommended)', '*.json'),
+                                                ('Log file', '*.log'),
+                                                ('Comma-seperated values', '*.csv'),
+                                                ('EPS-embedded image', '*.eps'),
+                                                ('PDF-embedded image', '*.pdf'),
+                                                ('PFG-embedded image', '*.pfg'),
+                                                ('PNG image', '*.png'),
+                                                ('PostScript-embedded image', '*.ps'),
+                                                ('RAW image', '*.raw'),
+                                                ('RBGA image', '*.rbga'),
+                                                ('SVG image', '*.svg'),
+                                                ('SVGZ image', '*.svgz')])
         if filename:
             extension = filename.split(".")[-1] if "." in filename else ""
             if extension not in ["json", "log", "csv", # Data formats
@@ -438,9 +453,72 @@ class Application(Frame):
                 showerror("Error", "Invalid file extension\n" +
                           "Filename must end in .csv")
             
-            # Create a popup window to ask what items to include
+            # Create a popup window to ask for settings of what data to include
             exportWindow = Toplevel(self)
-            exportWindow.title("Export fields")
+            exportWindow.title("Export settings")
+            
+            startTimeLabel = Label(exportWindow, text="Start time (sec)")
+            startTimeLabel.grid(row=0, column=0)
+
+            startTimeVar = DoubleVar()
+            startTimeVar.set(0)
+
+            startTimeEntry = None
+            
+            lastValidStartTime = 0
+            def validateStartTime(value):
+                nonlocal lastValidStartTime
+                if value == '':
+                    return True
+                try:
+                    lastValidStartTime = float(value)
+                    if lastValidStartTime < 0:
+                        lastValidStartTime = 0
+                        return False
+                    else:
+                        return True
+                except ValueError:
+                    return False
+
+            startTimeEntry = Entry(exportWindow,
+                                   textvariable=startTimeVar,
+                                   validate='all',
+                                   validatecommand=(exportWindow.register(validateStartTime), '%P'),
+                                   width=10)
+            startTimeEntry.grid(row=0, column=1)
+
+            endTimeLabel = Label(exportWindow, text="End time (sec)")
+            endTimeLabel.grid(row=1, column=0)
+            
+            lastUpdateTime = self.manager.last_update_time / 1000
+
+            endTimeVar = DoubleVar()
+            endTimeVar.set(lastUpdateTime)
+
+            endTimeEntry = None
+            
+            lastValidEndTime = lastUpdateTime
+            def validateEndTime(value):
+                nonlocal lastValidEndTime
+                if value == '':
+                    return True
+                try:
+                    lastValidEndTime = float(value)
+                    if lastValidEndTime < 0:
+                        lastValidEndTime = 0
+                        return False
+                    else:
+                        return True
+                except ValueError:
+                    return False
+            
+            endTimeEntry = Entry(exportWindow,
+                                 textvariable=endTimeVar,
+                                 validate='all',
+                                 validatecommand=(exportWindow.register(validateEndTime), '%P'),
+                                 width=10)
+            endTimeEntry.grid(row=1, column=1)
+            
             names = OrderedDict()
             i = 0
             for data in self.dispatcher.data_types.values():
@@ -448,25 +526,27 @@ class Application(Frame):
                     var = IntVar()
                     var.set(data.export_csv)
                     cb = Checkbutton(exportWindow, text=data.name, variable=var)
-                    cb.grid(row=i % 10, column=i // 10, sticky=W)
+                    cb.grid(row=i % 10 + 2, column=i // 10, sticky=W)
                     names[data.name] = var
                     i += 1
 
-            ok = True
-            def cancel():
+            ok = False
+            def accept():
                 nonlocal ok
-                ok = False
+                ok = True
                 exportWindow.destroy()
 
-            exportButton = Button(exportWindow, text='Export', command=exportWindow.destroy)
+            exportButton = Button(exportWindow, text='Export', command=accept)
             exportButton.grid(row=11, column=0, sticky=E)
-            cancelButton = Button(exportWindow, text='Cancel', command=cancel)
+            cancelButton = Button(exportWindow, text='Cancel', command=exportWindow.destroy)
             cancelButton.grid(row=11, column=1, sticky=W)
 
             self.wait_window(exportWindow)
             
             if ok:
                 selected_data = [name for name, var in names.items() if var.get()]
+                start_time = lastValidStartTime * 1000
+                end_time = lastValidEndTime * 1000
                 for data, (name, var) in zip(self.dispatcher.data_types.values(), names.items()):
                     data.export_csv = bool(var.get())
-                open(filename, 'w').write(self.manager.dump_csv(selected_data))
+                open(filename, 'w').write(self.manager.dump_csv(selected_data, start_time, end_time))

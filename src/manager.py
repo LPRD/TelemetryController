@@ -175,6 +175,7 @@ class DataManager:
     def __init__(self, dispatcher: Dispatcher) -> None:
         self.dispatcher = dispatcher
         self.data = OrderedDict((name, ([], [])) for name in dispatcher.data_names) # type: Dict[str, Tuple[List[int], List[Data]]]
+        self.last_update_time = 0
         self.listeners = {name: [] for name in dispatcher.data_names} # type: Dict[str, List[DataListener]]
         self.needs_update = {name: False for name in dispatcher.data_names}
         self.running = False
@@ -191,6 +192,7 @@ class DataManager:
                     else:
                         self.data[name][0].append(time)
                         self.data[name][1].append(value)
+                    self.last_update_time = time
                     self.needs_update[name] = True
             dispatcher.add_listener(name, fn)
 
@@ -230,15 +232,19 @@ class DataManager:
         self.running = False
         self.update_all_listeners(True)
 
-    def dump_csv(self, data_names: Iterable[str]) -> str:
+    def dump_csv(self, data_names: Iterable[str], start: int = 0, end: int = None) -> str:
+        if end is None:
+            end = self.last_update_time
+        
         result = "abs time," + ",".join(data_names) + "\n"
         data = {} # type: Dict[int, Dict[str, Data]]
         for name, (times, values) in self.data.items():
             if name in data_names:
                 for time, value in zip(times, values):
-                    if time not in data:
-                        data[time] = {}
-                    data[time][name] = value
+                    if time >= start and time < end:
+                        if time not in data:
+                            data[time] = {}
+                        data[time][name] = value
         for time, updates in sorted(data.items()):
             result += (str(time) + "," +
                        ",".join(str(updates[n]) if n in updates else ""
@@ -292,5 +298,8 @@ class DataManager:
             self.stop()
         else:
             sys.exit("Unsupported format" + format)
+
+        last_times = [times[-1] for times, values in self.data.values() if len(times) > 0]
+        self.last_update_time = max(last_times) if len(last_times) > 0 else 0
         self.update_all_listeners(True)
         return True

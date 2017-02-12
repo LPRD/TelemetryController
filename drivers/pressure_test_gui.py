@@ -9,10 +9,10 @@ import manager
 import gui
 import plot
 
-dts = [manager.DataType('pressure_in', float, units='psi'),
-       manager.DataType('pressure_out', float, units='psi'),
-       manager.DataType('pressure_drop', float, units='psi'),
-       manager.DataType('angle', int, units='degrees')]
+dts = [manager.DataType('pressure_in', float, units='psi', export_csv=True),
+       manager.DataType('pressure_out', float, units='psi', export_csv=True),
+       manager.DataType('pressure_drop', float, units='psi', export_csv=True),
+       manager.DataType('angle', int, units='degrees', export_csv=True)]
 plots = [plot.Plot('time', ['pressure_in', 'pressure_out', 'pressure_drop']),
          plot.Plot('time', 'angle')]
          #plot.Plot('pressure', 'angle')]
