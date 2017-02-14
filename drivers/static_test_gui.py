@@ -28,19 +28,25 @@ def init(config=Config.MK_1):
          manager.DataType('force', float, units="Newtons", export_csv=True),
          manager.DataType('inlet_temperature', float, units="deg C", export_csv=True),
          manager.DataType('outlet_temperature', float, units="deg C", export_csv=True)] +\
-         ([manager.DataType('chamber_temperature', float, units="deg C", export_csv=True),
-           manager.DataType('pressure', float, units="PSI", export_csv=True)]
-          if config == Config.MK_2 else []) +\
-        vector_DataType('acceleration', float, units="Gs", export_csv=True) +\
+         ([] if config == Config.MK_1 else
+          [manager.DataType('chamber_temperature', float, units="deg C", export_csv=True),
+           manager.DataType('pressure', float, units="PSI", export_csv=True)]) +\
+        vector_DataType('acceleration', float, units="m/s^2", export_csv=True) +\
         [manager.DataType('status', str, show=False),
          manager.DataType('sensor_status', bool, show=False),
          manager.DataType('fuel_setting', int, show=False),
          manager.DataType('oxy_setting', int, show=False),
          manager.DataType('fuel_target', int, show=False),
          manager.DataType('oxy_target', int, show=False)]
-    plots = [plot.Plot('time', 'force', width=3, show_x_label=False),
-             plot.Plot('time', ['inlet_temperature', 'outlet_temperature'], "coolant temperature", width=3, show_x_label=False),
-             plot.Plot('time', ['x_acceleration', 'y_acceleration', 'z_acceleration'], width=3)]
+    plots =\
+        [plot.Plot('time', 'force', width=3, show_x_label=False)] +\
+        ([] if config == Config.MK_1 else
+         [plot.Plot('time', 'pressure', width=3),
+          plot.Plot('time', 'chamber_temperature')]) +\
+        [plot.Plot('time', ['inlet_temperature', 'outlet_temperature'], "temperature",
+                   width=3 if config == Config.MK_1 else 1, show_x_label=False),
+         plot.Plot('time', ['x_acceleration', 'y_acceleration', 'z_acceleration'],
+                   width=3 if config == Config.MK_1 else 1)]
     dispatcher = manager.Dispatcher(*dts)
     data_manager = manager.DataManager(dispatcher)
     root = Tk()
@@ -95,7 +101,8 @@ def init(config=Config.MK_1):
     controlsFrame.pack()
     sensorStatus = Label(controlsFrame, text="All sensors functional", fg='green', font=("Helvetica", 17))
     sensorStatus.pack()
-    Button(controlsFrame, text="Zero force sensor", command=lambda: app.sendValue("zero")).pack(side=LEFT)
+    Button(controlsFrame, text="Zero force", command=lambda: app.sendValue("zero_force")).pack(side=LEFT)
+    Button(controlsFrame, text="Zero pressure", command=lambda: app.sendValue("zero_pressure")).pack(side=LEFT)
     Button(controlsFrame, text="Reset board", command=lambda: app.sendValue("reset")).pack(side=LEFT)
 
     # Throttle controls

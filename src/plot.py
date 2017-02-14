@@ -190,4 +190,4 @@ def setup(plots, fig, manager):
         plot.create(manager, fig, gridspec[y1:y2, x1:x2])
 
     if plots:
-        fig.tight_layout(pad=2)
+        fig.tight_layout(h_pad=1.4)
