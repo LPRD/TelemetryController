@@ -28,7 +28,7 @@ def init(config=Config.MK_1):
          manager.DataType('force', float, units="Newtons", export_csv=True),
          manager.DataType('inlet_temperature', float, units="deg C", export_csv=True),
          manager.DataType('outlet_temperature', float, units="deg C", export_csv=True)] +\
-         ([] if config == Config.MK_1 else
+         ([] if config != Config.MK_2 else
           [manager.DataType('chamber_temperature', float, units="deg C", export_csv=True),
            manager.DataType('pressure', float, units="PSI", export_csv=True)]) +\
         vector_DataType('acceleration', float, units="m/s^2", export_csv=True) +\
@@ -40,13 +40,13 @@ def init(config=Config.MK_1):
          manager.DataType('oxy_target', int, show=False)]
     plots =\
         [plot.Plot('time', 'force', width=3, show_x_label=False)] +\
-        ([] if config == Config.MK_1 else
+        ([] if config != Config.MK_2 else
          [plot.Plot('time', 'pressure', width=3),
           plot.Plot('time', 'chamber_temperature')]) +\
         [plot.Plot('time', ['inlet_temperature', 'outlet_temperature'], "temperature",
-                   width=3 if config == Config.MK_1 else 1, show_x_label=False),
+                   width=3 if config != Config.MK_2 else 1, show_x_label=False),
          plot.Plot('time', ['x_acceleration', 'y_acceleration', 'z_acceleration'],
-                   width=3 if config == Config.MK_1 else 1)]
+                   width=3 if config != Config.MK_2 else 1)]
     dispatcher = manager.Dispatcher(*dts)
     data_manager = manager.DataManager(dispatcher)
     root = Tk()
@@ -58,7 +58,7 @@ def init(config=Config.MK_1):
                           "Telemetry monitor",
                           show_send_value=False,
                           serial_console_height=5,
-                          default_baud=230400)
+                          default_baud=115200)
     running = False
     def start_abort_handler():
         nonlocal running
@@ -75,14 +75,17 @@ def init(config=Config.MK_1):
         if status == 'STAND_BY':
             app.stop()
             running = False
-            countdown.config(text="  T-01:00:00")
+            if config == Config.DEMO:
+                countdown.config(text="  T-00:10:00")
+            else:
+                countdown.config(text="  T-01:00:00")
             start_abort_button.config(text="Start", bg='lime green')
         else:
             start_abort_button.config(text="Abort", bg='red')
 
     def update_time(abs_time, relative_time):
         if not running:
-            relative_time = -60000
+            relative_time = -60000 if config != Config.DEMO else -10000
         sign = "+" if relative_time > 0 else "-"
         mins = abs(relative_time) // 60000
         secs = (abs(relative_time) // 1000) % 60
@@ -102,7 +105,7 @@ def init(config=Config.MK_1):
     sensorStatus = Label(controlsFrame, text="All sensors functional", fg='green', font=("Helvetica", 17))
     sensorStatus.pack()
     Button(controlsFrame, text="Zero force", command=lambda: app.sendValue("zero_force")).pack(side=LEFT)
-    if config != Config.MK_1:
+    if config == Config.MK_2:
         Button(controlsFrame, text="Zero pressure", command=lambda: app.sendValue("zero_pressure")).pack(side=LEFT)
     Button(controlsFrame, text="Reset board", command=lambda: app.sendValue("reset")).pack(side=LEFT)
 
