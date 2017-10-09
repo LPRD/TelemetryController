@@ -47,9 +47,9 @@ class Plot:
         if name != None:
             self.name = name
         elif len(self.ys) == 1:
-            self.name = self.ys[0]
+            self.name = self.ys[0].replace("_", " ")
         elif suffix:
-            self.name = suffix[1:]
+            self.name = suffix[1:].replace("_", " ")
         else:
             self.name = None
 

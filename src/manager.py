@@ -15,7 +15,7 @@ class DataType:
                  show:       bool = True,
                  one_line:   bool = True,
                  export_csv: bool = False,
-                 units:      str = None) -> None:
+                 units:      str  = None) -> None:
         self.name = name
         self.type = type
         # bool doesn't actually parse the value, just checks whether string is empty

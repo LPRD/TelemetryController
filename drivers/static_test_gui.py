@@ -33,11 +33,12 @@ def init(config=Config.MK_1):
            manager.DataType('pressure', float, units="PSI", export_csv=True)]) +\
         vector_DataType('acceleration', float, units="m/s^2", export_csv=True) +\
         [manager.DataType('status', str, show=False),
+         # True = open, False = closed for these
          manager.DataType('sensor_status', bool, show=False),
-         manager.DataType('fuel_setting', int, show=False),
-         manager.DataType('oxy_setting', int, show=False),
-         manager.DataType('fuel_target', int, show=False),
-         manager.DataType('oxy_target', int, show=False)]
+         manager.DataType('fuel_pre_setting', bool, show=False),
+         manager.DataType('oxy_pre_setting', bool, show=False),
+         manager.DataType('fuel_main_setting', bool, show=False),
+         manager.DataType('oxy_main_setting', bool, show=False)]
     plots =\
         [plot.Plot('time', 'force', width=3, show_x_label=False)] +\
         ([] if config != Config.MK_2 else
@@ -98,8 +99,10 @@ def init(config=Config.MK_1):
         return lower_name.replace("_", " ")
 
     # Add custom gui controls
+    Label(app, text="\nControls").pack()
+    
     # Sensor controls
-    Label(app, text="\nSensor Controls").pack()
+    #Label(app, text="\nSensor Controls").pack()
     controlsFrame = Frame(app)
     controlsFrame.pack()
     sensorStatus = Label(controlsFrame, text="All sensors functional", fg='green', font=("Helvetica", 17))
@@ -110,30 +113,25 @@ def init(config=Config.MK_1):
     Button(controlsFrame, text="Reset board", command=lambda: app.sendValue("reset")).pack(side=LEFT)
 
     # Throttle controls
-    Label(app, text="\nThrottle Controls").pack()
+    #Label(app, text="\nThrottle Controls").pack()
     throttleFrame = Frame(app)
     throttleFrame.pack()
-    Label(throttleFrame, text="Target", font=("Helvetica", 15)).grid(row=0, column=1)
-    Label(throttleFrame, text="Setting", font=("Helvetica", 15)).grid(row=0, column=2, padx=15)
+    Label(throttleFrame, text="Prestage", font=("Helvetica", 15)).grid(row=0, column=1)
+    Label(throttleFrame, text="Mainstage", font=("Helvetica", 15)).grid(row=0, column=2, padx=15)
     Label(throttleFrame, text="Fuel", font=("Helvetica", 15)).grid(row=1, column=0, sticky=W, padx=5)
     Label(throttleFrame, text="Oxygen", font=("Helvetica", 15)).grid(row=2, column=0, sticky=W, padx=5)
-    
-    fuelTarget = Entry(throttleFrame, width=6, font=("Helvetica", 12))
-    fuelTarget.bind('<Return>', lambda _=None: app.sendValue("fuel_command", fuelTarget.get()))
-    fuelTarget.insert(END, '0')
-    fuelTarget.grid(row=1, column=1, sticky=W, padx=5)
-    oxyTarget = Entry(throttleFrame, width=6, font=("Helvetica", 12))
-    oxyTarget.bind('<Return>', lambda _=None: app.sendValue("oxy_command", oxyTarget.get()))
-    oxyTarget.insert(END, '0')
-    oxyTarget.grid(row=2, column=1, sticky=W, padx=5)
-    
-    fuelSetting = Label(throttleFrame, text="0", fg='green', bg='white', width=6, font=("Helvetica", 12))
-    fuelSetting.grid(row=1, column=2, sticky=W, padx=20)
-    oxySetting = Label(throttleFrame, text="0", fg='green', bg='white', width=6, font=("Helvetica", 12))
-    oxySetting.grid(row=2, column=2, sticky=W, padx=20)
+
+    valves = ['fuel_pre', 'fuel_main', 'oxy_pre', 'oxy_main']
+    valveSettings = {valve: False for valve in valves}
+    valveButtons = {}
+    for i, valve in enumerate(valves):
+        button = Button(throttleFrame, text="closed", background="red")
+        button.bind('<Button-1>', lambda _: app.sendValue(valve + "_command", not valveSettings[valve]))
+        button.grid(row=1 + i % 2, column=1 + int(i / 2), sticky=W, padx=5)
+        valveButtons[valve] = button
 
     # Run controls
-    Label(app, text="\nRun Controls").pack()
+    #Label(app, text="\nRun Controls").pack()
     runFrame = Frame(app)
     runFrame.pack()
     start_abort_button = Button(runFrame, text="Start", command=start_abort_handler, bg="lime green", height=3, width=10)
@@ -149,10 +147,12 @@ def init(config=Config.MK_1):
     app.dispatcher.add_listener('run_time', update_time)
     app.dispatcher.add_listener('sensor_status', lambda time, val: sensorStatus.config(text="All sensors functional" if val else "Sensor error encountered",
                                                                                        fg='green' if val else 'red'))
-    app.dispatcher.add_listener('fuel_target', lambda time, val: (fuelTarget.delete(0, END), fuelTarget.insert(0, str(val))))
-    app.dispatcher.add_listener('oxy_target', lambda time, val: (oxyTarget.delete(0, END), oxyTarget.insert(0, str(val))))
-    app.dispatcher.add_listener('fuel_setting', lambda time, val: fuelSetting.config(text=str(val), fg='green' if val == data_manager.request('fuel_target') else 'red'))
-    app.dispatcher.add_listener('oxy_setting', lambda time, val: oxySetting.config(text=str(val), fg='green' if val == data_manager.request('oxy_target') else 'red'))
+
+    for valve in valves:
+        def callback(time, val):
+            valveSettings[valve] = val
+            valveButtons.config(text='open' if val else 'closed', background='green' if val else 'red')
+        app.dispatcher.add_listener(valve + '_setting', callback)
 
     return app
 

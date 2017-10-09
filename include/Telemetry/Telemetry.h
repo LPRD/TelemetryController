@@ -35,7 +35,7 @@
   
 #define SEND_ITEM_NAME(field, value)            \
   Serial.print(F(";"));                         \
-  Serial.print(F(field));                       \
+  Serial.print(field);                          \
   Serial.print(F(":"));                         \
   Serial.print(value);
 
