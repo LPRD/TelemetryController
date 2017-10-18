@@ -20,14 +20,14 @@ import traceback
 
 from typing import List, Iterable, Callable, Any
 
-# Helper class that has a write method that is provided to the constructor
 class FnWriteableStream:
+    """Helper class that has a write method that is provided to the constructor"""
     def __init__(self, write: Callable[[str], None]) -> None:
         self.write = write
 
-# Main gui application class.  Extends frame so an instance can be extended with additional widgets
-# directly.  
 class Application(Frame):
+    """Main gui application class.  Extends frame so an instance can be extended
+    with additional widgets directly.  """
     def __init__(self,
                  dispatcher: manager.Dispatcher,
                  manager: manager.DataManager,
@@ -72,7 +72,7 @@ class Application(Frame):
         master.attributes("-fullscreen", self.flags['full_screen'])
         master.bind('<Escape>', self.unmaximize)
         master.wm_title(self.flags['window_manager_title'])
-        self.createWidgets()
+        self._createWidgets()
         self.manager.add_listener("sys time", self.saveBackup)
 
         # Start reading from Serial
@@ -90,7 +90,7 @@ class Application(Frame):
         elif ports:
             self.serialPort.set(ports[0])
 
-        self.startListeners()
+        self._startListeners()
 
         # Open a file if requested from command line
         if args.filename:
@@ -108,9 +108,9 @@ class Application(Frame):
                 except FileNotFoundError:
                     parser.error("File " + args.filename + " not found")
 
-    # Initialize the various widgets in the main frame
-    def createWidgets(self):
-        self.setupPlots()
+    def _createWidgets(self):
+        """Initialize the various widgets in the main frame."""
+        self._setupPlots()
 
         buttons = Frame(self)
         self.controlButton = Button(buttons, text="Start", command=self.start, bg="lime green")
@@ -234,8 +234,8 @@ class Application(Frame):
 
         self.miscGuiPanel = None
 
-    # Set up the plots and add it as a widget
-    def setupPlots(self):
+    def _setupPlots(self):
+        """Set up the plots and add it as a widget."""
         self.fig = matplotlib.figure.Figure(figsize=(10,10),dpi=100)
         self.canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.fig, master=self)
         
@@ -252,8 +252,8 @@ class Application(Frame):
         self.canvas._tkcanvas.pack(side=LEFT)
         #self.update() # Is this needed? Causes freezing with lots of plots
 
-    # Exit, handler for quit button
     def terminate(self):
+        """Exit, handler for quit button."""
         if self.manager.running:
             result = askquestion("Exit",
                                  "Logging is running, do you really want to exit?",
@@ -263,8 +263,8 @@ class Application(Frame):
         else:
             sys.exit(0)
 
-    # Write text to the serial console
-    def write(self, txt: str, color: str = None):
+    def write(self, txt: str, color: str=None):
+        """Write text to the serial console."""
         self.serialOut.config(state=NORMAL)
         if color:
             self.serialOut.insert(END, str(txt), color + '_text')
@@ -273,8 +273,8 @@ class Application(Frame):
         self.serialOut.see(END)
         self.serialOut.config(state=DISABLED)
 
-    # Start a run
     def start(self):
+        """Start a run."""
         if self.serialManager:
             self.resetValuesList()
             self.manager.start()
@@ -284,64 +284,63 @@ class Application(Frame):
             showerror("Error", "No serial port selected")
             return False
     
-    # Stop the current run
     def stop(self):
+        """Stop the current run."""
         self.manager.stop()
         self.controlButton.config(text="Reset", bg="grey", command=self.reset)
     
-    # Reset for the next run
     def reset(self):
+        """Reset for the next run."""
         self.resetValuesList()
         self.manager.reset()
         self.controlButton.config(text="Start", bg="lime green", command=self.start)
-        
-    # Send a serial command
+    
     def sendSerial(self, _=None):
+        """Send a serial command."""
         if self.serialManager:
             self.serialManager.write(self.serialIn.get())
             self.serialIn.delete(0, 'end')
         else:
             showerror("Error", "No serial port selected")
-        
-    # Handler for sending a serial command with a newline appended
+    
     def sendSerialNewline(self, _=None):
+        """Handler for sending a serial command with a newline appended."""
         if self.serialManager:
             self.serialManager.write(self.serialIn.get() + "\r\n")
             self.serialIn.delete(0, 'end')
         else:
             showerror("Error", "No serial port selected")
-        
-    # Handler for sending a formatted packet
+    
     def sendValues(self, _=None):
+        """Handler for sending a formatted packet."""
         self.sendValue(self.sendDataName.get(), self.sendDataIn.get())
         if self.serialManager:
             self.sendDataIn.delete(0, 'end')
-
-    # Send a formatted packet
+    
     def sendValue(self, name, value=""):
+        """Send a formatted packet."""
         if self.serialManager:
             self.serialManager.write("@@@@@" + name + ":" + manager.unparse(value) + "&&&&&\r\n")
             return True
         else:
             showerror("Error", "No serial port selected")
             return False
-
-    # Disable full-screen mode
+    
     def unmaximize(self, _):
+        """Disable full-screen mode."""
         self.master.attributes("-fullscreen", False)
-
-    # Clear the values list after a reset or changing ports
+    
     def resetValuesList(self):
+        """Clear the values list after a reset or changing ports."""
         shown_data_types = [self.dispatcher.data_types[name]
                             for name in self.dispatcher.data_names
                             if self.dispatcher.data_types[name].show]
         self.valuesList.delete(0, END)
         for i in range(len(shown_data_types) + 1):
             self.valuesList.insert(i, "")
-        
-
-    # Handler for changing the serial port
+    
     def changeSerial(self, *args):
+        """Handler for changing the serial port."""
         # Try-catch needed b/c error messages in tracebacks on Windows are buggy
         try:
             #print("Selected port", self.serialPort.get())
@@ -354,22 +353,22 @@ class Application(Frame):
         except:
             if not sys.platform.startswith('win'):
                 traceback.print_exc()
-
-    # Handler for checking the available serial ports
+    
     def checkSerial(self):
+        """Handler for checking the available serial ports."""
         self.serialSelect['menu'].delete(0, 'end')
         for port in serialmanager.serial_ports():
             self.serialSelect['menu'].add_command(label=port, command=lambda p=port: self.serialPort.set(p))
-
-    # Begin updating the data manager listeners
-    def startListeners(self):
+    
+    def _startListeners(self):
+        """Begin updating the data manager listeners."""
         if self.manager.update_all_listeners():
-            self.after(50, self.startListeners)
+            self.after(50, self._startListeners)
         else:
-            self.after(100, self.startListeners)
-
-    # Begin reading serial data
+            self.after(100, self._startListeners)
+    
     def startSerial(self):
+        """Begin reading serial data."""
         if self.serialManager:
             try:
                 if self.serialManager.handleInput(self, self.colorStreams['red']):
@@ -379,17 +378,18 @@ class Application(Frame):
             except OSError:
                 self.serialManager = None
                 self.checkSerial()
-
-    # Write the current run data log to the backup file once per second while collecting data
-    # TODO: use self.after(...)
-    last_update_time = ""
+    
+    _last_update_time = ""
     def saveBackup(self, times, values):
-        if len(values) > 0 and values[-1] != self.last_update_time:
-            self.last_update_time = values[0]
+        """Write the current run data log to the backup file once per second
+        while collecting data."""
+        # TODO: use self.after(...)
+        if len(values) > 0 and values[-1] != self._last_update_time:
+            self._last_update_time = values[0]
             open(self.flags["backup_log"], 'w').write(self.manager.dump('json'))
-
-    # Handler to open a file
+    
     def openFile(self):
+        """Handler to open a file."""
         filename = askopenfilename(filetypes=[('All files', '*.*'), 
                                               ('JSON data file', '*.json'),
                                               ('Log file', '*.log'),
@@ -409,9 +409,9 @@ class Application(Frame):
                     self.controlButton.config(text="Reset", bg="grey", command=self.reset)
                 else:
                     showerror("Error", "Invalid data file")
-
-    # Handler to save file
+    
     def saveFile(self):
+        """Handler to save to a file."""
         filename = asksaveasfilename(defaultextension='.json',
                                      filetypes=[('JSON data file (recommended)', '*.json'),
                                                 ('Log file', '*.log'),
@@ -444,9 +444,9 @@ class Application(Frame):
                         self.serialManager.paused = False
                 else:
                     self.fig.savefig(filename)
-
-    # Handler to export as a CSV file
+    
     def exportCSV(self):
+        """Handler to export as a CSV file."""
         filename = asksaveasfilename()
         if filename:
             if filename.split(".")[-1] != "csv":
@@ -490,7 +490,7 @@ class Application(Frame):
             endTimeLabel = Label(exportWindow, text="End time (sec)")
             endTimeLabel.grid(row=1, column=0)
             
-            lastUpdateTime = self.manager.last_update_time / 1000
+            lastUpdateTime = self.manager._last_update_time / 1000
 
             endTimeVar = DoubleVar()
             endTimeVar.set(lastUpdateTime)

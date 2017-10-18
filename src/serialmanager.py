@@ -7,9 +7,11 @@ import typing
 import typing.io
 import manager
 
-# Manages recieving data from a serial port and passes it to a Dispatcher
 class SerialManager:
+    """Manages recieving data from a serial port and passes it to a Dispatcher."""
+    
     ports = {} # type: Dict[str, serial.Serial]
+    paused = False
     def __init__(self,
                  dispatcher: manager.Dispatcher,
                  port: str = '/dev/ttyACM0',
@@ -26,8 +28,6 @@ class SerialManager:
                 self.ser = SerialManager.ports[port]
             else:
                 raise e
-        
-        self.paused = False
 
         self.dispatcher.reset()
 
@@ -37,9 +37,9 @@ class SerialManager:
     def handleInput(self,
                     txtout: typing.TextIO = sys.stdout,
                     errout: typing.TextIO = sys.stderr):
-        while self.paused:
-            time.sleep(100 / 1000) # Sleep 100 ms
-        if self.ser.in_waiting:
+        """Check if data is available, and if so send it to the dispatcher or
+        appropriate output stream."""
+        if self.ser.in_waiting and not self.paused:
             try:
                 bytes_in = self.ser.read(self.ser.in_waiting)
             except serial.serialutil.SerialException:
@@ -50,12 +50,12 @@ class SerialManager:
         return False
     
     def write(self, txt: typing.Text):
+        """Send the given text back out the serial port."""
         self.ser.write(txt.encode())
         self.ser.flush()
 
-# Utility function, get the list of all available serial devices
 def serial_ports() -> typing.List[str]:
-    """ Lists serial port names
+    """ Lists all available serial port names
 
         :raises EnvironmentError:
             On unsupported or unknown platforms

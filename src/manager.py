@@ -8,24 +8,23 @@ from typing import cast, Any, Union, List, Tuple, NamedTuple, Dict, Callable, It
 from typing.io import TextIO
 
 # Data handling functions
-
-# Parse a string to get a value of a given type
 def parse(type: type, value: str):
+    """Parse a string to get a value of a given type."""
     # bool doesn't actually parse the value, just checks whether string is empty
     if type is bool:
         return value == "1" or value == "True"
     else:
         return type(value)
 
-# Convert a value to a string that we can send
 def unparse(value) -> str:
+    """Convert a value to a string that we can send."""
     # Treat bools as ints
     if type(value) is bool:
         value = int(value)
     return str(value)
 
-# Representation of a data value category, with various properties
 class DataType:
+    """Representation of a data value category, with various properties."""
     def __init__(self,
                  name:       str,
                  type:       type = float,
@@ -46,19 +45,23 @@ class DataType:
         if self.units:
             self.full_name += " (" + self.units + ")"
 
-# Representation of a serial packet that contains multiple data types
 class PacketSpec:
+    """Representation of a serial packet that contains multiple data types."""
     def __init__(self, name: str, *data_types: DataType) -> None:
         self.name = name
         self.data_types = data_types
 
 Spec = Union[PacketSpec, DataType]
-Data = Union[int, float, str]
+Data = Union[bool, int, float, str]
 DispatchListener = Callable[[int, Data], None]
 
-# Manages parsing incoming serial packets, recieving data in given data types, and passes it to
-# listeners.  Also tracks system date and time.  
 class Dispatcher:
+    """Manages parsing incoming serial packets, recieving data in given data
+    types, and passes it to listeners.  Also tracks system date and time.  """
+    
+    start_time = None # type: int
+    _current_line = ""
+    
     def __init__(self, *specs: Spec) -> None:
         specs += (DataType('sys date', str, False),
                   DataType('sys time', str, False),
@@ -72,16 +75,17 @@ class Dispatcher:
         self.time = {name: None for name in self.data_names} # type: Dict[str, int]
         self.listeners = {name: [] for name in self.data_names} # type: Dict[str, List[Tuple[DispatchListener, int]]]
         self.listener_last_updates = {name: [] for name in self.data_names} # type: Dict[str, List[int]]
-        self.start_time = None # type: int
-        self.current_line = ""
 
     def reset(self):
+        """Reset the states of all listeners as if no data had been received."""
         self.start_time = None
         for name in self.data_names:
             for i in range(len(self.listener_last_updates[name])):
                 self.listener_last_updates[name][i] = 0
 
     def add_listener(self, name: str, fn: DispatchListener, period=0):
+        """Attatch a new listener function to a data field, with an optional
+        delay between updates."""
         self.listeners[name].append((fn, period))
         self.listener_last_updates[name].append(0)
 
@@ -89,8 +93,10 @@ class Dispatcher:
                    text: str,
                    txtout: TextIO = sys.stdout,
                    errout: TextIO = sys.stderr):
+        """Eat a raw string of data, parse it, and dispatch the new values
+        appropriately."""
         # Split the unparsed text from previously with the new text into lines
-        lines = (self.current_line + text).split("\n")
+        lines = (self._current_line + text).split("\n")
 
         # Parse each line as a packet or text output
         abs_time = None
@@ -120,10 +126,10 @@ class Dispatcher:
         
         # Print the last line if it isn't the start of an incomplete packet
         if lines[-1].startswith("@"):
-            self.current_line = lines[-1]
+            self._current_line = lines[-1]
         else:
             print(lines[-1], end='', file=txtout)
-            self.current_line = ""
+            self._current_line = ""
         
         # Always update log, even if parse failed
         self.accept('log', abs_time, [text], errout)
@@ -133,6 +139,7 @@ class Dispatcher:
                time: int,
                data: List[str],
                errout: TextIO = sys.stderr) -> bool:
+        """Accept a new value for a field, and dispatch it appropriately."""
         # Check that name is a valid packet format
         if name not in self.packet_specs:
             print("Received unrecognized data type", name, file=errout)
@@ -178,21 +185,26 @@ class Dispatcher:
         return True
 
     def request(self, name: str) -> Tuple[int, Data]:
+        """Get the current value of any data field and the time that it was
+        recieved, by name"""
         return self.time[name], self.data[name]
 
 DataListener = Callable[[List[int], List[Data]], None]
 
-# Manages the data for a spesific run.  Attatches handlers to a Dispatcher, logs the data when
-# running, can save or load data runs in various formats.  Listeners can be attatched that trigger
-# on new data when there is an active run
 class DataManager:
+    """Manages the data for a spesific run.  Attatches handlers to a Dispatcher,
+    logs the data when running, can save or load data runs in various formats.  
+    Listeners can be attatched that trigger on new data when there is an active
+    run."""
+
+    running = False
+    
     def __init__(self, dispatcher: Dispatcher) -> None:
         self.dispatcher = dispatcher
         self.data = OrderedDict((name, ([], [])) for name in dispatcher.data_names) # type: Dict[str, Tuple[List[int], List[Data]]]
         self.last_update_time = 0
         self.listeners = {name: [] for name in dispatcher.data_names} # type: Dict[str, List[DataListener]]
         self.needs_update = {name: False for name in dispatcher.data_names}
-        self.running = False
 
         for name in dispatcher.data_names:
             def fn(time: int, value: Data, name=name):
@@ -211,15 +223,19 @@ class DataManager:
             dispatcher.add_listener(name, fn)
 
     def add_listener(self, name: str, fn: DataListener) -> None:
+        """Attatch a new listener function to a data field."""
         self.listeners[name].append(fn)
 
     def update_listeners(self, name: str) -> None:
+        """Perform an update of all listeners attatched to the given field."""
         self.needs_update[name] = False
         times, values = self.request(name)
         for listener in self.listeners[name]:
             listener(times, values)
 
     def update_all_listeners(self, force: bool = False) -> bool:
+        """Perform an update of all listeners, optionally forcing an update
+        regardless of whether new data was present."""
         updated = False
         for name in self.dispatcher.data_types:
             if self.needs_update[name] or force:
@@ -228,18 +244,22 @@ class DataManager:
         return updated
 
     def request(self, name: str) -> Tuple[List[int], List[Data]]:
+        """Request all run data for a field."""
         return self.data[name]
 
     def start(self):
+        """Begin taking data and updating the listeners."""
         self.dispatcher.reset()
         self.running = True
         self.update_all_listeners(True)
 
     def stop(self):
+        """Halt taking data and updating the listeners."""
         self.running = False
         self.update_all_listeners(True)
 
     def reset(self):
+        """Reset the most recent stored run data."""
         for times, values in self.data.values():
             times.clear()
             values.clear()
@@ -247,6 +267,8 @@ class DataManager:
         self.update_all_listeners(True)
 
     def dump_csv(self, data_names: Iterable[str], start: int = 0, end: int = None) -> str:
+        """Dump the current run data for the given data fields at the given
+        indices to a csv data string."""
         if end is None:
             end = self.last_update_time
         
@@ -266,6 +288,12 @@ class DataManager:
         return result
 
     def dump(self, format: str) -> str:
+        """Dump the current run data to a string representation in one of the
+        following formats:
+        * csv: A csv log containing all data from most fields.
+        * json: A json representation of the entire internal state of the current
+        run, that may be reloaded for analysis.
+        * log: All recieved data appended into a single string."""
         if format == 'csv':
             data_names = [name
                           for name in self.dispatcher.data_names
@@ -278,12 +306,19 @@ class DataManager:
         else:
             sys.exit("Unsupported format " + format)
 
-    # txtout is stream to write non-packet text when loading a log
+  
     def load(self,
              format: str, 
-             text: str, txtout:
-             TextIO = sys.stdout,
+             text: str,
+             # streams to write non-packet output when loading a log
+             txtout: TextIO = sys.stdout,
              errout: TextIO = sys.stderr) -> bool:
+        """Load a string representation of run data from one of the following
+        formats, as generated by dump():
+        * csv: A csv log containing all data from most fields.
+        * json: A json representation of the entire internal state of the current
+        run, that may be reloaded for analysis.
+        * log: All recieved data appended into a single string."""
         if format == 'json':
             data = OrderedDict(json.loads(text))
             if set(self.data.keys()) != set(data.keys()):

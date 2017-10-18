@@ -58,7 +58,7 @@ def init(config=Config.MK_1):
                           "Telemetry monitor - Mk 2 static test" if config == Config.MK_2 else
                           "Telemetry monitor",
                           show_send_value=False,
-                          serial_console_height=5,
+                          serial_console_height=8,
                           default_baud=115200)
     running = False
     def start_abort_handler():

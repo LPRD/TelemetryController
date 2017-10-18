@@ -7,10 +7,11 @@ from matplotlib.gridspec import GridSpec
 from typing import cast, List, Tuple, Sequence, Iterator, Union, Any
 
 def rev(x: str) -> Iterator[str]:
+    """Typed wrapper function for reversed() on a str."""
     return reversed(x)
 
-# Representation of a group of plotted data values
 class Plot:
+    """Representation of a group of plotted data values."""
     def __init__(self,
                  x: str,
                  ys: Union[str, Sequence[str]],
@@ -63,6 +64,8 @@ class Plot:
         self.lines = {y: None for y in self.ys} # type: Dict[str, Any] # TODO: type
 
     def create(self, manager, fig, gs):
+        """Create the specified plot on a figure and grid specification,
+        attatched to listen to a manager."""
         data_types = manager.dispatcher.data_types
         self.subplot = fig.add_subplot(gs)
         if self.name:
@@ -138,6 +141,8 @@ class Plot:
             manager.add_listener(y, fn)
 
     def animate(self):
+        """Matplotlib callback to update the animated plot based on manager
+        data."""
         updated = False
         for y in self.ys:
             if self.update[y]:
@@ -150,8 +155,8 @@ class Plot:
             self.subplot.relim()
             self.subplot.autoscale_view(None, True, True)
 
-# Generate a layout for the given plots
 def gen_layout(plots):
+    """Generate a layout for the given plots."""
     # Minimum possible size based on number of plots
     for height in count(int(math.ceil(math.sqrt(len(plots))))):
         for width in (height - 1, height):
@@ -183,6 +188,7 @@ def gen_layout(plots):
                 return width, height, layout
 
 def setup(plots, fig, manager):
+    """Create a list of plots on a figure for a manager in an optimal layout."""
     width, height, layout = gen_layout(plots)
     gridspec = GridSpec(height, width)
 
