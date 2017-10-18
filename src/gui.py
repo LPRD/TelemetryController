@@ -490,7 +490,7 @@ class Application(Frame):
             endTimeLabel = Label(exportWindow, text="End time (sec)")
             endTimeLabel.grid(row=1, column=0)
             
-            lastUpdateTime = self.manager._last_update_time / 1000
+            lastUpdateTime = self.manager.last_update_time / 1000
 
             endTimeVar = DoubleVar()
             endTimeVar.set(lastUpdateTime)
@@ -520,15 +520,15 @@ class Application(Frame):
             endTimeEntry.grid(row=1, column=1)
             
             names = OrderedDict()
-            i = 0
-            for data in self.dispatcher.data_types.values():
-                if data.one_line:
-                    var = IntVar()
-                    var.set(data.export_csv)
-                    cb = Checkbutton(exportWindow, text=data.name, variable=var)
-                    cb.grid(row=i % 10 + 2, column=i // 10, sticky=W)
-                    names[data.name] = var
-                    i += 1
+            data_types = list(filter(lambda data: data.one_line,
+                                     self.dispatcher.data_types.values()))
+            num_data_rows = math.ceil(len(list(data_types)) / 2)
+            for i, data in enumerate(data_types):
+                var = IntVar()
+                var.set(data.export_csv)
+                cb = Checkbutton(exportWindow, text=data.name, variable=var)
+                cb.grid(row=i % num_data_rows + 2, column=i // num_data_rows, sticky=W)
+                names[data.name] = var
 
             ok = False
             def accept():
@@ -537,9 +537,9 @@ class Application(Frame):
                 exportWindow.destroy()
 
             exportButton = Button(exportWindow, text='Export', command=accept)
-            exportButton.grid(row=11, column=0, sticky=E)
+            exportButton.grid(row=num_data_rows + 2, column=0, sticky=E)
             cancelButton = Button(exportWindow, text='Cancel', command=exportWindow.destroy)
-            cancelButton.grid(row=11, column=1, sticky=W)
+            cancelButton.grid(row=num_data_rows + 2, column=1, sticky=W)
 
             self.wait_window(exportWindow)
             
