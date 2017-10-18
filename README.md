@@ -91,7 +91,7 @@ The exit code should be 0.
 * Slowdown when plotting has been running for a while
 * Large numbers of invalid packets until restart after certain disruptions (reproduce?)
 * Serial ports under WINE act like Linux serial ports, preventing testing
-* Fix glitchy scrollbar on value readout
+* Fix glitchy scrollbar on value readout - convert to TreeView?
 * Convert comments to docstrings
 
 ### Fix later
