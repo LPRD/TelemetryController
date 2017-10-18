@@ -126,7 +126,7 @@ def init(config=Config.MK_1):
     valveButtons = {}
     for i, valve in enumerate(valves):
         button = Button(throttleFrame, text="closed", background="red")
-        button.bind('<Button-1>', lambda _: app.sendValue(valve + "_command", not valveSettings[valve]))
+        button.bind('<Button-1>', lambda _, valve=valve: app.sendValue(valve + "_command", not valveSettings[valve]))
         button.grid(row=1 + i % 2, column=1 + int(i / 2), sticky=W, padx=5)
         valveButtons[valve] = button
 
@@ -149,9 +149,9 @@ def init(config=Config.MK_1):
                                                                                        fg='green' if val else 'red'))
 
     for valve in valves:
-        def callback(time, val):
+        def callback(time, val, valve=valve):
             valveSettings[valve] = val
-            valveButtons.config(text='open' if val else 'closed', background='green' if val else 'red')
+            valveButtons[valve].config(text='open' if val else 'closed', background='green' if val else 'red')
         app.dispatcher.add_listener(valve + '_setting', callback)
 
     return app

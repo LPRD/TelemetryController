@@ -92,6 +92,7 @@ The exit code should be 0.
 * Large numbers of invalid packets until restart after certain disruptions (reproduce?)
 * Serial ports under WINE act like Linux serial ports, preventing testing
 * Fix glitchy scrollbar on value readout
+* Convert comments to docstrings
 
 ### Fix later
 * Create new folder from save dialogue

@@ -7,6 +7,23 @@ import sys
 from typing import cast, Any, Union, List, Tuple, NamedTuple, Dict, Callable, Iterable, Sequence
 from typing.io import TextIO
 
+# Data handling functions
+
+# Parse a string to get a value of a given type
+def parse(type: type, value: str):
+    # bool doesn't actually parse the value, just checks whether string is empty
+    if type is bool:
+        return value == "1" or value == "True"
+    else:
+        return type(value)
+
+# Convert a value to a string that we can send
+def unparse(value) -> str:
+    # Treat bools as ints
+    if type(value) is bool:
+        value = int(value)
+    return str(value)
+
 # Representation of a data value category, with various properties
 class DataType:
     def __init__(self,
@@ -19,10 +36,7 @@ class DataType:
         self.name = name
         self.type = type
         # bool doesn't actually parse the value, just checks whether string is empty
-        if type == bool:
-            self.parse = lambda x: x == "1" or x == "True"
-        else:
-            self.parse = type
+        self.parse = lambda value: parse(type, value)
         self.show = show
         self.one_line = one_line
         self.export_csv = export_csv

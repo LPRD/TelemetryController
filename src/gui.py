@@ -320,7 +320,7 @@ class Application(Frame):
     # Send a formatted packet
     def sendValue(self, name, value=""):
         if self.serialManager:
-            self.serialManager.write("@@@@@" + name + ":" + value + "&&&&&\r\n")
+            self.serialManager.write("@@@@@" + name + ":" + manager.unparse(value) + "&&&&&\r\n")
             return True
         else:
             showerror("Error", "No serial port selected")
