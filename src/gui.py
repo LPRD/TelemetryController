@@ -265,13 +265,14 @@ class Application(Frame):
 
     def write(self, txt: str, color: str=None):
         """Write text to the serial console."""
-        self.serialOut.config(state=NORMAL)
-        if color:
-            self.serialOut.insert(END, str(txt), color + '_text')
-        else:
-            self.serialOut.insert(END, str(txt))
-        self.serialOut.see(END)
-        self.serialOut.config(state=DISABLED)
+        if txt:
+            self.serialOut.config(state=NORMAL)
+            if color:
+                self.serialOut.insert(END, str(txt), color + '_text')
+            else:
+                self.serialOut.insert(END, str(txt))
+            self.serialOut.see(END)
+            self.serialOut.config(state=DISABLED)
 
     def start(self):
         """Start a run."""
