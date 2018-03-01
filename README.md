@@ -77,6 +77,14 @@ This should print the python version and start the python REPL.
 ```> wine python -c 'import matplotlib; import serial; import typing; import pywintypes'```
 The exit code should be 0.  
 
+## Repository Layout
+* include/Telemetry - Contains Telemetry.h file detailing communication conventions for the Arduino. Must change paramater to switch communication modes between Serial, Ethernet TCP, Ethernet UDP, etc. 
+* libs - Contains Telemetry.zip of Telemetry.h file for easy distribution to Arduino. 
+* build_tools - A link to another repository of the same name. Contains tools to distribute the GUI, to run it on multiple platforms. 
+* dist - Contains built executables of the GUI, one for both Windows/*nix systems. Includes various configurations, such as mk1/2_static_test, pressure_test, flight, demo_static_test, etc. 
+* drivers - Contains Python3 scripts specifying the design of each GUI to be built in dist/ directory. The demo, mk1, and mk2 scripts are wrappers around static_test_gui.py, the main script. 
+* src - Contains Python3 scripts handling the components of the GUI and the GUI class. Includes plotting, managing, and IO (serial, ethernet, etc) classes. 
+
 ## TODO items
 ### Enhancements
 * Proper support for shared x axis

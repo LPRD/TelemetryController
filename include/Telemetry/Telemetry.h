@@ -1,6 +1,8 @@
 // Contains defs for standard packet io protocol
 // To read floating point numbers, you need to change your arduino configuration settings
 
+// The code & macros in this file are ONLY run on the Arduino end, the test-stand end
+
 // This just works, OK?
 
 #ifndef _TELEMETRY_H
@@ -8,6 +10,49 @@
 
 #include "Arduino.h"
 #include <avr/pgmspace.h>
+
+// Set the protocall here: Serial, Ethernet
+#define Protocall Serial
+
+#if Protocall == Serial
+#define Pr(x) Serial.print(x)
+#define Prln(x) Serial.println(x)
+#define Read Serial.read()
+#define Avail Serial.available()
+#define Flush Serial.flush()
+#define INIT_GLOBALS
+#define SETUP Serial.begin(9600);
+
+#elif Protocall == Ethernet_TCP
+#define Pr(x) server.print(x)
+#define Prln(x) server.println(x)
+#define Read() client.read()
+#define Avail() client.available()
+#define Flush() client.flush()
+#define INIT_GLOBALS \
+  byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; \
+  IPAddress ip(192, 168, 1, 177); \
+  IPAddress myDns(192,168,1, 1); \
+  IPAddress gateway(192, 168, 1, 1); \
+  IPAddress subnet(255, 255, 0, 0); \
+  EthernetServer server(23); \
+  EthernetClient client;
+#define SETUP \
+  Ethernet.begin(mac, ip, myDns, gateway, subnet); \
+  server.begin(); \
+  client = server.available(); \
+  assert(client); // Not sure about this, discuss
+#elif Protocall == Ethernet_UDP
+#define Pr(x) 
+#define Prln(x)
+#define Read()
+#define Avail()
+#Flush()
+#define INIT_GLOBALS
+#define SETUP
+#else
+assert(false);
+#endif
 
 // Defs for simulating C++ ostream
 /* template<class T>  */
@@ -20,28 +65,28 @@
 /* { obj.println(); return obj; } */
 
 #define BEGIN_SEND {              \
-  Serial.print(F("@@@@@_time:")); \
-  Serial.print(millis());
+  Pr(F("@@@@@_time:")); \
+  Pr(millis());
   
 #define SEND_ITEM(field, value) \
-  Serial.print(F(";"));         \
-  Serial.print(F(#field));      \
-  Serial.print(F(":"));         \
-  Serial.print(value);
+  Pr(F(";"));         \
+  Pr(F(#field));      \
+  Pr(F(":"));         \
+  Pr(value);
   
 #define SEND_GROUP_ITEM(value)  \
-  Serial.print(F(","));         \
-  Serial.print(value);
+  Pr(F(","));         \
+  Pr(value);
   
 #define SEND_ITEM_NAME(field, value)            \
-  Serial.print(F(";"));                         \
-  Serial.print(field);                          \
-  Serial.print(F(":"));                         \
-  Serial.print(value);
+  Pr(F(";"));                         \
+  Pr(field);                          \
+  Pr(F(":"));                         \
+  Pr(value);
 
 #define END_SEND                \
-  Serial.println(F("&&&&&"));   \
-  Serial.flush();               \
+  Prln(F("&&&&&"));   \
+  Flush;               \
 }
 
 #define SEND(field, value)      \
@@ -59,34 +104,34 @@ char _buffer[READ_BUFFER_SIZE];
 char _data[READ_BUFFER_SIZE - 10];
 
 #define CHECK_SERIAL_AVAIL                      \
-  if (!Serial.available()) {                    \
+  if (!Avail()) {                    \
     delay(100);                                 \
-    if (!Serial.available()) {                  \
-      Serial.println(F("READ timeout"));        \
+    if (!Avail()) {                  \
+      Prln(F("READ timeout"));        \
       goto L_ENDREAD;                           \
     }                                           \
   }
 
 // Sorry about the gotos, only needed because macros.  
 #define BEGIN_READ                                                      \
-  if (Serial.available()) {                                             \
+  if (Avail()) {                                             \
     char _c = '\0';                                                     \
     int _i;                                                             \
     for (_i = 0; _c != '\n'; _i++) {                                    \
       if (_i == READ_BUFFER_SIZE) {                                     \
-        Serial.println(F("READ buffer overflow"));                      \
-        while (Serial.available() && Serial.read() != '\n')             \
+        Prln(F("READ buffer overflow"));                      \
+        while (Avail() && Read() != '\n')             \
           CHECK_SERIAL_AVAIL                                            \
         goto L_ENDREAD;                                                 \
       }                                                                 \
       CHECK_SERIAL_AVAIL                                                \
-      _c = Serial.read();                                               \
+      _c = Read();                                               \
       _buffer[_i] = _c;                                                 \
       if (_c == '\r') _i--;                                             \
     }                                                                   \
     _buffer[_i] = '\0';                                                 \
     if (!sscanf(_buffer, "@@@@@%[^&]&&&&&", _data)) {                   \
-      Serial.println(F("READ packet error"));                           \
+      Prln(F("READ packet error"));                           \
       goto L_ENDREAD;                                                   \
     }                                                                   \
     if (0);
