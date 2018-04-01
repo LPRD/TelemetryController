@@ -12,44 +12,63 @@
 #include <avr/pgmspace.h>
 
 // Set the protocall here: Serial, Ethernet
-#define Protocall Serial
+#define Protocall Ethernet_TCP
 
 #if Protocall == Serial
 #define Pr(x) Serial.print(x)
 #define Prln(x) Serial.println(x)
-#define Read Serial.read()
-#define Avail Serial.available()
-#define Flush Serial.flush()
-#define INIT_GLOBALS
-#define SETUP Serial.begin(9600);
+#define Read() Serial.read()
+#define Avail() Serial.available()
+#define Flush() Serial.flush()
+#define INIT_GLOBALS() do{}while(0)
+#define SETUP() Serial.begin(9600)
 
 #elif Protocall == Ethernet_TCP
+#include <Ethernet.h>
 #define Pr(x) server.print(x)
 #define Prln(x) server.println(x)
 #define Read() client.read()
 #define Avail() client.available()
 #define Flush() client.flush()
-#define INIT_GLOBALS \
+#define INIT_GLOBALS do{ \
   byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; \
   IPAddress ip(192, 168, 1, 177); \
-  IPAddress myDns(192,168,1, 1); \
-  IPAddress gateway(192, 168, 1, 1); \
-  IPAddress subnet(255, 255, 0, 0); \
-  EthernetServer server(23); \
-  EthernetClient client;
-#define SETUP \
-  Ethernet.begin(mac, ip, myDns, gateway, subnet); \
+  // IPAddress myDns(192,168,1, 1); \
+  // IPAddress gateway(192, 168, 1, 1); \
+  // IPAddress subnet(255, 255, 0, 0); \
+  EthernetServer server(5005); \
+  EthernetClient client; \
+} while(0)
+#define SETUP do{ \
+  Ethernet.begin(mac, ip); \
   server.begin(); \
-  client = server.available(); \
-  assert(client); // Not sure about this, discuss
+  while(!(client = server.available())); \
+  assert(client); \ // Not sure about this, discuss
+} while(0)
+
 #elif Protocall == Ethernet_UDP
-#define Pr(x) 
-#define Prln(x)
-#define Read()
-#define Avail()
-#Flush()
-#define INIT_GLOBALS
-#define SETUP
+#include <Ethernet.h>
+#include <EthernetUdp.h>
+#define Pr(x) do{ \
+  Udp.beginPacket(Udp.remoteIP(), Udp.remotePort()); \
+  Udp.write(x); \
+  Udp.endPacket(); \
+} while(0)
+#define Prln(x) Pr(x.concat('\n'))
+#define Read() Udp.read()
+#define Avail() Udp.parsePacket()
+#define Flush()
+#define INIT_GLOBALS do{ \
+  byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; \
+  IPAddress ip(192, 168, 1, 177); \
+  unsigned int port 5005; \
+  EthernetUDP Udp; \
+} while(0)
+#define SETUP do{ \
+  Ethernet.begin(mac, ip); \
+  Udp.begin(port); \
+} while(0)
+
 #else
 assert(false);
 #endif
