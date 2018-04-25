@@ -29,21 +29,22 @@ def init(config=Config.MK_1):
          manager.DataType('inlet_temperature', float, units="deg C", export_csv=True),
          manager.DataType('outlet_temperature', float, units="deg C", export_csv=True)] +\
          ([] if config != Config.MK_2 else
-          [manager.DataType('chamber_temperature', float, units="deg C", export_csv=True),
-           manager.DataType('pressure', float, units="PSI", export_csv=True)]) +\
+          manager.DataType('chamber_temperature', float, units="deg C", export_csv=True)) +\
+        [manager.DataType('fuel_pressure', float, units="PSI", export_csv=True),
+         manager.DataType('ox_pressure', float, units="PSI", export_csv=True)] +\
         vector_DataType('acceleration', float, units="m/s^2", export_csv=True) +\
         [manager.DataType('status', str, show=False),
          # True = open, False = closed for these
          manager.DataType('sensor_status', bool, show=False),
          manager.DataType('fuel_pre_setting', bool, show=False),
-         manager.DataType('oxy_pre_setting', bool, show=False),
+         manager.DataType('ox_pre_setting', bool, show=False),
          manager.DataType('fuel_main_setting', bool, show=False),
-         manager.DataType('oxy_main_setting', bool, show=False)]
+         manager.DataType('ox_main_setting', bool, show=False)]
     plots =\
-        [plot.Plot('time', 'force', width=3, show_x_label=False)] +\
+        [plot.Plot('time', 'force', width=3, show_x_label=False),
+         plot.Plot('time', ['fuel_pressure', 'ox_pressure'], width=3)] +\
         ([] if config != Config.MK_2 else
-         [plot.Plot('time', 'pressure', width=3),
-          plot.Plot('time', 'chamber_temperature')]) +\
+         [plot.Plot('time', 'chamber_temperature')]) +\
         [plot.Plot('time', ['inlet_temperature', 'outlet_temperature'], "temperature",
                    width=3 if config != Config.MK_2 else 1, show_x_label=False),
          plot.Plot('time', ['x_acceleration', 'y_acceleration', 'z_acceleration'],
@@ -108,8 +109,7 @@ def init(config=Config.MK_1):
     sensorStatus = Label(controlsFrame, text="All sensors functional", fg='green', font=("Helvetica", 17))
     sensorStatus.pack()
     Button(controlsFrame, text="Zero force", command=lambda: app.sendValue("zero_force")).pack(side=LEFT)
-    if config == Config.MK_2:
-        Button(controlsFrame, text="Zero pressure", command=lambda: app.sendValue("zero_pressure")).pack(side=LEFT)
+    Button(controlsFrame, text="Zero pressure", command=lambda: app.sendValue("zero_pressure")).pack(side=LEFT)
     Button(controlsFrame, text="Reset board", command=lambda: app.sendValue("reset")).pack(side=LEFT)
 
     # Throttle controls
@@ -119,15 +119,15 @@ def init(config=Config.MK_1):
     Label(throttleFrame, text="Prestage", font=("Helvetica", 15)).grid(row=0, column=1)
     Label(throttleFrame, text="Mainstage", font=("Helvetica", 15)).grid(row=0, column=2, padx=15)
     Label(throttleFrame, text="Fuel", font=("Helvetica", 15)).grid(row=1, column=0, sticky=W, padx=5)
-    Label(throttleFrame, text="Oxygen", font=("Helvetica", 15)).grid(row=2, column=0, sticky=W, padx=5)
+    Label(throttleFrame, text="Oxidizer", font=("Helvetica", 15)).grid(row=2, column=0, sticky=W, padx=5)
 
-    valves = ['fuel_pre', 'fuel_main', 'oxy_pre', 'oxy_main']
+    valves = ['fuel_pre', 'fuel_main', 'ox_pre', 'ox_main']
     valveSettings = {valve: False for valve in valves}
     valveButtons = {}
     for i, valve in enumerate(valves):
         button = Button(throttleFrame, text="closed", background="red")
         button.bind('<Button-1>', lambda _, valve=valve: app.sendValue(valve + "_command", not valveSettings[valve]))
-        button.grid(row=1 + i % 2, column=1 + int(i / 2), sticky=W, padx=5)
+        button.grid(row=1 + int(i / 2), column=1 + i % 2, sticky=W, padx=5)
         valveButtons[valve] = button
 
     # Run controls
