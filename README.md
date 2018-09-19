@@ -1,4 +1,4 @@
-# Telemetry-display
+# Telemetry Controller
 Python matplotlib-based graphical viewer for telemetry streams
 
 ## Arduino setup instructions
@@ -11,6 +11,7 @@ You can simply download the packaged executables under dist, which should run wi
 
 ### Method 2 - setup for development
 #### Linux and Mac
+This requires dependencies in the https://github.com/LPRD/build_tools repository, which should be cloned with `--recursive` in the same working directory.
 **There is now no need to install python or any libraries!**  Everything should be included in the virtual python env.  To use it,
 simply run  
 ```> source build_tools/linux_venv/bin/activate```

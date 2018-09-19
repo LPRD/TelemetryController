@@ -2,9 +2,9 @@ NATIVE_WINE=0
 NATIVE_PYTHON=0
 
 SOURCES=$(wildcard src/*.py)
-PYINSTALLER_SOURCE=build_tools/pyinstaller
-WINE_VENV=build_tools/wine_venv
-LINUX_VENV=build_tools/linux_venv
+PYINSTALLER_SOURCE=../build_tools/pyinstaller
+WINE_VENV=../build_tools/wine_venv
+LINUX_VENV=../build_tools/linux_venv
 
 PYINSTALLER=$(PYINSTALLER_SOURCE)/pyinstaller.py
 ifeq ($(NATIVE_WINE), 0)
@@ -51,7 +51,7 @@ lib: $(LIB_TARGETS)
 # Raise an error if anything in build_tools is missing or modified
 # These only get built when missing
 $(PYINSTALLER_SOURCE) $(LINUX_VENV) $(WINE_VENV):
-	$(error Error: $@ appears to be missing, did you clone with --recursive?  You can fix this with "git submodule update --recursive --init")
+	$(error Error: $@ appears to be missing, did you clone https://github.com/LPRD/build_tools in the same directory?)
 
 # All static test gui varients depend on static_test_gui.py
 $(STATIC_TEST_GUI_BIN_TARGETS) $(STATIC_TEST_GUI_EXE_TARGETS): drivers/static_test_gui.py
