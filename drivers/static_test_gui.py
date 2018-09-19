@@ -29,7 +29,7 @@ def init(config=Config.MK_1):
          manager.DataType('inlet_temperature', float, units="deg C", export_csv=True),
          manager.DataType('outlet_temperature', float, units="deg C", export_csv=True)] +\
          ([] if config != Config.MK_2 else
-          manager.DataType('chamber_temperature', float, units="deg C", export_csv=True)) +\
+          [manager.DataType('chamber_temperature', float, units="deg C", export_csv=True)]) +\
         [manager.DataType('fuel_pressure', float, units="PSI", export_csv=True),
          manager.DataType('ox_pressure', float, units="PSI", export_csv=True)] +\
         vector_DataType('acceleration', float, units="m/s^2", export_csv=True) +\
