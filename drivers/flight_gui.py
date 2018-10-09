@@ -19,19 +19,15 @@ def vector_Plot(x, y, name=None, *args, **kwd_args):
         name = y.replace("_", " ")
     return plot.Plot(x, [d + "_" + y for d in ['x', 'y', 'z']], name, *args, **kwd_args)
 
-dts = ([manager.DataType('temperature', float, units='deg C'),
-        manager.DataType('missed_deadlines', int),
-        manager.DataType('servo_angle', int)] +
+dts = ([manager.DataType('temperature', float, units='deg C')] +
        vector_DataType('magnetometer', float) + # TODO: units
        vector_DataType('gyro', float) + # TODO: units
        vector_DataType('euler_angle', float, units='degrees') +
        vector_DataType('acceleration', float, units='m/sec^2'))
-plots = [#plot.Plot('time', 'temperature'),
-         vector_Plot('time', 'magnetometer'),
-         vector_Plot('time', 'gyro'),
-         vector_Plot('time', 'euler_angle'),
-         vector_Plot('time', 'acceleration'),
-         plot.Plot('time', 'servo_angle', "servo angle", width=2)]
+plots = [vector_Plot('time', 'magnetometer', width=3),
+         vector_Plot('time', 'gyro', width=3),
+         vector_Plot('time', 'euler_angle', width=3),
+         vector_Plot('time', 'acceleration', width=3)]
 dispatcher = manager.Dispatcher(*dts)
 manager = manager.DataManager(dispatcher)
 root = Tk()
