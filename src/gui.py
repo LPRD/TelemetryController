@@ -101,10 +101,12 @@ class Application(Frame):
             else:
                 self.reset()
                 try:
-                    if self.manager.load(extension, open(args.filename).read(), self, self.colorStreams['red']):
-                        self.controlButton.config(text="Reset", bg="grey", command=self.reset)
+                    try:
+                        self.manager.load(extension, open(args.filename).read(), self, self.colorStreams['red'])
+                    except ValueError as e:
+                        parser.error("Invalid data file:\n" + str(e))
                     else:
-                        parser.error("Invalid data file")
+                        self.controlButton.config(text="Reset", bg="grey", command=self.reset)
                 except FileNotFoundError:
                     parser.error("File " + args.filename + " not found")
 
@@ -127,6 +129,9 @@ class Application(Frame):
 
         self.exportButton = Button(buttons, text="Export csv...", command=self.exportCSV)
         self.exportButton.pack(side=LEFT)
+
+        self.thresholdButton = Button(buttons, text="Set thresholds...", command=self.configureThresholds)
+        self.thresholdButton.pack(side=LEFT)
         
         buttons.pack()
 
@@ -406,10 +411,12 @@ class Application(Frame):
                               "Legal formats are json, log, csv")
             else:
                 self.reset()
-                if self.manager.load(extension, open(filename).read(), self, self.colorStreams['red']):
-                    self.controlButton.config(text="Reset", bg="grey", command=self.reset)
+                try:
+                    self.manager.load(extension, open(filename).read(), self, self.colorStreams['red'])
+                except ValueError as e:
+                    showerror("Error", "Invalid data file:\n" + str(e))
                 else:
-                    showerror("Error", "Invalid data file")
+                    self.controlButton.config(text="Reset", bg="grey", command=self.reset)
     
     def saveFile(self):
         """Handler to save to a file."""
@@ -453,101 +460,162 @@ class Application(Frame):
             if filename.split(".")[-1] != "csv":
                 showerror("Error", "Invalid file extension\n" +
                           "Filename must end in .csv")
-            
-            # Create a popup window to ask for settings of what data to include
-            exportWindow = Toplevel(self)
-            exportWindow.title("Export settings")
-            
-            startTimeLabel = Label(exportWindow, text="Start time (sec)")
-            startTimeLabel.grid(row=0, column=0)
+            else:
+                # Create a popup window to ask for settings of what data to include
+                exportWindow = Toplevel(self)
+                exportWindow.title("Export settings")
 
-            startTimeVar = DoubleVar()
-            startTimeVar.set(0)
+                startTimeLabel = Label(exportWindow, text="Start time (sec)")
+                startTimeLabel.grid(row=0, column=0)
 
-            startTimeEntry = None
-            
-            lastValidStartTime = 0
-            def validateStartTime(value):
-                nonlocal lastValidStartTime
-                if value == '':
-                    return True
-                try:
-                    lastValidStartTime = float(value)
-                    if lastValidStartTime < 0:
-                        lastValidStartTime = 0
-                        return False
-                    else:
+                startTimeVar = DoubleVar()
+                startTimeVar.set(0)
+
+                startTimeEntry = None
+
+                lastValidStartTime = 0
+                def validateStartTime(value):
+                    nonlocal lastValidStartTime
+                    if value == '':
                         return True
-                except ValueError:
-                    return False
-
-            startTimeEntry = Entry(exportWindow,
-                                   textvariable=startTimeVar,
-                                   validate='all',
-                                   validatecommand=(exportWindow.register(validateStartTime), '%P'),
-                                   width=10)
-            startTimeEntry.grid(row=0, column=1)
-
-            endTimeLabel = Label(exportWindow, text="End time (sec)")
-            endTimeLabel.grid(row=1, column=0)
-            
-            lastUpdateTime = self.manager.last_update_time / 1000
-
-            endTimeVar = DoubleVar()
-            endTimeVar.set(lastUpdateTime)
-
-            endTimeEntry = None
-            
-            lastValidEndTime = lastUpdateTime
-            def validateEndTime(value):
-                nonlocal lastValidEndTime
-                if value == '':
-                    return True
-                try:
-                    lastValidEndTime = float(value)
-                    if lastValidEndTime < 0:
-                        lastValidEndTime = 0
+                    try:
+                        lastValidStartTime = float(value)
+                        if lastValidStartTime < 0:
+                            lastValidStartTime = 0
+                            return False
+                        else:
+                            return True
+                    except ValueError:
                         return False
-                    else:
-                        return True
-                except ValueError:
-                    return False
-            
-            endTimeEntry = Entry(exportWindow,
-                                 textvariable=endTimeVar,
-                                 validate='all',
-                                 validatecommand=(exportWindow.register(validateEndTime), '%P'),
-                                 width=10)
-            endTimeEntry.grid(row=1, column=1)
-            
-            names = OrderedDict()
-            data_types = list(filter(lambda data: data.one_line,
-                                     self.dispatcher.data_types.values()))
-            num_data_rows = math.ceil(len(list(data_types)) / 2)
-            for i, data in enumerate(data_types):
-                var = IntVar()
-                var.set(data.export_csv)
-                cb = Checkbutton(exportWindow, text=data.name, variable=var)
-                cb.grid(row=i % num_data_rows + 2, column=i // num_data_rows, sticky=W)
-                names[data.name] = var
 
-            ok = False
-            def accept():
-                nonlocal ok
+                startTimeEntry = Entry(exportWindow,
+                                       textvariable=startTimeVar,
+                                       validate='all',
+                                       validatecommand=(exportWindow.register(validateStartTime), '%P'),
+                                       width=10)
+                startTimeEntry.grid(row=0, column=1)
+
+                endTimeLabel = Label(exportWindow, text="End time (sec)")
+                endTimeLabel.grid(row=1, column=0)
+
+                lastUpdateTime = self.manager.last_update_time / 1000
+
+                endTimeVar = DoubleVar()
+                endTimeVar.set(lastUpdateTime)
+
+                endTimeEntry = None
+
+                lastValidEndTime = lastUpdateTime
+                def validateEndTime(value):
+                    nonlocal lastValidEndTime
+                    if value == '':
+                        return True
+                    try:
+                        lastValidEndTime = float(value)
+                        if lastValidEndTime < 0:
+                            lastValidEndTime = 0
+                            return False
+                        else:
+                            return True
+                    except ValueError:
+                        return False
+
+                endTimeEntry = Entry(exportWindow,
+                                     textvariable=endTimeVar,
+                                     validate='all',
+                                     validatecommand=(exportWindow.register(validateEndTime), '%P'),
+                                     width=10)
+                endTimeEntry.grid(row=1, column=1)
+
+                names = OrderedDict()
+                data_types = [data for data in self.dispatcher.data_types.values() if data.one_line]
+                num_data_rows = math.ceil(len(data_types) / 2)
+                for i, data in enumerate(data_types):
+                    var = IntVar()
+                    var.set(data.export_csv)
+                    cb = Checkbutton(exportWindow, text=data.name, variable=var)
+                    cb.grid(row=i % num_data_rows + 2, column=i // num_data_rows, sticky=W)
+                    names[data.name] = var
+
+                ok = False
+                def accept():
+                    nonlocal ok
+                    ok = True
+                    exportWindow.destroy()
+
+                exportButton = Button(exportWindow, text='Export', command=accept)
+                exportButton.grid(row=num_data_rows + 2, column=0, sticky=E)
+                cancelButton = Button(exportWindow, text='Cancel', command=exportWindow.destroy)
+                cancelButton.grid(row=num_data_rows + 2, column=1, sticky=W)
+
+                self.wait_window(exportWindow)
+
+                if ok:
+                    selected_data = [name for name, var in names.items() if var.get()]
+                    start_time = lastValidStartTime * 1000
+                    end_time = lastValidEndTime * 1000
+                    for data, (name, var) in zip(self.dispatcher.data_types.values(), names.items()):
+                        data.export_csv = bool(var.get())
+                    open(filename, 'w').write(self.manager.dump_csv(selected_data, start_time, end_time))
+
+    def configureThresholds(self):
+        # Create a popup window to ask for settings of what data to include
+        thresholdWindow = Toplevel(self)
+        thresholdWindow.title("Threshold settings")
+
+        Label(thresholdWindow, text="Enabled").grid(row=0, column=0)
+        Label(thresholdWindow, text="Lower").grid(row=0, column=1)
+        Label(thresholdWindow, text="Upper").grid(row=0, column=2)
+
+        data_types = [data for data in self.dispatcher.data_types.values()
+                      if data.type is int or data.type is float]
+        enabled_vars, lower_vars, upper_vars = {}, {}, {}
+        for i, data in enumerate(data_types):
+            enabled_var = IntVar()
+            enabled_var.set(data.name in self.manager.thresholds)
+            lower_var = StringVar()
+            upper_var = StringVar()
+            lower, upper = self.manager.get_default_threshold(data.name)
+            lower_var.set(str(lower))
+            upper_var.set(str(upper))
+            cb = Checkbutton(thresholdWindow, text=data.name, variable=enabled_var)
+            cb.grid(row=i + 1, column=0, sticky=W)
+            lower_entry = Entry(thresholdWindow, textvariable=lower_var, width=10)
+            lower_entry.grid(row=i + 1, column=1)
+            upper_entry = Entry(thresholdWindow, textvariable=upper_var, width=10)
+            upper_entry.grid(row=i + 1, column=2)
+            enabled_vars[data.name] = enabled_var
+            lower_vars[data.name] = lower_var
+            upper_vars[data.name] = upper_var
+            
+        ok = False
+        def accept():
+            nonlocal ok
+
+            for data in data_types:
+                if enabled_vars[data.name].get():
+                    try:
+                        lower = data.type(lower_vars[data.name].get())
+                        upper = data.type(upper_vars[data.name].get())
+                    except ValueError as e:
+                        showerror("Error", "Invalid threshold value for " + data.name)
+                        break
+                    if upper < lower:
+                        showerror("Error", "Lower threshold for {} must be less than upper threshold".format(data.name))
+                        break
+            else:
                 ok = True
-                exportWindow.destroy()
+                self.manager.reset_thresholds()
+                for data in data_types:
+                    if enabled_vars[data.name].get():
+                        self.manager.set_threshold(data.name,
+                                                   data.type(lower_vars[data.name].get()),
+                                                   data.type(upper_vars[data.name].get()))
+                thresholdWindow.destroy()
 
-            exportButton = Button(exportWindow, text='Export', command=accept)
-            exportButton.grid(row=num_data_rows + 2, column=0, sticky=E)
-            cancelButton = Button(exportWindow, text='Cancel', command=exportWindow.destroy)
-            cancelButton.grid(row=num_data_rows + 2, column=1, sticky=W)
+        okButton = Button(thresholdWindow, text='OK', command=accept)
+        okButton.grid(row=i + 2, column=0, sticky=E)
+        cancelButton = Button(thresholdWindow, text='Cancel', command=thresholdWindow.destroy)
+        cancelButton.grid(row=i + 2, column=1, sticky=W)
 
-            self.wait_window(exportWindow)
-            
-            if ok:
-                selected_data = [name for name, var in names.items() if var.get()]
-                start_time = lastValidStartTime * 1000
-                end_time = lastValidEndTime * 1000
-                for data, (name, var) in zip(self.dispatcher.data_types.values(), names.items()):
-                    data.export_csv = bool(var.get())
-                open(filename, 'w').write(self.manager.dump_csv(selected_data, start_time, end_time))
+        self.wait_window(thresholdWindow)

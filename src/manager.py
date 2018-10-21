@@ -1,5 +1,7 @@
 
 from collections import OrderedDict
+import itertools
+import copy
 import time
 import json
 import sys
@@ -23,6 +25,8 @@ def unparse(value) -> str:
         value = int(value)
     return str(value)
 
+Data = Union[bool, int, float, str]
+
 class DataType:
     """Representation of a data value category, with various properties."""
     def __init__(self,
@@ -31,6 +35,7 @@ class DataType:
                  show:       bool = True,
                  one_line:   bool = True,
                  export_csv: bool = False,
+                 thresholds: Tuple[Data, Data] = None,
                  units:      str  = None) -> None:
         self.name = name
         self.type = type
@@ -39,6 +44,9 @@ class DataType:
         self.show = show
         self.one_line = one_line
         self.export_csv = export_csv
+        if thresholds and thresholds[1] < thresholds[0]:
+            raise ValueError("lower must be less than upper")
+        self.thresholds = thresholds
         self.units = units
 
         self.full_name = self.name.replace("_", " ")
@@ -52,7 +60,6 @@ class PacketSpec:
         self.data_types = data_types
 
 Spec = Union[PacketSpec, DataType]
-Data = Union[bool, int, float, str]
 DispatchListener = Callable[[int, Data], None]
 
 class Dispatcher:
@@ -63,9 +70,9 @@ class Dispatcher:
     _current_line = ""
     
     def __init__(self, *specs: Spec) -> None:
-        specs += (DataType('sys date', str, False),
-                  DataType('sys time', str, False),
-                  DataType('log', str, False, False))
+        specs = (DataType('sys date', str),
+                 DataType('sys time', str),
+                 DataType('log', str, False, False)) + specs
         data_types = tuple(s for s in specs if isinstance(s, DataType))
 
         self.packet_specs = OrderedDict((s.name, s) for s in specs)
@@ -202,6 +209,10 @@ class DataManager:
     def __init__(self, dispatcher: Dispatcher) -> None:
         self.dispatcher = dispatcher
         self.data = OrderedDict((name, ([], [])) for name in dispatcher.data_names) # type: Dict[str, Tuple[List[int], List[Data]]]
+        self.thresholds = OrderedDict((name, data.thresholds)
+                                      for name, data in dispatcher.data_types.items()
+                                      if data.thresholds) # type: Dict[str, Tuple[Data, Data]]
+        self.threshold_data = OrderedDict((name, ([], [])) for name in dispatcher.data_names) # type: Dict[str, Tuple[List[int], List[Data]]]
         self.last_update_time = 0
         self.listeners = {name: [] for name in dispatcher.data_names} # type: Dict[str, List[DataListener]]
         self.needs_update = {name: False for name in dispatcher.data_names}
@@ -215,9 +226,15 @@ class DataManager:
                         (time < self.data[name][0][-1] or self.data[name][0][-1] < 0)):
                         self.data[name][0][-1] = time
                         self.data[name][1][-1] = value
+                        if self.is_valid(name, value):
+                            self.threshold_data[name][0][-1] = time
+                            self.threshold_data[name][1][-1] = value
                     else:
                         self.data[name][0].append(time)
                         self.data[name][1].append(value)
+                        if self.is_valid(name, value):
+                            self.threshold_data[name][0].append(time)
+                            self.threshold_data[name][1].append(value)
                     self.last_update_time = time
                     self.needs_update[name] = True
             dispatcher.add_listener(name, fn)
@@ -243,9 +260,44 @@ class DataManager:
                 updated = True
         return updated
 
+    def is_valid(self, name: str, value: Data) -> bool:
+        """Test if a value is valid for the current thresholds."""
+        if name in self.thresholds:
+            return self.thresholds[name][0] < value < self.thresholds[name][1]
+        else:
+            return True
+
+    def get_default_threshold(self, name: str):
+        """Get the current lower and upper values of threshold data."""
+        if name in self.thresholds:
+            return self.thresholds[name]
+        else:
+            return min(self.data[name][1]), max(self.data[name][1])
+    
+    def set_threshold(self, name: str, lower: Data, upper: Data):
+        """Set a lower and upper threshold for data to consider."""
+        if not hasattr(self.dispatcher.data_types[name].type, '__lt__'):
+            raise ValueError("Cannot set threshold for " + name)
+        if upper < lower:
+            raise ValueError("Invalid threshold for {}: lower must be less than upper"
+                             .format(name))
+        self.thresholds[name] = lower, upper
+        self.threshold_data[name] = ([], [])
+        for time, value in zip(*self.data[name]):
+            if lower <= value <= upper:
+                self.threshold_data[name][0].append(time)
+                self.threshold_data[name][1].append(value)
+        self.update_all_listeners(True)
+
+    def reset_thresholds(self):
+        """Remove all set thresholds."""
+        self.thresholds.clear()
+        self.threshold_data = copy.deepcopy(self.data)
+        self.update_all_listeners(True)
+
     def request(self, name: str) -> Tuple[List[int], List[Data]]:
         """Request all run data for a field."""
-        return self.data[name]
+        return self.threshold_data[name]
 
     def start(self):
         """Begin taking data and updating the listeners."""
@@ -260,7 +312,7 @@ class DataManager:
 
     def reset(self):
         """Reset the most recent stored run data."""
-        for times, values in self.data.values():
+        for times, values in itertools.chain(self.data.values(), self.threshold_data.values()):
             times.clear()
             values.clear()
         self.running = False
@@ -274,7 +326,7 @@ class DataManager:
         
         result = "abs time," + ",".join(data_names) + "\n"
         data = {} # type: Dict[int, Dict[str, Data]]
-        for name, (times, values) in self.data.items():
+        for name, (times, values) in self.threshold_data.items():
             if name in data_names:
                 for time, value in zip(times, values):
                     if time >= start and time < end:
@@ -312,7 +364,7 @@ class DataManager:
              text: str,
              # streams to write non-packet output when loading a log
              txtout: TextIO = sys.stdout,
-             errout: TextIO = sys.stderr) -> bool:
+             errout: TextIO = sys.stderr):
         """Load a string representation of run data from one of the following
         formats, as generated by dump():
         * csv: A csv log containing all data from most fields.
@@ -322,15 +374,21 @@ class DataManager:
         if format == 'json':
             data = OrderedDict(json.loads(text))
             if set(self.data.keys()) != set(data.keys()):
-                #sys.exit("Invalid fields")
-                return False
+                raise ValueError("Unexpected data fields: expected {}, found {}"
+                                 .format(str(sorted(self.data.keys())), str(sorted(data.keys()))))
             else:
                 self.data = data
+                for name, (times, values) in data.items():
+                    for time, value in zip(times, values):
+                        if self.is_valid(name, value):
+                            self.threshold_data[name][0].append(time)
+                            self.threshold_data[name][1].append(value)
+        
         elif format == 'csv':
             rows = [row.split(',') for row in text.split('\n')]
             for name in rows[0][1:]:
                 if name not in self.dispatcher.data_names:
-                    return False
+                    raise ValueError("Unexpected data field: " + name)
             data = OrderedDict([(name, ([], [])) for name in rows[0][1:]])
             for row in rows[1:]:
                 for elem, (name, (time_elems, data_elems)) in zip(row[1:], data.items()):
@@ -340,15 +398,21 @@ class DataManager:
                         data_elems.append(elem)
             self.data = OrderedDict([(name, data[name] if name in data else ([], []))
                                       for name in self.dispatcher.data_names])
+            for name, (times, values) in self.data.items():
+                for time, value in zip(times, values):
+                    if self.is_valid(name, value):
+                        self.threshold_data[name][0].append(time)
+                        self.threshold_data[name][1].append(value)
+        
         elif format == 'log':
             self.reset()
             self.start()
             self.dispatcher.acceptText(text, txtout, errout)
             self.stop()
         else:
-            sys.exit("Unsupported format" + format)
+            raise ValueError("Unsupported format" + format)
 
         last_times = [times[-1] for times, values in self.data.values() if len(times) > 0]
         self.last_update_time = max(last_times) if len(last_times) > 0 else 0
         self.update_all_listeners(True)
-        return True
+        
