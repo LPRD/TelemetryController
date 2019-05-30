@@ -8,7 +8,7 @@ from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.messagebox import showerror, askquestion
 
 import matplotlib
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 from matplotlib.animation import FuncAnimation
 
@@ -18,7 +18,7 @@ import math
 import sys
 import traceback
 
-from typing import List, Iterable, Callable, Any
+from typing import List, Iterable, Callable, Any, Optional
 
 class FnWriteableStream:
     """Helper class that has a write method that is provided to the constructor"""
@@ -76,7 +76,7 @@ class Application(Frame):
         self.manager.add_listener("sys time", self.saveBackup)
 
         # Start reading from Serial
-        self.serialManager = None # type: serialmanager.SerialManager
+        self.serialManager: Optional[serialmanager.SerialManager] = None
         self.checkSerial()
         self.baud.set(str(self.flags['default_baud']))
         self.serialPort.trace('w', self.changeSerial)
@@ -252,7 +252,7 @@ class Application(Frame):
 
         ani = FuncAnimation(self.fig, animate, interval=200)
 
-        self.canvas.show()
+        self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=LEFT)
         self.canvas._tkcanvas.pack(side=LEFT)
         #self.update() # Is this needed? Causes freezing with lots of plots
@@ -568,7 +568,7 @@ class Application(Frame):
         Label(thresholdWindow, text="Upper").grid(row=0, column=2)
 
         data_types = [data for data in self.dispatcher.data_types.values()
-                      if data.type is int or data.type is float]
+                      if data.ty is int or data.ty is float]
         enabled_vars, lower_vars, upper_vars = {}, {}, {}
         for i, data in enumerate(data_types):
             enabled_var = IntVar()
@@ -595,8 +595,8 @@ class Application(Frame):
             for data in data_types:
                 if enabled_vars[data.name].get():
                     try:
-                        lower = data.type(lower_vars[data.name].get())
-                        upper = data.type(upper_vars[data.name].get())
+                        lower = data.ty(lower_vars[data.name].get())
+                        upper = data.ty(upper_vars[data.name].get())
                     except ValueError as e:
                         showerror("Error", "Invalid threshold value for " + data.name)
                         break
@@ -609,8 +609,8 @@ class Application(Frame):
                 for data in data_types:
                     if enabled_vars[data.name].get():
                         self.manager.set_threshold(data.name,
-                                                   data.type(lower_vars[data.name].get()),
-                                                   data.type(upper_vars[data.name].get()))
+                                                   data.ty(lower_vars[data.name].get()),
+                                                   data.ty(upper_vars[data.name].get()))
                 thresholdWindow.destroy()
 
         okButton = Button(thresholdWindow, text='OK', command=accept)

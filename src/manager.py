@@ -6,8 +6,8 @@ import time
 import json
 import sys
 
-from typing import cast, Any, Union, List, Tuple, NamedTuple, Dict, Callable, Iterable, Sequence
-from typing.io import TextIO
+from typing import List, Iterable, Callable, Any, Optional, Tuple, Union
+from typing_extensions import Protocol
 
 # Data handling functions
 def parse(type: type, value: str):
@@ -25,27 +25,39 @@ def unparse(value) -> str:
         value = int(value)
     return str(value)
 
-Data = Union[bool, int, float, str]
+# TODO: Representing data as anything comparable, for now...
+class Data(Protocol):
+    def __lt__(self, other: 'Data') -> bool: ...
+    def __gt__(self, other: 'Data') -> bool: ...
+    def __le__(self, other: 'Data') -> bool: ...
+    def __ge__(self, other: 'Data') -> bool: ...
+
+# Not using TextIO here since we only care that it has a write() method
+class Writeable(Protocol):
+    def write(self, s: str) -> int: ...
 
 class DataType:
     """Representation of a data value category, with various properties."""
     def __init__(self,
                  name:       str,
-                 type:       type = float,
+                 ty:         type = float,
                  show:       bool = True,
                  one_line:   bool = True,
                  export_csv: bool = False,
-                 thresholds: Tuple[Data, Data] = None,
+                 thresholds: Tuple[Data, Data] = None, # TODO: More specific type here
                  units:      str  = None) -> None:
         self.name = name
-        self.type = type
+        self.ty = ty
         # bool doesn't actually parse the value, just checks whether string is empty
         self.parse = lambda value: parse(type, value)
         self.show = show
         self.one_line = one_line
         self.export_csv = export_csv
-        if thresholds and thresholds[1] < thresholds[0]:
-            raise ValueError("lower must be less than upper")
+        if thresholds:
+            lower, upper = thresholds
+            assert type(lower) is type(upper)
+            if lower > upper:
+                raise ValueError("lower must be less than upper")
         self.thresholds = thresholds
         self.units = units
 
@@ -66,22 +78,23 @@ class Dispatcher:
     """Manages parsing incoming serial packets, recieving data in given data
     types, and passes it to listeners.  Also tracks system date and time.  """
     
-    start_time = None # type: int
-    _current_line = ""
-    
     def __init__(self, *specs: Spec) -> None:
-        specs = (DataType('sys date', str),
-                 DataType('sys time', str),
-                 DataType('log', str, False, False)) + specs
+        # TODO: ignoring type due to mypy bug
+        specs: Sequence[Spec] = (DataType('sys date', str), # type: ignore
+                                 DataType('sys time', str),
+                                 DataType('log', str, False, False)) + specs
         data_types = tuple(s for s in specs if isinstance(s, DataType))
 
         self.packet_specs = OrderedDict((s.name, s) for s in specs)
         self.data_names = [d.name for d in data_types]
         self.data_types = OrderedDict((d.name, d) for d in data_types)
-        self.data = {name: None for name in self.data_names} # type: Dict[str, Data]
-        self.time = {name: None for name in self.data_names} # type: Dict[str, int]
-        self.listeners = {name: [] for name in self.data_names} # type: Dict[str, List[Tuple[DispatchListener, int]]]
-        self.listener_last_updates = {name: [] for name in self.data_names} # type: Dict[str, List[int]]
+        self.data: Dict[str, Optional[Data]] = {name: None for name in self.data_names}
+        self.time: Dict[str, Optional[int]] = {name: None for name in self.data_names}
+        self.listeners: Dict[str, List[Tuple[DispatchListener, int]]] = {name: [] for name in self.data_names}
+        self.listener_last_updates: Dict[str, List[int]] = {name: [] for name in self.data_names}
+    
+        self.start_time: Optional[int] = None
+        self._current_line = ""
 
     def reset(self):
         """Reset the states of all listeners as if no data had been received."""
@@ -98,8 +111,8 @@ class Dispatcher:
 
     def acceptText(self,
                    text: str,
-                   txtout: TextIO = sys.stdout,
-                   errout: TextIO = sys.stderr):
+                   txtout: Writeable = sys.stdout,
+                   errout: Writeable = sys.stderr):
         """Eat a raw string of data, parse it, and dispatch the new values
         appropriately."""
         # Split the unparsed text from previously with the new text into lines
@@ -143,9 +156,9 @@ class Dispatcher:
         
     def accept(self,
                name: str,
-               time: int,
+               time: Optional[int],
                data: List[str],
-               errout: TextIO = sys.stderr) -> bool:
+               errout: Writeable = sys.stderr) -> bool:
         """Accept a new value for a field, and dispatch it appropriately."""
         # Check that name is a valid packet format
         if name not in self.packet_specs:
@@ -153,8 +166,8 @@ class Dispatcher:
             return False
 
         # If a time was recieved, update it and the start time if needed
-        if time != None:
-            if self.start_time == None:
+        if time is not None:
+            if self.start_time is None:
                 self.start_time = time
                 time = 0
             else:
@@ -164,7 +177,7 @@ class Dispatcher:
         # and generate the list of data types
         spec = self.packet_specs[name]
         if isinstance(spec, DataType):
-            data_types = [spec] # type: Sequence[DataType]
+            data_types: Sequence[DataType] = [spec]
         elif isinstance(spec, PacketSpec):
             data_types = spec.data_types
         else:
@@ -184,9 +197,9 @@ class Dispatcher:
                 # If successful, update the listeners
                 for i, (fn, period) in enumerate(self.listeners[data_type.name]):
                     last = self.listener_last_updates[data_type.name][i]
-                    if time == None or time - last >= period or time < last:
+                    if time is None or time - last >= period or time < last:
                         fn(*self.request(data_type.name))
-                        if time != None:
+                        if time is not None:
                             self.listener_last_updates[data_type.name][i] = time
 
         return True
@@ -194,7 +207,12 @@ class Dispatcher:
     def request(self, name: str) -> Tuple[int, Data]:
         """Get the current value of any data field and the time that it was
         recieved, by name"""
-        return self.time[name], self.data[name]
+        time = self.time[name]
+        data = self.data[name]
+        if time is not None and data is not None:
+            return time, data
+        else:
+            raise ValueError("Requested field {} has not yet been recieved".format(name))
 
 DataListener = Callable[[List[int], List[Data]], None]
 
@@ -208,13 +226,13 @@ class DataManager:
     
     def __init__(self, dispatcher: Dispatcher) -> None:
         self.dispatcher = dispatcher
-        self.data = OrderedDict((name, ([], [])) for name in dispatcher.data_names) # type: Dict[str, Tuple[List[int], List[Data]]]
-        self.thresholds = OrderedDict((name, data.thresholds)
-                                      for name, data in dispatcher.data_types.items()
-                                      if data.thresholds) # type: Dict[str, Tuple[Data, Data]]
-        self.threshold_data = OrderedDict((name, ([], [])) for name in dispatcher.data_names) # type: Dict[str, Tuple[List[int], List[Data]]]
+        self.data: Dict[str, Tuple[List[int], List[Data]]] = OrderedDict((name, ([], [])) for name in dispatcher.data_names)
+        self.thresholds: Dict[str, Tuple[Data, Data]] = OrderedDict((name, data.thresholds)
+                                                                    for name, data in dispatcher.data_types.items()
+                                                                    if data.thresholds)
+        self.threshold_data: Dict[str, Tuple[List[int], List[Data]]] = OrderedDict((name, ([], [])) for name in dispatcher.data_names)
         self.last_update_time = 0
-        self.listeners = {name: [] for name in dispatcher.data_names} # type: Dict[str, List[DataListener]]
+        self.listeners: Dict[str, List[DataListener]] = {name: [] for name in dispatcher.data_names}
         self.needs_update = {name: False for name in dispatcher.data_names}
 
         for name in dispatcher.data_names:
@@ -276,7 +294,7 @@ class DataManager:
     
     def set_threshold(self, name: str, lower: Data, upper: Data):
         """Set a lower and upper threshold for data to consider."""
-        if not hasattr(self.dispatcher.data_types[name].type, '__lt__'):
+        if not hasattr(self.dispatcher.data_types[name].ty, '__lt__'):
             raise ValueError("Cannot set threshold for " + name)
         if upper < lower:
             raise ValueError("Invalid threshold for {}: lower must be less than upper"
@@ -325,7 +343,7 @@ class DataManager:
             end = self.last_update_time
         
         result = "abs time," + ",".join(data_names) + "\n"
-        data = {} # type: Dict[int, Dict[str, Data]]
+        data: Dict[int, Dict[str, Data]] = {}
         for name, (times, values) in self.threshold_data.items():
             if name in data_names:
                 for time, value in zip(times, values):
@@ -363,8 +381,8 @@ class DataManager:
              format: str, 
              text: str,
              # streams to write non-packet output when loading a log
-             txtout: TextIO = sys.stdout,
-             errout: TextIO = sys.stderr):
+             txtout: Writeable = sys.stdout,
+             errout: Writeable = sys.stderr):
         """Load a string representation of run data from one of the following
         formats, as generated by dump():
         * csv: A csv log containing all data from most fields.

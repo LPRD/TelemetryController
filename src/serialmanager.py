@@ -3,14 +3,13 @@ import sys
 import glob
 import time
 
-import typing
-import typing.io
+from typing import *
 import manager
 
 class SerialManager:
     """Manages recieving data from a serial port and passes it to a Dispatcher."""
     
-    ports = {} # type: Dict[str, serial.Serial]
+    ports: Dict[str, serial.Serial] = {}
     paused = False
     def __init__(self,
                  dispatcher: manager.Dispatcher,
@@ -35,8 +34,8 @@ class SerialManager:
         self.ser.close()
 
     def handleInput(self,
-                    txtout: typing.TextIO = sys.stdout,
-                    errout: typing.TextIO = sys.stderr):
+                    txtout: manager.Writeable = sys.stdout,
+                    errout: manager.Writeable = sys.stderr):
         """Check if data is available, and if so send it to the dispatcher or
         appropriate output stream."""
         if self.ser.in_waiting and not self.paused:
@@ -49,12 +48,12 @@ class SerialManager:
             return True
         return False
     
-    def write(self, txt: typing.Text):
+    def write(self, txt: Text):
         """Send the given text back out the serial port."""
         self.ser.write(txt.encode())
         self.ser.flush()
 
-def serial_ports() -> typing.List[str]:
+def serial_ports() -> List[str]:
     """ Lists all available serial port names
 
         :raises EnvironmentError:

@@ -1,25 +1,12 @@
-NATIVE_WINE=0
-NATIVE_PYTHON=0
+PYINSTALLER_SOURCE=../pyinstaller
+PYINSTALLER=$(PYINSTALLER_SOURCE)/pyinstaller.py
+PYTHON:=$(shell which python3)
+WINE_PYTHON:=$(shell which wine) python
+WIN_PYTHON=python
 
 SOURCES=$(wildcard src/*.py)
-PYINSTALLER_SOURCE=../build_tools/pyinstaller
-WINE_VENV=../build_tools/wine_venv
-LINUX_VENV=../build_tools/linux_venv
-
-PYINSTALLER=$(PYINSTALLER_SOURCE)/pyinstaller.py
-ifeq ($(NATIVE_WINE), 0)
-WINE=$(WINE_VENV)/bin/wine
-else
-WINE:=$(shell which wine)
-endif
-ifeq ($(NATIVE_PYTHON), 0)
-PYTHON=$(LINUX_VENV)/bin/python3
-else
-PYTHON:=$(shell which python3)
-endif
-
 EXCLUDE_MODULES=
-PYINSTALLER_FLAGS=-p src -F --windowed --workpath $(PYINSTALLER_CONFIG_DIR) --specpath $(PYINSTALLER_CONFIG_DIR)
+PYINSTALLER_FLAGS=-p src -F --windowed --onefile --workpath $(PYINSTALLER_CONFIG_DIR) --specpath $(PYINSTALLER_CONFIG_DIR)
 
 MAX_DIST_FILE_SIZE=100000
 
@@ -48,27 +35,23 @@ bin: $(BIN_TARGETS)
 exe: $(EXE_TARGETS)
 lib: $(LIB_TARGETS)
 
-# Raise an error if anything in build_tools is missing or modified
-# These only get built when missing
-$(PYINSTALLER_SOURCE) $(LINUX_VENV) $(WINE_VENV):
-	$(error Error: $@ appears to be missing, did you clone https://github.com/LPRD/build_tools in the same directory?)
+# Raise an error if pyinstaller is missing
+$(PYINSTALLER_SOURCE):
+	$(error Error: $@ appears to be missing, did you clone https://github.com/pyinstaller/pyinstaller in the same directory?)
 
 # All static test gui varients depend on static_test_gui.py
 $(STATIC_TEST_GUI_BIN_TARGETS) $(STATIC_TEST_GUI_EXE_TARGETS): drivers/static_test_gui.py
 
-# TODO: make this actually works on Windows
-ifeq ($(OS),Windows_NT)
-dist/%.exe: drivers/%.py $(SOURCES) $(PYINSTALLER_SOURCE) | $(PY_VENV)
-else
-dist/%.exe: drivers/%.py $(SOURCES) $(PYINSTALLER_SOURCE) | $(WINE_VENV)
-endif
+dist/%.exe: drivers/%.py $(SOURCES) $(PYINSTALLER_SOURCE)
 	@echo "Building $@"
+	mkdir -p $(PYINSTALLER_CONFIG_DIR)
 # Needed b/c pyinstaller sometimes chokes when this already exists
 	rm -rf build/$*/cycler*.egg 
 ifeq ($(OS),Windows_NT)
-	python $(PYINSTALLER) $(PYINSTALLER_FLAGS) $< # TODO: Use a virtualenv on windows
+# TODO: make this actually works on Windows
+	$(WIN_PYTHON) $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
 else
-	$(WINE) python $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
+	$(WINE_PYTHON) $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
 endif
 	@if [ `du -k $@ | cut -f1` -ge $(MAX_DIST_FILE_SIZE) ]; then\
 	  rm $@;\
@@ -76,8 +59,9 @@ endif
 	  exit 1;\
 	fi
 
-dist/%: drivers/%.py $(SOURCES) $(PYINSTALLER_SOURCE) | $(PY_VENV)
+dist/%: drivers/%.py $(SOURCES) $(PYINSTALLER_SOURCE)
 	@echo "Building $@"
+	mkdir -p $(PYINSTALLER_CONFIG_DIR)
 # Needed b/c pyinstaller sometimes chokes when this already exists
 	rm -rf build/$*/cycler*.egg 
 	$(PYTHON) $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
@@ -95,7 +79,7 @@ libs:
 	mkdir -p libs
 
 typecheck:
-	mypy $(SOURCES) $(TARGET_SOURCES) --silent-imports
+	mypy $(SOURCES) $(TARGET_SOURCES) --ignore-missing-imports
 
 commit: all
 	git add $(ALL_TARGETS)

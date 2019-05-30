@@ -4,7 +4,7 @@ from itertools import *
 
 from matplotlib.gridspec import GridSpec
 
-from typing import cast, List, Tuple, Sequence, Iterator, Union, Any
+from typing import cast, List, Dict, Tuple, Sequence, Iterator, Union, Any
 
 def rev(x: str) -> Iterator[str]:
     """Typed wrapper function for reversed() on a str."""
@@ -60,8 +60,8 @@ class Plot:
         self.legend = legend
         self.show_x_label = show_x_label
 
-        self.update = {y: ([], []) for y in self.ys} # type: Dict[str, Tuple[List[float], List[float]]]
-        self.lines = {y: None for y in self.ys} # type: Dict[str, Any] # TODO: type
+        self.update: Dict[str, Tuple[List[float], List[float]]] = {y: ([], []) for y in self.ys}
+        self.lines: Dict[str, Any] = {y: None for y in self.ys} # TODO: type
 
     def create(self, manager, fig, gs):
         """Create the specified plot on a figure and grid specification,
