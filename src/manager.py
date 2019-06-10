@@ -6,17 +6,17 @@ import time
 import json
 import sys
 
-from typing import List, Iterable, Callable, Any, Optional, Tuple, Union
+from typing import List, Iterable, Callable, Any, Optional, Tuple, Union, Dict, Sequence, cast
 from typing_extensions import Protocol
 
 # Data handling functions
-def parse(type: type, value: str):
+def parse(ty: type, value: str):
     """Parse a string to get a value of a given type."""
     # bool doesn't actually parse the value, just checks whether string is empty
-    if type is bool:
+    if ty is bool:
         return value == "1" or value == "True"
     else:
-        return type(value)
+        return ty(value)
 
 def unparse(value) -> str:
     """Convert a value to a string that we can send."""
@@ -49,7 +49,7 @@ class DataType:
         self.name = name
         self.ty = ty
         # bool doesn't actually parse the value, just checks whether string is empty
-        self.parse = lambda value: parse(type, value)
+        self.parse = lambda value: parse(ty, value)
         self.show = show
         self.one_line = one_line
         self.export_csv = export_csv
@@ -72,7 +72,7 @@ class PacketSpec:
         self.data_types = data_types
 
 Spec = Union[PacketSpec, DataType]
-DispatchListener = Callable[[int, Data], None]
+DispatchListener = Callable[[Optional[int], Data], None]
 
 class Dispatcher:
     """Manages parsing incoming serial packets, recieving data in given data
@@ -99,7 +99,10 @@ class Dispatcher:
     def reset(self):
         """Reset the states of all listeners as if no data had been received."""
         self.start_time = None
+        self._current_line = ""
         for name in self.data_names:
+            self.data[name] = None
+            self.time[name] = None
             for i in range(len(self.listener_last_updates[name])):
                 self.listener_last_updates[name][i] = 0
 
@@ -204,12 +207,12 @@ class Dispatcher:
 
         return True
 
-    def request(self, name: str) -> Tuple[int, Data]:
+    def request(self, name: str) -> Tuple[Optional[int], Data]:
         """Get the current value of any data field and the time that it was
         recieved, by name"""
         time = self.time[name]
         data = self.data[name]
-        if time is not None and data is not None:
+        if data is not None:
             return time, data
         else:
             raise ValueError("Requested field {} has not yet been recieved".format(name))
@@ -236,8 +239,8 @@ class DataManager:
         self.needs_update = {name: False for name in dispatcher.data_names}
 
         for name in dispatcher.data_names:
-            def fn(time: int, value: Data, name=name):
-                if self.running and time != None:
+            def fn(time: Optional[int], value: Data, name=name):
+                if self.running and time is not None:
                     # If the time jumps backward (recieved a corrupted timestamp)
                     # overwrite the most recent data point
                     if (len(self.data[name][0]) > 0 and
