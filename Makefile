@@ -6,7 +6,7 @@ WIN_PYTHON=python
 
 SOURCES=$(wildcard src/*.py)
 EXCLUDE_MODULES=
-PYINSTALLER_FLAGS=-p src -F --windowed --onefile --workpath $(PYINSTALLER_CONFIG_DIR) --specpath $(PYINSTALLER_CONFIG_DIR)
+PYINSTALLER_FLAGS=-p src -F --windowed --onefile --workpath $(PYINSTALLER_CONFIG_DIR) --specpath $(PYINSTALLER_CONFIG_DIR) --exclude-module ipykernel
 
 MAX_DIST_FILE_SIZE=100000
 
@@ -48,7 +48,7 @@ dist/%.exe: drivers/%.py $(SOURCES) $(PYINSTALLER_SOURCE)
 # Needed b/c pyinstaller sometimes chokes when this already exists
 	rm -rf build/$*/cycler*.egg 
 ifeq ($(OS),Windows_NT)
-# TODO: make this actually works on Windows
+# TODO: make sure this actually works on Windows
 	$(WIN_PYTHON) $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
 else
 	$(WINE_PYTHON) $(PYINSTALLER) $(PYINSTALLER_FLAGS) $<
