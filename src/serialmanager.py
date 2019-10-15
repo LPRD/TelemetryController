@@ -17,6 +17,7 @@ class SerialManager:
                  baud: int = 9600) -> None:
         self.dispatcher = dispatcher
         self.baud = baud
+        self.ser = None
         
         # Prevent opening a port more than once on windows
         try:
@@ -31,7 +32,8 @@ class SerialManager:
         self.dispatcher.reset()
 
     def __del__(self):
-        self.ser.close()
+        if self.ser:
+            self.ser.close()
 
     def handleInput(self,
                     txtout: manager.Writeable = sys.stdout,
