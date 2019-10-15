@@ -92,3 +92,4 @@ clobber:
 	rm -rf dist build libs
 
 .PHONY: all bin exe lib setup typecheck commit clean
+.NOTPARALLEL: # Unfourtunately now required by Pyinstaller
