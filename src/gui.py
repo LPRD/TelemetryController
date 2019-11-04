@@ -3,6 +3,7 @@ import manager
 import plot
 
 from tkinter import *
+from tkinter.ttk import Treeview
 from tkinter.scrolledtext import *
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.messagebox import showerror, askquestion
@@ -205,37 +206,30 @@ class Application(Frame):
         if self.flags['show_current_values']:
             valuesLabel.pack()
 
-        valuesTable = Frame(self)
+        valuesTableFrame = Frame(self)
+        self.valuesTable = Treeview(valuesTableFrame, columns=('value',), show='tree')
+        
+        self.valuesTable.insert('', 'end', 'abs time', text="abs time (ms)")
+        self.dispatcher.add_listener(
+            'sys time',
+            lambda time, data: self.valuesTable.item('abs time', values=(str(time),) if time else ()),
+            100)
+        for ty in self.dispatcher.data_types.values():
+            if ty.show:
+                self.valuesTable.insert('', 'end', ty.name, text=ty.full_name)
+                self.dispatcher.add_listener(
+                    ty.name,
+                    lambda time, data, id=ty.name: self.valuesTable.item(id, values=(data,)),
+                    100)
+        
+        valuesScrollbar = Scrollbar(valuesTableFrame, orient=VERTICAL)
+        valuesScrollbar.config(command=self.valuesTable.yview)
+        self.valuesTable.configure(yscrollcommand=valuesScrollbar.set)
 
-        shown_data_types = [self.dispatcher.data_types[name]
-                            for name in self.dispatcher.data_names
-                            if self.dispatcher.data_types[name].show]
-        valuesScrollbar = Scrollbar(valuesTable, orient=VERTICAL)
-        self.namesList = Listbox(valuesTable, width=15, height=len(shown_data_types) + 1, yscrollcommand=valuesScrollbar.set)
-        self.valuesList = Listbox(valuesTable, width=35, height=len(shown_data_types) + 1, yscrollcommand=valuesScrollbar.set)
-        self.namesList.insert(0, "abs time (ms)")
-        def fn1(xdata, ydata):
-            self.valuesList.delete(0)
-            self.valuesList.insert(0, str(xdata) if xdata else "")
-        self.dispatcher.add_listener('sys time', fn1, 100)
-        for i, ty in enumerate(shown_data_types):
-            self.namesList.insert(i + 1, ty.full_name)
-            def fn2(xdata: List[float], ydata: List[float], i = i):
-                self.valuesList.delete(i + 1)
-                self.valuesList.insert(i + 1, str(ydata))
-            self.dispatcher.add_listener(ty.name, fn2, 100)
-
-        def yview(*args):
-            self.namesList.yview(*args)
-            self.valuesList.yview(*args)
-        valuesScrollbar.config(command=yview)
         valuesScrollbar.pack(side=RIGHT, fill=Y)
-
-        self.namesList.pack(side=LEFT, fill=BOTH, expand=1)
-        self.valuesList.pack(side=LEFT, fill=BOTH, expand=1)
-
+        self.valuesTable.pack()
         if self.flags['show_current_values']:
-            valuesTable.pack()
+            valuesTableFrame.pack()
 
         self.miscGuiPanel = None
 
@@ -282,7 +276,7 @@ class Application(Frame):
     def start(self):
         """Start a run."""
         if self.serialManager:
-            self.resetValuesList()
+            self.resetValuesTable()
             self.manager.start()
             self.controlButton.config(text="Stop", bg="red", command=self.stop)
             return True
@@ -297,7 +291,7 @@ class Application(Frame):
     
     def reset(self):
         """Reset for the next run."""
-        self.resetValuesList()
+        self.resetValuesTable()
         self.manager.reset()
         self.controlButton.config(text="Start", bg="lime green", command=self.start)
     
@@ -336,14 +330,10 @@ class Application(Frame):
         """Disable full-screen mode."""
         self.master.attributes("-fullscreen", False)
     
-    def resetValuesList(self):
-        """Clear the values list after a reset or changing ports."""
-        shown_data_types = [self.dispatcher.data_types[name]
-                            for name in self.dispatcher.data_names
-                            if self.dispatcher.data_types[name].show]
-        self.valuesList.delete(0, END)
-        for i in range(len(shown_data_types) + 1):
-            self.valuesList.insert(i, "")
+    def resetValuesTable(self):
+        """Clear the values table after a reset or changing ports."""
+        for item in self.valuesTable.get_children():
+            self.valuesTable.item(item, values=())
     
     def changeSerial(self, *args):
         """Handler for changing the serial port."""
@@ -580,6 +570,8 @@ class Application(Frame):
             upper_var.set(str(upper))
             cb = Checkbutton(thresholdWindow, text=data.name, variable=enabled_var)
             cb.grid(row=i + 1, column=0, sticky=W)
+            lower_var.trace_add('write', lambda *args, cb=cb: cb.select())
+            upper_var.trace_add('write', lambda *args, cb=cb: cb.select())
             lower_entry = Entry(thresholdWindow, textvariable=lower_var, width=10)
             lower_entry.grid(row=i + 1, column=1)
             upper_entry = Entry(thresholdWindow, textvariable=upper_var, width=10)
@@ -617,5 +609,6 @@ class Application(Frame):
         okButton.grid(row=i + 2, column=0, sticky=E)
         cancelButton = Button(thresholdWindow, text='Cancel', command=thresholdWindow.destroy)
         cancelButton.grid(row=i + 2, column=1, sticky=W)
+        thresholdWindow.bind('<Return>', lambda _: accept())
 
         self.wait_window(thresholdWindow)
