@@ -112,6 +112,13 @@ def init(config=Config.MK_1):
     Button(controlsFrame, text="Zero pressure", command=lambda: app.sendValue("zero_pressure")).pack(side=LEFT)
     Button(controlsFrame, text="Reset board", command=lambda: app.sendValue("reset")).pack(side=LEFT)
 
+    # Igniter controls
+    #Label(app, text="\Igniter Controls").pack()
+    igniterFrame = Frame(app)
+    igniterFrame.pack()
+    fireButton = Button(igniterFrame, text="Fire Igniter", background="orange", command=lambda: app.sendValue("fire_igniter"))
+    fireButton.pack()
+
     # Throttle controls
     #Label(app, text="\nThrottle Controls").pack()
     throttleFrame = Frame(app)
