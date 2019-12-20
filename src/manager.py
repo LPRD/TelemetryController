@@ -94,6 +94,7 @@ class Dispatcher:
         self.listener_last_updates: Dict[str, List[int]] = {name: [] for name in self.data_names}
     
         self.start_time: Optional[int] = None
+        self.time_increasing = True
         self._current_line = ""
 
     def reset(self):
@@ -170,6 +171,14 @@ class Dispatcher:
 
         # If a time was recieved, update it and the start time if needed
         if time is not None:
+            # If two consecutive times prior to the start time are recieved, update the start time
+            if time < self.start_time:
+                if not self.time_increasing:
+                    self.start_time = None
+                self.time_increasing = False
+            else:
+                self.time_increasing = True
+            
             if self.start_time is None:
                 self.start_time = time
                 time = 0
