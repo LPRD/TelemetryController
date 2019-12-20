@@ -14,7 +14,6 @@ import enum
 
 class Config(enum.Enum):
     DEMO = 0
-    MK_1 = 1
     MK_2 = 2
 
 def vector_DataType(name, *args, **kwd_args):
@@ -22,14 +21,17 @@ def vector_DataType(name, *args, **kwd_args):
     data_types.append(manager.PacketSpec(name, *data_types))
     return data_types
 
-def init(config=Config.MK_1):
+NUM_MK2_THERMOCOUPLES = 3
+
+def init(config=Config.MK_2):
     dts =\
         [manager.DataType('run_time', int, units="ms", show=False, export_csv=False),
          manager.DataType('force', float, units="Newtons", export_csv=True),
          manager.DataType('inlet_temperature', float, units="deg C", export_csv=True),
          manager.DataType('outlet_temperature', float, units="deg C", export_csv=True)] +\
          ([] if config != Config.MK_2 else
-          [manager.DataType('chamber_temperature', float, units="deg C", export_csv=True)]) +\
+          [manager.DataType('chamber_temperature_' + str(i + 1), float, units="deg C", export_csv=True)
+           for i in range(NUM_MK2_THERMOCOUPLES)]) +\
         [manager.DataType('fuel_pressure', float, units="PSI", export_csv=True),
          manager.DataType('ox_pressure', float, units="PSI", export_csv=True)] +\
         vector_DataType('acceleration', float, units="m/s^2", export_csv=True) +\
@@ -44,7 +46,8 @@ def init(config=Config.MK_1):
         [plot.Plot('time', 'force', width=3, show_x_label=False),
          plot.Plot('time', ['fuel_pressure', 'ox_pressure'], width=3)] +\
         ([] if config != Config.MK_2 else
-         [plot.Plot('time', 'chamber_temperature')]) +\
+         [plot.Plot('time', ['chamber_temperature_' + str(i + 1)
+                             for i in range(NUM_MK2_THERMOCOUPLES)])]) +\
         [plot.Plot('time', ['inlet_temperature', 'outlet_temperature'], "temperature",
                    width=3 if config != Config.MK_2 else 1, show_x_label=False),
          plot.Plot('time', ['x_acceleration', 'y_acceleration', 'z_acceleration'],
@@ -55,7 +58,6 @@ def init(config=Config.MK_1):
     app = gui.Application(dispatcher, data_manager, plots, master=root,
                           window_manager_title=
                           "Telemetry monitor - Demo static test" if config == Config.DEMO else
-                          "Telemetry monitor - Mk 1 static test" if config == Config.MK_1 else
                           "Telemetry monitor - Mk 2 static test" if config == Config.MK_2 else
                           "Telemetry monitor",
                           show_send_value=False,
