@@ -10,7 +10,7 @@ PYINSTALLER_FLAGS=-p src -F --windowed --onefile --workpath $(PYINSTALLER_CONFIG
 
 MAX_DIST_FILE_SIZE=100000
 
-STATIC_TEST_GUI_TARGETS=demo_static_test_gui mk1_static_test_gui mk2_static_test_gui # These all depend on static_test_gui.py
+STATIC_TEST_GUI_TARGETS=demo_static_test_gui mk2_static_test_gui # These all depend on static_test_gui.py
 TARGETS=$(STATIC_TEST_GUI_TARGETS) flight_gui
 LIBS=Telemetry
 STATIC_TEST_GUI_BIN_TARGETS=$(addprefix dist/, $(TARGETS))
