@@ -27,13 +27,13 @@ def init(config=Config.MK_2):
     dts =\
         [manager.DataType('run_time', int, units="ms", show=False, export_csv=False),
          manager.DataType('force', float, units="Newtons", export_csv=True),
-         manager.DataType('inlet_temperature', float, units="deg C", export_csv=True),
-         manager.DataType('outlet_temperature', float, units="deg C", export_csv=True)] +\
+         manager.DataType('inlet_temp', float, units="deg C", export_csv=True),
+         manager.DataType('outlet_temp', float, units="deg C", export_csv=True)] +\
          ([] if config != Config.MK_2 else
-          [manager.DataType('chamber_temperature_' + str(i + 1), float, units="deg C", export_csv=True)
+          [manager.DataType('chamber_temp_' + str(i + 1), float, units="deg C", export_csv=True)
            for i in range(NUM_MK2_THERMOCOUPLES)]) +\
-        [manager.DataType('fuel_pressure', float, units="PSI", export_csv=True),
-         manager.DataType('ox_pressure', float, units="PSI", export_csv=True)] +\
+        [manager.DataType('fuel_press', float, units="PSI", export_csv=True),
+         manager.DataType('ox_press', float, units="PSI", export_csv=True)] +\
         vector_DataType('acceleration', float, units="m/s^2", export_csv=True) +\
         [manager.DataType('status', str, show=False),
          # True = open, False = closed for these
@@ -44,11 +44,12 @@ def init(config=Config.MK_2):
          manager.DataType('ox_main_setting', bool, show=False)]
     plots =\
         [plot.Plot('time', 'force', width=3, show_x_label=False),
-         plot.Plot('time', ['fuel_pressure', 'ox_pressure'], width=3)] +\
+         plot.Plot('time', ['fuel_press', 'ox_press'], "line pressure", width=3)] +\
         ([] if config != Config.MK_2 else
-         [plot.Plot('time', ['chamber_temperature_' + str(i + 1)
-                             for i in range(NUM_MK2_THERMOCOUPLES)])]) +\
-        [plot.Plot('time', ['inlet_temperature', 'outlet_temperature'], "temperature",
+         [plot.Plot('time', ['chamber_temp_' + str(i + 1)
+                             for i in range(NUM_MK2_THERMOCOUPLES)],
+                    "chamber temperature")]) +\
+        [plot.Plot('time', ['inlet_temp', 'outlet_temp'], "coolant temperature",
                    width=3 if config != Config.MK_2 else 1, show_x_label=False),
          plot.Plot('time', ['x_acceleration', 'y_acceleration', 'z_acceleration'],
                    width=3 if config != Config.MK_2 else 1)]
