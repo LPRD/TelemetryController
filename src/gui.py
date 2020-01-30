@@ -236,7 +236,7 @@ class Application(Frame):
 
     def _setupPlots(self):
         """Set up the plots and add it as a widget."""
-        self.fig = matplotlib.figure.Figure(figsize=(10,10),dpi=100)
+        self.fig = matplotlib.figure.Figure(figsize=(12,10),dpi=100)
         self.canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.fig, master=self)
         
         plot.setup(self.plots, self.fig, self.manager)

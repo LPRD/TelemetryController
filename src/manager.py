@@ -172,7 +172,7 @@ class Dispatcher:
         # If a time was recieved, update it and the start time if needed
         if time is not None:
             # If two consecutive times prior to the start time are recieved, update the start time
-            if time < self.start_time:
+            if self.start_time is not None and time < self.start_time:
                 if not self.time_increasing:
                     self.start_time = None
                 self.time_increasing = False

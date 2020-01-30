@@ -34,7 +34,7 @@ def init(config=Config.MK_2):
            for i in range(NUM_MK2_THERMOCOUPLES)]) +\
         [manager.DataType('fuel_press', float, units="PSI", export_csv=True),
          manager.DataType('ox_press', float, units="PSI", export_csv=True)] +\
-        vector_DataType('acceleration', float, units="m/s^2", export_csv=True) +\
+        vector_DataType('accel', float, units="m/s^2", export_csv=True) +\
         [manager.DataType('status', str, show=False),
          # True = open, False = closed for these
          manager.DataType('sensor_status', bool, show=False),
@@ -51,7 +51,7 @@ def init(config=Config.MK_2):
                     "chamber temperature")]) +\
         [plot.Plot('time', ['inlet_temp', 'outlet_temp'], "coolant temperature",
                    width=3 if config != Config.MK_2 else 1, show_x_label=False),
-         plot.Plot('time', ['x_acceleration', 'y_acceleration', 'z_acceleration'],
+         plot.Plot('time', ['x_accel', 'y_accel', 'z_accel'],
                    width=3 if config != Config.MK_2 else 1)]
     dispatcher = manager.Dispatcher(*dts)
     data_manager = manager.DataManager(dispatcher)
@@ -65,6 +65,11 @@ def init(config=Config.MK_2):
                           serial_console_height=7,
                           default_baud=115200)
     running = False
+    def heartbeat():
+        if running:
+            app.sendValue("heartbeat")
+            app.after(500, heartbeat)
+    
     def start_abort_handler():
         nonlocal running
         if running:
@@ -74,6 +79,7 @@ def init(config=Config.MK_2):
             if app.start():
                 app.sendValue("start")
                 running = True
+                heartbeat()
 
     def check_stop(time, status):
         nonlocal running
@@ -163,7 +169,7 @@ def init(config=Config.MK_2):
             valveSettings[valve] = val
             valveButtons[valve].config(text='open' if val else 'closed', background='green' if val else 'red')
         app.dispatcher.add_listener(valve + '_setting', callback)
-
+        
     return app
 
 if __name__ == '__main__':
