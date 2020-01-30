@@ -72,6 +72,7 @@ class Application(Frame):
         #master.iconbitmap('telemetry.png')
         master.attributes("-fullscreen", self.flags['full_screen'])
         master.bind('<Escape>', self.unmaximize)
+        master.bind('<F11>', self.toggleFullScreen)
         master.wm_title(self.flags['window_manager_title'])
         self._createWidgets()
         self.manager.add_listener("sys time", self.saveBackup)
@@ -329,6 +330,10 @@ class Application(Frame):
     def unmaximize(self, _):
         """Disable full-screen mode."""
         self.master.attributes("-fullscreen", False)
+    
+    def toggleFullScreen(self, _):
+        """Toggle full-screen mode."""
+        self.master.attributes("-fullscreen", not self.master.attributes('-fullscreen'))
     
     def resetValuesTable(self):
         """Clear the values table after a reset or changing ports."""
