@@ -4,7 +4,7 @@ import glob
 import time
 
 from typing import *
-import manager
+from manager import Dispatcher, Writeable
 
 class SerialManager:
     """Manages recieving data from a serial port and passes it to a Dispatcher."""
@@ -12,12 +12,11 @@ class SerialManager:
     ports: Dict[str, serial.Serial] = {}
     paused = False
     def __init__(self,
-                 dispatcher: manager.Dispatcher,
+                 dispatcher: Dispatcher,
                  port: str = '/dev/ttyACM0',
                  baud: int = 9600) -> None:
         self.dispatcher = dispatcher
         self.baud = baud
-        self.ser = None
         
         # Prevent opening a port more than once on windows
         try:
@@ -36,8 +35,8 @@ class SerialManager:
             self.ser.close()
 
     def handleInput(self,
-                    txtout: manager.Writeable = sys.stdout,
-                    errout: manager.Writeable = sys.stderr):
+                    txtout: Writeable = sys.stdout,
+                    errout: Writeable = sys.stderr):
         """Check if data is available, and if so send it to the dispatcher or
         appropriate output stream."""
         if self.ser.in_waiting and not self.paused:
