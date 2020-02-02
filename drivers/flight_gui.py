@@ -23,7 +23,7 @@ dts = ([manager.DataType('temperature', float, units='deg C', thresholds=(-20, 8
        [manager.DataType('bmp_alt', float, units='m', thresholds=(-100, 80000))] +
        [manager.DataType('gps_alt', float, units='m', thresholds=(-100, 80000))] +
        [manager.DataType('gps_lat', float, units='deg', thresholds=(-91, 91))] +
-       [manager.DataType('gps_lon', float, units='deg', thresholds=(-91, 91))] +
+       [manager.DataType('gps_lon', float, units='deg', thresholds=(-181, 181))] +
        [manager.DataType('gps_vel', float, units='xy m/s', thresholds=(-20, 100))] +
        [manager.DataType('gps_dir', float, units='xy deg', thresholds=(-20, 365))] +
        [manager.DataType('xy_from_lanch', float, units='xy m', thresholds=(-20, 100000))] +
