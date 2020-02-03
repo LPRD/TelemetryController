@@ -36,9 +36,9 @@ dts = ([manager.DataType('temperature', float, units='deg C', thresholds=(-20, 8
 plots = [plot.Plot('time', ['bmp_alt', 'gps_alt'], "Altitude", width=2, show_x_label=False),
          plot.Plot('time', 'gps_lat', width=1, show_x_label=False),
          plot.Plot('time', 'gps_lon', width=1, show_x_label=False),
-         vector_Plot('time', 'gyro', width=4),
-         vector_Plot('time', 'euler_angle', width=4),
-         vector_Plot('time', 'acceleration', width=4)]
+         vector_Plot('time', 'gyro', width=4, show_x_label=False),
+         vector_Plot('time', 'euler_angle', width=4, show_x_label=False),
+         vector_Plot('time', 'acceleration', width=4, show_x_label=False)]
 dispatcher = manager.Dispatcher(*dts)
 manager = manager.DataManager(dispatcher)
 root = Tk()
