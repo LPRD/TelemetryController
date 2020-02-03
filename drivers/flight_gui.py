@@ -19,16 +19,16 @@ def vector_Plot(x, y, name=None, *args, **kwd_args):
         name = y.replace("_", " ")
     return plot.Plot(x, [d + "_" + y for d in ['x', 'y', 'z']], name, *args, **kwd_args)
 
-dts = ([manager.DataType('temperature', float, units='deg C', thresholds=(-20, 80))] +
-       [manager.DataType('bmp_alt', float, units='m', thresholds=(-100, 80000))] +
-       [manager.DataType('gps_alt', float, units='m', thresholds=(-100, 80000))] +
-       [manager.DataType('gps_lat', float, units='deg', thresholds=(-91, 91))] +
-       [manager.DataType('gps_lon', float, units='deg', thresholds=(-181, 181))] +
-       [manager.DataType('gps_vel', float, units='xy m/s', thresholds=(-20, 100))] +
-       [manager.DataType('gps_dir', float, units='xy deg', thresholds=(-20, 365))] +
-       [manager.DataType('xy_from_lanch', float, units='xy m', thresholds=(-20, 100000))] +
-       [manager.DataType('dir_from_launch', float, units='xy deg', thresholds=(-20, 365))] +
-       [manager.DataType('sats', float, units='#', thresholds=(-10, 169))] +
+dts = ([manager.DataType('temperature', float, units='deg C', thresholds=(-20, 80)),
+       manager.DataType('bmp_alt', float, units='m', thresholds=(-100, 80000)),
+       manager.DataType('gps_alt', float, units='m', thresholds=(-100, 80000)),
+       manager.DataType('gps_lat', float, units='deg', thresholds=(-91, 91)),
+       manager.DataType('gps_lon', float, units='deg', thresholds=(-181, 181)),
+       manager.DataType('gps_vel', float, units='xy m/s', thresholds=(-20, 100)),
+       manager.DataType('gps_dir', float, units='xy deg', thresholds=(-20, 365)),
+       manager.DataType('xy_from_lanch', float, units='xy m', thresholds=(-20, 100000)),
+       manager.DataType('dir_from_launch', float, units='xy deg', thresholds=(-20, 365)),
+       manager.DataType('sats', float, units='#', thresholds=(-10, 169))] +
        vector_DataType('magnetometer', float, units='mu T', thresholds=(-100, 100)) +
        vector_DataType('gyro', float, units='rad/s', thresholds=(-100, 100)) +
        vector_DataType('euler_angle', float, units='degrees', thresholds=(0, 360)) +
