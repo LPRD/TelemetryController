@@ -31,7 +31,7 @@ dts = ([manager.DataType('temperature', float, units='deg C', thresholds=(-20, 8
        manager.DataType('sats', float, units='#', thresholds=(-10, 169))] +
        vector_DataType('magnetometer', float, units='mu T', thresholds=(-100, 100)) +
        vector_DataType('gyro', float, units='rad/s', thresholds=(-100, 100)) +
-       vector_DataType('euler_angle', float, units='degrees', thresholds=(0, 360)) +
+       vector_DataType('euler_angle', float, units='degrees', thresholds=(-180, 360)) +
        vector_DataType('acceleration', float, units='m/sec^2', thresholds=(-50, 50)))
 plots = [plot.Plot('time', ['bmp_alt', 'gps_alt'], "Altitude", width=2, show_x_label=False),
          plot.Plot('time', 'gps_lat', width=1, show_x_label=False),
