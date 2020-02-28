@@ -33,7 +33,9 @@ def init(config=Config.MK_2):
           [manager.DataType('chamber_temp_' + str(i + 1), float, units="deg C", export_csv=True)
            for i in range(NUM_MK2_THERMOCOUPLES)]) +\
         [manager.DataType('fuel_press', float, units="PSI", export_csv=True),
-         manager.DataType('ox_press', float, units="PSI", export_csv=True)] +\
+         manager.DataType('ox_press', float, units="PSI", export_csv=True),
+         manager.DataType('fuel_inj_press', float, units="PSI", export_csv=True),
+         manager.DataType('ox_inj_press', float, units="PSI", export_csv=True)] +\
         vector_DataType('accel', float, units="m/s^2", export_csv=True) +\
         [manager.DataType('status', str, show=False),
          # True = open, False = closed for these
@@ -44,7 +46,7 @@ def init(config=Config.MK_2):
          manager.DataType('ox_main_setting', bool, show=False)]
     plots =\
         [plot.Plot('time', 'force', width=3, show_x_label=False),
-         plot.Plot('time', ['fuel_press', 'ox_press'], "line pressure", width=3)] +\
+         plot.Plot('time', ['fuel_press', 'ox_press', 'fuel_inj_press', 'ox_inj_press'], "line pressure", width=3)] +\
         ([] if config != Config.MK_2 else
          [plot.Plot('time', ['chamber_temp_' + str(i + 1)
                              for i in range(NUM_MK2_THERMOCOUPLES)],
