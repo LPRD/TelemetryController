@@ -28,6 +28,7 @@ dts = ([manager.DataType('temperature', float, units='deg C', thresholds=(-20, 8
        manager.DataType('gps_dir', float, units='xy deg', thresholds=(-20, 365)),
        manager.DataType('xy_from_lanch', float, units='xy m', thresholds=(-20, 100000)),
        manager.DataType('dir_from_launch', float, units='xy deg', thresholds=(-20, 365)),
+       manager.DataType('vb1', float, units='V', thresholds=(-1, 55)),
        manager.DataType('sats', float, units='#', thresholds=(-10, 169))] +
        vector_DataType('magnetometer', float, units='mu T', thresholds=(-100, 100)) +
        vector_DataType('gyro', float, units='rad/s', thresholds=(-100, 100)) +
