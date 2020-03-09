@@ -79,7 +79,7 @@ def init(config=Config.FLIGHT):
                            "Telemetry monitor - Flight" if config == Config.FLIGHT else
                            "Telemetry monitor",
                            show_send_value=False,
-                           serial_console_height=8,
+                           serial_console_height=5,
                            default_baud=57600)
 
     running = False
@@ -132,12 +132,12 @@ def init(config=Config.FLIGHT):
     # Sensor controls
     #Label(app, text="\nSensor Controls").pack()
     controlsFrame = Frame(app)
-    controlsFrame.pack()
+    controlsFrame.pack()    #expand=1
     sensorStatus = Label(controlsFrame, text="All sensors functional", fg='green', font=("Helvetica", 17))
-    sensorStatus.pack()
-    Button(controlsFrame, text="Zero force", command=lambda: app.sendValue("zero_force")).pack(side=LEFT)
-    Button(controlsFrame, text="Zero pressure", command=lambda: app.sendValue("zero_pressure")).pack(side=LEFT)
-    Button(controlsFrame, text="Reset board", command=lambda: app.sendValue("reset")).pack(side=LEFT)
+    sensorStatus.grid(row=0,column=0,columnspan=4)
+    #Button(controlsFrame, text="Zero force", command=lambda: app.sendValue("zero_force")).pack(side=LEFT)
+    #Button(controlsFrame, text="Zero pressure", command=lambda: app.sendValue("zero_pressure")).pack(side=LEFT)
+    #Button(controlsFrame, text="Reset board", command=lambda: app.sendValue("reset")).pack(side=LEFT)
     #BMP_cf - pressure calibration factor input
     #Launch_ALT
     #ATST
@@ -145,16 +145,42 @@ def init(config=Config.FLIGHT):
     #launch_lon
     #land_lat
     #land_lon
+    u1= Entry(controlsFrame)    #,width=20
+    u1.grid(row=1,column=2,columnspan=2)
+    #u1.focus_set()  #not sure if this is needed
+    #def sendVar():
+    b1= Button(controlsFrame, text="set launch alt (m)", width=20, command=lambda: app.sendValue("Launch_ALT",u1.get()))
+    b1.grid(row=1,column=0,padx=5,columnspan=2)
 
-    updateFrame= Entry(app)
-    updateFrame.pack()
-    updateFrame.focus_set()  #not sure if this is needed
+    u2= Entry(controlsFrame)
+    u2.grid(row=2,column=2,columnspan=2)
+    b2= Button(controlsFrame, text="set BMP calib. factor (HPA)", width=20, command=lambda: app.sendValue("BMP_cf",u2.get()))
+    b2.grid(row=2,column=0,padx=5,columnspan=2)
 
-    def sendVar():
+    u3= Entry(controlsFrame)
+    u3.grid(row=3,column=2,columnspan=2)
+    b3= Button(controlsFrame, text="set ATST (m)", width=20, command=lambda: app.sendValue("ATST",u3.get()))
+    b3.grid(row=3,column=0,padx=5,columnspan=2)
 
+    u4= Entry(controlsFrame,width=8)
+    u4.grid(row=4,column=1)
+    b4= Button(controlsFrame, text="set launch lat", width=8, command=lambda: app.sendValue("launch_lat",u4.get()))
+    b4.grid(row=4,column=0,padx=1)
 
+    u5= Entry(controlsFrame,width=8)
+    u5.grid(row=4,column=3)
+    b5= Button(controlsFrame, text="set launch lon", width=8, command=lambda: app.sendValue("launch_lon",u5.get()))
+    b5.grid(row=4,column=2,padx=1)
 
+    u6= Entry(controlsFrame,width=8)
+    u6.grid(row=5,column=1)
+    b6= Button(controlsFrame, text="set land lat", width=8, command=lambda: app.sendValue("land_lat",u6.get()))
+    b6.grid(row=5,column=0,padx=1)
 
+    u7= Entry(controlsFrame,width=8)
+    u7.grid(row=5,column=3)
+    b7= Button(controlsFrame, text="set land lon", width=8, command=lambda: app.sendValue("land_lon",u7.get()))
+    b7.grid(row=5,column=2,padx=1)
 
     # Igniter controls- can only switch one way...
     #Label(app, text="\Igniter Controls").pack()
@@ -171,8 +197,9 @@ def init(config=Config.FLIGHT):
     Label(throttleFrame, text="Main", font=("Helvetica", 15)).grid(row=0, column=2, padx=15)
     Label(throttleFrame, text="1", font=("Helvetica", 15)).grid(row=1, column=0, sticky=W, padx=5)
     Label(throttleFrame, text="2", font=("Helvetica", 15)).grid(row=2, column=0, sticky=W, padx=5)
+    Label(throttleFrame, text="Cam", font=("Helvetica", 15)).grid(row=3, column=0, sticky=W, padx=5)
 
-    valves = ['P1', 'P2', 'P3', 'P4']
+    valves = ['P1', 'P2', 'P3', 'P4', 'P5']         #indexing starts at 0
     valveSettings = {valve: False for valve in valves}
     valveButtons = {}
     for i, valve in enumerate(valves):
