@@ -116,7 +116,7 @@ def init(config=Config.FLIGHT):
 
     def check_stop(time, status):
         nonlocal running
-        if status == 'STAND_BY':
+        if status == 'STAND_BY':    #was 'STAND_BY'
             app.stop()
             running = False
             if config == Config.DEMO:
