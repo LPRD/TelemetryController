@@ -52,7 +52,6 @@ def init(config=Config.FLIGHT):
            manager.DataType('gps_dir', float, units='xy deg', thresholds=(-20, 365)),
            manager.DataType('xy_from_lanch', float, units='xy m', thresholds=(-20, 100000)),
            manager.DataType('dir_from_launch', float, units='xy deg', thresholds=(-20, 365)),
-           manager.DataType('run_time', int, units="ms"),
            manager.DataType('P1_setting', bool),
            manager.DataType('P2_setting', bool),
            manager.DataType('P3_setting', bool),
@@ -66,13 +65,18 @@ def init(config=Config.FLIGHT):
            manager.DataType('launch_lon', float),
            manager.DataType('land_lat', float),
            manager.DataType('land_lon', float),
+           manager.DataType('gps_n', float, units="m"),
+           manager.DataType('gps_e', float, units="m"),
 
+           manager.DataType('up', bool),
+           manager.DataType('down', bool),
            manager.DataType('gps_d', bool),
            manager.DataType('bmp_d', bool),
            manager.DataType('bmp_d2', bool),
            manager.DataType('bno_d', bool),
 
-           manager.DataType('status', str),
+           manager.DataType('run_time', int, units="ms"),
+           manager.DataType('status', str), #str),
            manager.DataType('Apogee_Passed', bool),
            manager.DataType('l2g', bool),
            manager.DataType('ss', bool) #sensor_status , show=False
@@ -82,8 +86,9 @@ def init(config=Config.FLIGHT):
              plot.Plot('time', ['heading', 'attitude','bank'], "q-Angles", width=4, show_x_label=False),
              plot.Plot('time', 'gps_lat', width=1, show_x_label=False),
              plot.Plot('time', 'gps_lon', width=1, show_x_label=False),
-             vector_Plot('time', 'gyro', width=4, show_x_label=False),
+             plot.Plot('gps_e', 'gps_n',"xy from launch (m)", width=1, show_x_label=True),
              vector_Plot('time', 'euler_angle', width=4, show_x_label=False),
+             vector_Plot('time', 'gyro', width=4, show_x_label=False),
              vector_Plot('time', 'acceleration', width=4, show_x_label=False)]
     dispatcher = manager.Dispatcher(*dts)
     data_manager = manager.DataManager(dispatcher)
@@ -99,7 +104,7 @@ def init(config=Config.FLIGHT):
 
     running = False
     def heartbeat():
-        if running:
+        if running:        #get link2ground status all the time, exept if I delete this line, the start/abort button doesn't work right for some reason
             app.sendValue("c")  #c stands for connection, i.e. heartbeat
             app.after(500, heartbeat)
 
@@ -197,6 +202,7 @@ def init(config=Config.FLIGHT):
     b7= Button(controlsFrame, text="set land lon", width=10, command=lambda: app.sendValue("land_lon",u7.get()))
     b7.grid(row=5,column=2,padx=1)
 
+
     # Igniter controls- can only switch one way...
     #Label(app, text="\Igniter Controls").pack()
     #igniterFrame = Frame(app)
@@ -213,6 +219,8 @@ def init(config=Config.FLIGHT):
     Label(throttleFrame, text="1", font=("Helvetica", 15)).grid(row=1, column=0, sticky=W, padx=5)
     Label(throttleFrame, text="2", font=("Helvetica", 15)).grid(row=2, column=0, sticky=W, padx=5)
     Label(throttleFrame, text="Cam", font=("Helvetica", 15)).grid(row=3, column=0, sticky=W, padx=5)
+    Button(throttleFrame, text="Reset board", command=lambda: app.sendValue("reset")).grid(row=3, column=2, sticky=W, padx=5)
+
 
     valves = ['P1', 'P2', 'P3', 'P4', 'P5']         #indexing starts at 0
     valveSettings = {valve: False for valve in valves}
