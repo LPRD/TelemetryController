@@ -100,6 +100,7 @@ def init(config=Config.FLIGHT):
                            "Telemetry monitor",
                            show_send_value=False,
                            serial_console_height=5,
+                           plots_size=(10,10),
                            default_baud=57600)
 
     running = False
