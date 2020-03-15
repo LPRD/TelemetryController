@@ -48,7 +48,8 @@ class Application(Frame):
                      'full_screen': False,
                      'backup_log': ".temp_log.json",
                      'serial_console_height': 15,
-                     'default_baud': 9600}
+                     'default_baud': 9600,
+                     'plots_size': (12,10)}
         new_flags.update(flags)
         self.flags = new_flags
 
@@ -236,7 +237,7 @@ class Application(Frame):
 
     def _setupPlots(self):
         """Set up the plots and add it as a widget."""
-        self.fig = matplotlib.figure.Figure(figsize=(12,10),dpi=100)
+        self.fig = matplotlib.figure.Figure(figsize=self.flags['plots_size'], dpi=100)
         self.canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.fig, master=self)
 
         plot.setup(self.plots, self.fig, self.manager)
