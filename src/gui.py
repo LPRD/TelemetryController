@@ -48,7 +48,8 @@ class Application(Frame):
                      'full_screen': False,
                      'backup_log': ".temp_log.json",
                      'serial_console_height': 15,
-                     'default_baud': 9600}
+                     'default_baud': 9600,
+                     'plots_size': (10,10)}
         new_flags.update(flags)
         self.flags = new_flags
 
@@ -140,7 +141,7 @@ class Application(Frame):
         serialLabel = Label(self, text="\nSerial console")
         serialLabel.pack()
 
-        serial = Frame(self)
+        serial = Frame(self, bg= '#69615e')
         serialControls = Frame(serial)
 
         self.serialPort = StringVar(self)
@@ -176,7 +177,7 @@ class Application(Frame):
         self.sendButton = Button(serialSendButtons, text="Send", command=self.sendSerial)
         self.sendButton.pack(side=LEFT)
 
-        self.sendNewlineButton = Button(serialSendButtons, text="Send with newline", command=self.sendSerialNewline)
+        self.sendNewlineButton = Button(serialSendButtons, text="Send with newline", command=self.sendSerialNewline, bg= '#69696e')
         self.sendNewlineButton.pack(side=LEFT)
 
         serialSendButtons.pack()
@@ -236,7 +237,7 @@ class Application(Frame):
 
     def _setupPlots(self):
         """Set up the plots and add it as a widget."""
-        self.fig = matplotlib.figure.Figure(figsize=(12,10),dpi=100)
+        self.fig = matplotlib.figure.Figure(figsize=self.flags['plots_size'],dpi=100)
         self.canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.fig, master=self)
 
         plot.setup(self.plots, self.fig, self.manager)

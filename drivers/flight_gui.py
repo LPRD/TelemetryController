@@ -151,7 +151,7 @@ def init(config=Config.FLIGHT):
 
     # Sensor controls
     #Label(app, text="\nSensor Controls").pack()
-    controlsFrame = Frame(app)
+    controlsFrame = Frame(app, bg= '#69615e')
     controlsFrame.pack()    #expand=1
     sensorStatus = Label(controlsFrame, text="All sensors functional", fg='green', font=("Helvetica", 17))
     sensorStatus.grid(row=0,column=0,columnspan=4)
@@ -212,7 +212,7 @@ def init(config=Config.FLIGHT):
 
     # Throttle controls
     #Label(app, text="\nThrottle Controls").pack()
-    throttleFrame = Frame(app)
+    throttleFrame = Frame(app, bg= '#69615e')   #bg or background works
     throttleFrame.pack()
     Label(throttleFrame, text="Drouge", font=("Helvetica", 15)).grid(row=0, column=1)
     Label(throttleFrame, text="Main", font=("Helvetica", 15)).grid(row=0, column=2, padx=15)
@@ -233,7 +233,7 @@ def init(config=Config.FLIGHT):
 
     # Run controls
     #Label(app, text="\nRun Controls").pack()
-    runFrame = Frame(app)
+    runFrame = Frame(app, bg= '#69615e')
     runFrame.pack()
     start_abort_button = Button(runFrame, text="Start", command=start_abort_handler, bg="lime green", height=3, width=10)
     start_abort_button.pack(side=LEFT)
