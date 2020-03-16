@@ -21,7 +21,8 @@ class Plot:
                  height: int = 1,
                  style: str = None,
                  legend: str = 'best',
-                 show_x_label: bool = True) -> None:
+                 show_x_label: bool = True,
+                 background: str = 'white') -> None:
         self.x = x
         self.ys = [cast(str, ys)] if type(ys) == str else cast(Sequence[str], ys)
 
@@ -59,6 +60,7 @@ class Plot:
         self.style = style
         self.legend = legend
         self.show_x_label = show_x_label
+        self.background = background
 
         self.update: Dict[str, Tuple[List[float], List[float]]] = {y: ([], []) for y in self.ys}
         self.lines: Dict[str, Any] = {y: None for y in self.ys} # TODO: type
@@ -75,6 +77,7 @@ class Plot:
                 self.subplot.set_xlabel("time (sec)")
             else:
                 self.subplot.set_xlabel(self.x + (" (" + data_types[self.x].units + ")" if data_types[self.x].units else ""))
+        self.subplot.set_facecolor(self.background)
 
         # Check plot datatypes are in manager datatypes
         for y in self.ys:
