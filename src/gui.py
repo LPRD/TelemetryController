@@ -50,7 +50,7 @@ class Application(Frame):
                      'serial_console_height': 15,
                      'default_baud': 9600,
                      'plots_size': (12,10),
-                     'plots_background': 'white'}
+                     'plots_background': '#69615e'}
         new_flags.update(flags)
         self.flags = new_flags
 
@@ -69,8 +69,8 @@ class Application(Frame):
         self.flags['full_screen'] = args.full_screen
 
         # Init gui
-        Frame.__init__(self, master)
-        self.pack()
+        Frame.__init__(self, master, bg='#69615e')      #set whole background color here!
+        self.pack(side=LEFT)     #side=LEFT
         #master.iconbitmap('telemetry.png')
         master.attributes("-fullscreen", self.flags['full_screen'])
         master.bind('<Escape>', self.unmaximize)
@@ -118,7 +118,7 @@ class Application(Frame):
         """Initialize the various widgets in the main frame."""
         self._setupPlots()
 
-        buttons = Frame(self)
+        buttons = Frame(self)   #, bg='red'     buttons cover everything tho
         self.controlButton = Button(buttons, text="Start", command=self.start, bg="lime green")
         self.controlButton.pack(side=LEFT)
 
@@ -137,13 +137,13 @@ class Application(Frame):
         self.thresholdButton = Button(buttons, text="Set thresholds...", command=self.configureThresholds)
         self.thresholdButton.pack(side=LEFT)
 
-        buttons.pack()
-
-        serialLabel = Label(self, text="\nSerial console")
+        buttons.pack()  #side=RIGHT,fill=BOTH       move to right
+            #fill=BOTH, expand=50
+        serialLabel = Label(self, text="\nSerial console", bg= '#69615e')
         serialLabel.pack()
 
         serial = Frame(self, bg= '#69615e')
-        serialControls = Frame(serial)
+        serialControls = Frame(serial, bg= '#69615e')
 
         self.serialPort = StringVar(self)
         self.serialSelect = OptionMenu(serialControls, self.serialPort, [])
@@ -205,7 +205,7 @@ class Application(Frame):
             sendValues.pack()
 
         # Value readout widget
-        valuesLabel = Label(self, text="\nCurrent values")
+        valuesLabel = Label(self, text="\nCurrent values", bg= '#69615e')
         if self.flags['show_current_values']:
             valuesLabel.pack()
 

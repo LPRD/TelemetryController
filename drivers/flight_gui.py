@@ -100,7 +100,7 @@ def init(config=Config.FLIGHT):
                            "Telemetry monitor",
                            show_send_value=False,
                            serial_console_height=5,
-                           plots_size=(10,10),
+                           plots_size=(11.5,10),
                            default_baud=57600)
 
     running = False
@@ -148,13 +148,13 @@ def init(config=Config.FLIGHT):
         return lower_name.replace("_", " ")
 
     # Add custom gui controls
-    Label(app, text="\nControls").pack()
+    Label(app, text="\nControls", bg= '#69615e').pack()
 
     # Sensor controls
     #Label(app, text="\nSensor Controls").pack()
     controlsFrame = Frame(app, bg= '#69615e')
     controlsFrame.pack()    #expand=1
-    sensorStatus = Label(controlsFrame, text="All sensors functional", fg='green', font=("Helvetica", 17))
+    sensorStatus = Label(controlsFrame, text="All sensors functional", fg='green', font=("Helvetica", 17), bg= '#b9b1ae')
     sensorStatus.grid(row=0,column=0,columnspan=4)
     #Button(controlsFrame, text="Zero force", command=lambda: app.sendValue("zero_force")).pack(side=LEFT)
     #Button(controlsFrame, text="Zero pressure", command=lambda: app.sendValue("zero_pressure")).pack(side=LEFT)
@@ -215,11 +215,11 @@ def init(config=Config.FLIGHT):
     #Label(app, text="\nThrottle Controls").pack()
     throttleFrame = Frame(app, bg= '#69615e')   #bg or background works
     throttleFrame.pack()
-    Label(throttleFrame, text="Drouge", font=("Helvetica", 15)).grid(row=0, column=1)
-    Label(throttleFrame, text="Main", font=("Helvetica", 15)).grid(row=0, column=2, padx=15)
-    Label(throttleFrame, text="1", font=("Helvetica", 15)).grid(row=1, column=0, sticky=W, padx=5)
-    Label(throttleFrame, text="2", font=("Helvetica", 15)).grid(row=2, column=0, sticky=W, padx=5)
-    Label(throttleFrame, text="Cam", font=("Helvetica", 15)).grid(row=3, column=0, sticky=W, padx=5)
+    Label(throttleFrame, text="Drouge", font=("Helvetica", 15), bg= '#69615e').grid(row=0, column=1)
+    Label(throttleFrame, text="Main", font=("Helvetica", 15), bg= '#69615e').grid(row=0, column=2, padx=15)
+    Label(throttleFrame, text="1", font=("Helvetica", 15), bg= '#69615e').grid(row=1, column=0, sticky=W, padx=5)
+    Label(throttleFrame, text="2", font=("Helvetica", 15), bg= '#69615e').grid(row=2, column=0, sticky=W, padx=5)
+    Label(throttleFrame, text="Cam", font=("Helvetica", 15), bg= '#69615e').grid(row=3, column=0, sticky=W, padx=5)
     Button(throttleFrame, text="Reset board", command=lambda: app.sendValue("reset")).grid(row=3, column=2, sticky=W, padx=5)
 
 
@@ -238,7 +238,7 @@ def init(config=Config.FLIGHT):
     runFrame.pack()
     start_abort_button = Button(runFrame, text="Start", command=start_abort_handler, bg="lime green", height=3, width=10)
     start_abort_button.pack(side=LEFT)
-    countdown = Label(runFrame, text="  T-01:00:00", fg="red", font=("Helvetica", 20, "bold"))
+    countdown = Label(runFrame, text="  T-01:00:00", fg="red", font=("Helvetica", 20, "bold"), bg= '#b9b1ae')
     countdown.pack()
     status = Label(runFrame, text="  Stand by", width=15, font=("Helvetica", 17))
     status.pack()
