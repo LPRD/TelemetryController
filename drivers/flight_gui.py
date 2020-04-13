@@ -154,7 +154,7 @@ def init(config=Config.FLIGHT):
     #Label(app, text="\nSensor Controls").pack()
     controlsFrame = Frame(app, bg= '#69615e')
     controlsFrame.pack()    #expand=1
-    sensorStatus = Label(controlsFrame, text="All sensors functional", fg='green', font=("Helvetica", 17), bg= '#b9b1ae')
+    sensorStatus = Label(controlsFrame, text="All sensors functional", fg='green', font=("Helvetica", 17), bg= '#c9c1be')
     sensorStatus.grid(row=0,column=0,columnspan=4)
     #Button(controlsFrame, text="Zero force", command=lambda: app.sendValue("zero_force")).pack(side=LEFT)
     #Button(controlsFrame, text="Zero pressure", command=lambda: app.sendValue("zero_pressure")).pack(side=LEFT)
@@ -240,7 +240,8 @@ def init(config=Config.FLIGHT):
     start_abort_button.pack(side=LEFT)
     countdown = Label(runFrame, text="  T-01:00:00", fg="red", font=("Helvetica", 20, "bold"), bg= '#b9b1ae')
     countdown.pack()
-    status = Label(runFrame, text="  Stand by", width=15, font=("Helvetica", 17))
+
+    status = Label(runFrame, text="  Stand by", width=15, font=("Helvetica", 17), bg= '#b9b1ae')
     status.pack()
 
     # Listeners
