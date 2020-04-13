@@ -93,15 +93,19 @@ def init(config=Config.FLIGHT):
     dispatcher = manager.Dispatcher(*dts)
     data_manager = manager.DataManager(dispatcher)
     root = Tk()
-    app = gui.Application(dispatcher, data_manager, plots, master=root,
-                           window_manager_title=
-                           "Telemetry monitor - Demo" if config == Config.DEMO else
-                           "Telemetry monitor - Flight" if config == Config.FLIGHT else
-                           "Telemetry monitor",
-                           show_send_value=False,
-                           serial_console_height=5,
-                           plots_size=(11.5,10),
-                           default_baud=57600)
+    root.configure(background='#69615e')
+    app = gui.Application(
+        dispatcher, data_manager, plots, master=root,
+        window_manager_title=
+        "Telemetry monitor - Demo" if config == Config.DEMO else
+        "Telemetry monitor - Flight" if config == Config.FLIGHT else
+        "Telemetry monitor",
+        show_send_value=False,
+        serial_console_height=5,
+        plots_size=(11.5,10),
+        plots_background='#69615e',
+        controls_background='#69615e',
+        default_baud=57600)
 
     running = False
     def heartbeat():

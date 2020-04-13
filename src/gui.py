@@ -50,7 +50,8 @@ class Application(Frame):
                      'serial_console_height': 15,
                      'default_baud': 9600,
                      'plots_size': (12,10),
-                     'plots_background': '#69615e'}
+                     'plots_background': 'white',
+                     'controls_background': None}
         new_flags.update(flags)
         self.flags = new_flags
 
@@ -69,7 +70,7 @@ class Application(Frame):
         self.flags['full_screen'] = args.full_screen
 
         # Init gui
-        Frame.__init__(self, master, bg='#69615e')      #set whole background color here!
+        Frame.__init__(self, master, bg=self.flags['controls_background'])
         self.pack(side=LEFT)     #side=LEFT
         #master.iconbitmap('telemetry.png')
         master.attributes("-fullscreen", self.flags['full_screen'])
@@ -118,7 +119,7 @@ class Application(Frame):
         """Initialize the various widgets in the main frame."""
         self._setupPlots()
 
-        buttons = Frame(self)   #, bg='red'     buttons cover everything tho
+        buttons = Frame(self, bg=self.flags['controls_background'])
         self.controlButton = Button(buttons, text="Start", command=self.start, bg="lime green")
         self.controlButton.pack(side=LEFT)
 
@@ -137,13 +138,12 @@ class Application(Frame):
         self.thresholdButton = Button(buttons, text="Set thresholds...", command=self.configureThresholds)
         self.thresholdButton.pack(side=LEFT)
 
-        buttons.pack()  #side=RIGHT,fill=BOTH       move to right
-            #fill=BOTH, expand=50
-        serialLabel = Label(self, text="\nSerial console", bg= '#69615e')
+        buttons.pack()
+        serialLabel = Label(self, text="\nSerial console", bg=self.flags['controls_background'])
         serialLabel.pack()
 
-        serial = Frame(self, bg= '#69615e')
-        serialControls = Frame(serial, bg= '#69615e')
+        serial = Frame(self, bg=self.flags['controls_background'])
+        serialControls = Frame(serial, bg=self.flags['controls_background'])
 
         self.serialPort = StringVar(self)
         self.serialSelect = OptionMenu(serialControls, self.serialPort, [])
@@ -173,16 +173,15 @@ class Application(Frame):
             self.serialIn.bind('<Return>', self.sendSerial)
         self.serialIn.pack()
 
-        serialSendButtons = Frame(serial)
+        serialSendButtons = Frame(serial, bg=self.flags['controls_background'])
 
         self.sendButton = Button(serialSendButtons, text="Send", command=self.sendSerial)
         self.sendButton.pack(side=LEFT)
 
-        self.sendNewlineButton = Button(serialSendButtons, text="Send with newline", command=self.sendSerialNewline, bg= '#69696e')
+        self.sendNewlineButton = Button(serialSendButtons, text="Send with newline", command=self.sendSerialNewline)
         self.sendNewlineButton.pack(side=LEFT)
 
         serialSendButtons.pack()
-        serialSendButtons = Frame(serial)
 
         serial.pack()
 
@@ -191,7 +190,7 @@ class Application(Frame):
         if self.flags['show_send_value']:
             sendValuesLabel.pack()
 
-        sendValues = Frame(self)
+        sendValues = Frame(self, bg=self.flags['controls_background'])
 
         self.sendDataName = Entry(sendValues, width=10)
         self.sendDataName.bind('<Return>', self.sendValues)
@@ -205,11 +204,11 @@ class Application(Frame):
             sendValues.pack()
 
         # Value readout widget
-        valuesLabel = Label(self, text="\nCurrent values", bg= '#69615e')
+        valuesLabel = Label(self, text="\nCurrent values", bg=self.flags['controls_background'])
         if self.flags['show_current_values']:
             valuesLabel.pack()
 
-        valuesTableFrame = Frame(self)
+        valuesTableFrame = Frame(self, bg=self.flags['controls_background'])
         self.valuesTable = Treeview(valuesTableFrame, columns=('value',), show='tree')
 
         self.valuesTable.insert('', 'end', 'abs time', text="abs time (ms)")
