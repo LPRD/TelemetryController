@@ -86,7 +86,7 @@ def init(config=Config.FLIGHT):
              plot.Plot('time', ['heading', 'attitude','bank'], "q-Angles", width=4, show_x_label=False),
              plot.Plot('time', 'gps_lat', width=1, show_x_label=False),
              plot.Plot('time', 'gps_lon', width=1, show_x_label=False),
-             plot.Plot('gps_e', 'gps_n',"xy from launch (m)", width=1, show_x_label=True),
+             #plot.Plot('gps_e', 'gps_n',"xy from launch (m)", width=1, show_x_label=True),
              vector_Plot('time', 'euler_angle', width=4, show_x_label=False),
              vector_Plot('time', 'gyro', width=4, show_x_label=False),
              vector_Plot('time', 'acceleration', width=4, show_x_label=False)]
@@ -101,8 +101,8 @@ def init(config=Config.FLIGHT):
         "Telemetry monitor - Flight" if config == Config.FLIGHT else
         "Telemetry monitor",
         show_send_value=False,
-        serial_console_height=5,
-        plots_size=(11.5,10),
+        serial_console_height=1,
+        plots_size=(10,10),
         plots_background='#69615e',
         controls_background='#69615e',
         default_baud=57600)
@@ -127,6 +127,7 @@ def init(config=Config.FLIGHT):
     def check_stop(time, status):
         nonlocal running
         if status == 'STAND_BY':    #was 'STAND_BY'
+            #status.config(bg='#0fe9f5')
             app.stop()
             running = False
             if config == Config.DEMO:
@@ -134,6 +135,22 @@ def init(config=Config.FLIGHT):
             else:
                 countdown.config(text="  T-01:00:00")
             start_abort_button.config(text="Start", bg='lime green')
+        elif status == 'TERMINAL_COUNT':
+            status.config(bg='#e6d925')
+        elif status == 'POWERED_ASCENT':
+            status.config(bg='#e04122')
+
+        elif status == 'UNPOWERED_ASCENT':
+            status.config(bg='#bd857b')
+        elif status == 'FREEFALL':
+            status.config(bg='#760e99')
+        elif status == 'DROGUE_DESCENT':
+            status.config(bg='#8b65ba')
+        elif status == 'MAIN_DESCENT':
+            status.config(bg='#402aa1')
+
+        elif status == 'LANDED':
+            status.config(bg='#4395d9')
         else:
             start_abort_button.config(text="Abort", bg='red')
 
@@ -152,13 +169,13 @@ def init(config=Config.FLIGHT):
         return lower_name.replace("_", " ")
 
     # Add custom gui controls
-    Label(app, text="\nControls", bg= '#69615e').pack()
+    Label(app, text="\nControls", bg= '#69615e').pack(side=TOP)
 
     # Sensor controls
     #Label(app, text="\nSensor Controls").pack()
     controlsFrame = Frame(app, bg= '#69615e')
-    controlsFrame.pack()    #expand=1
-    sensorStatus = Label(controlsFrame, text="All sensors functional", fg='green', font=("Helvetica", 17), bg= '#c9c1be')
+    controlsFrame.pack(side=TOP)    #expand=1
+    sensorStatus = Label(controlsFrame, text="All sensors functional", fg='green', font=("Helvetica", 12), bg= '#c9c1be') #light grey c9c1be
     sensorStatus.grid(row=0,column=0,columnspan=4)
     #Button(controlsFrame, text="Zero force", command=lambda: app.sendValue("zero_force")).pack(side=LEFT)
     #Button(controlsFrame, text="Zero pressure", command=lambda: app.sendValue("zero_pressure")).pack(side=LEFT)
@@ -174,37 +191,37 @@ def init(config=Config.FLIGHT):
     u1.grid(row=1,column=2,columnspan=2)
     #u1.focus_set()  #not sure if this is needed
     #def sendVar():
-    b1= Button(controlsFrame, text="set launch alt (m)", width=20, command=lambda: app.sendValue("Launch_ALT",float(u1.get())))
+    b1= Button(controlsFrame, text="set launch alt (m)",font=("Helvetica", 7), width=20, command=lambda: app.sendValue("Launch_ALT",float(u1.get())))
     b1.grid(row=1,column=0,padx=5,columnspan=2)
 
     u2= Entry(controlsFrame)
     u2.grid(row=2,column=2,columnspan=2)
-    b2= Button(controlsFrame, text="set BMP calib. factor (HPA)", width=20, command=lambda: app.sendValue("BMP_cf",u2.get()))
+    b2= Button(controlsFrame, text="set BMP calib. factor (HPA)", width=20,font=("Helvetica", 7) , command=lambda: app.sendValue("BMP_cf",u2.get()))
     b2.grid(row=2,column=0,padx=5,columnspan=2)
 
     u3= Entry(controlsFrame)
     u3.grid(row=3,column=2,columnspan=2)
-    b3= Button(controlsFrame, text="set ATST (m)", width=20, command=lambda: app.sendValue("ATST",u3.get()))
+    b3= Button(controlsFrame, text="set ATST (m)", width=20,font=("Helvetica", 7), command=lambda: app.sendValue("ATST",u3.get()))
     b3.grid(row=3,column=0,padx=5,columnspan=2)
 
     u4= Entry(controlsFrame,width=8)
     u4.grid(row=4,column=1)
-    b4= Button(controlsFrame, text="set launch lat", width=10, command=lambda: app.sendValue("launch_lat",u4.get()))
+    b4= Button(controlsFrame, text="set launch lat", width=10, font=("Helvetica", 7), command=lambda: app.sendValue("launch_lat",u4.get()))
     b4.grid(row=4,column=0,padx=1)
 
     u5= Entry(controlsFrame,width=8)
     u5.grid(row=4,column=3)
-    b5= Button(controlsFrame, text="set launch lon", width=10, command=lambda: app.sendValue("launch_lon",u5.get()))
+    b5= Button(controlsFrame, text="set launch lon", font=("Helvetica", 7), width=10, command=lambda: app.sendValue("launch_lon",u5.get()))
     b5.grid(row=4,column=2,padx=1)
 
     u6= Entry(controlsFrame,width=8)
     u6.grid(row=5,column=1)
-    b6= Button(controlsFrame, text="set land lat", width=10, command=lambda: app.sendValue("land_lat",u6.get()))
+    b6= Button(controlsFrame, text="set land lat", width=10, font=("Helvetica", 7), command=lambda: app.sendValue("land_lat",u6.get()))
     b6.grid(row=5,column=0,padx=1)
 
     u7= Entry(controlsFrame,width=8)
     u7.grid(row=5,column=3)
-    b7= Button(controlsFrame, text="set land lon", width=10, command=lambda: app.sendValue("land_lon",u7.get()))
+    b7= Button(controlsFrame, text="set land lon", width=10, font=("Helvetica", 7), command=lambda: app.sendValue("land_lon",u7.get()))
     b7.grid(row=5,column=2,padx=1)
 
 
@@ -219,12 +236,12 @@ def init(config=Config.FLIGHT):
     #Label(app, text="\nThrottle Controls").pack()
     throttleFrame = Frame(app, bg= '#69615e')   #bg or background works
     throttleFrame.pack()
-    Label(throttleFrame, text="Drouge", font=("Helvetica", 15), bg= '#69615e').grid(row=0, column=1)
-    Label(throttleFrame, text="Main", font=("Helvetica", 15), bg= '#69615e').grid(row=0, column=2, padx=15)
-    Label(throttleFrame, text="1", font=("Helvetica", 15), bg= '#69615e').grid(row=1, column=0, sticky=W, padx=5)
-    Label(throttleFrame, text="2", font=("Helvetica", 15), bg= '#69615e').grid(row=2, column=0, sticky=W, padx=5)
-    Label(throttleFrame, text="Cam", font=("Helvetica", 15), bg= '#69615e').grid(row=3, column=0, sticky=W, padx=5)
-    Button(throttleFrame, text="Reset board", command=lambda: app.sendValue("reset")).grid(row=3, column=2, sticky=W, padx=5)
+    Label(throttleFrame, text="Drogue", font=("Helvetica", 10), bg= '#69615e').grid(row=0, column=1, sticky= W)
+    Label(throttleFrame, text="Main", font=("Helvetica", 10), bg= '#69615e').grid(row=0, column=2, padx=15, sticky= W)
+    Label(throttleFrame, text="1", font=("Helvetica", 10), bg= '#69615e').grid(row=1, column=0, sticky=W, padx=5)
+    Label(throttleFrame, text="2", font=("Helvetica", 10), bg= '#69615e').grid(row=2, column=0, sticky=W, padx=5)
+    Label(throttleFrame, text="Cam", font=("Helvetica", 10), bg= '#69615e').grid(row=3, column=0, sticky=W, padx=5)
+    Button(throttleFrame, text="Reset board", font=("Helvetica", 8), command=lambda: app.sendValue("reset")).grid(row=3, column=2, sticky=W, padx=5)
 
 
     valves = ['P1', 'P2', 'P3', 'P4', 'P5']         #indexing starts at 0
@@ -239,14 +256,14 @@ def init(config=Config.FLIGHT):
     # Run controls
     #Label(app, text="\nRun Controls").pack()
     runFrame = Frame(app, bg= '#69615e')
-    runFrame.pack()
-    start_abort_button = Button(runFrame, text="Start", command=start_abort_handler, bg="lime green", height=3, width=10)
+    runFrame.pack(side=TOP)
+    start_abort_button = Button(runFrame, text="Start", command=start_abort_handler, bg="lime green", height=2, width=8)
     start_abort_button.pack(side=LEFT)
-    countdown = Label(runFrame, text="  T-01:00:00", fg="red", font=("Helvetica", 20, "bold"), bg= '#b9b1ae')
-    countdown.pack()
+    countdown = Label(runFrame, text="  T-01:00:00", width=10, fg="red", font=("Helvetica", 16, "bold"), bg= '#c9c1be')  #b9b1ae
+    countdown.pack(side=TOP)
 
-    status = Label(runFrame, text="  Stand by", width=15, font=("Helvetica", 17), bg= '#b9b1ae')
-    status.pack()
+    status = Label(runFrame, text="  Stand by", width=16, font=("Helvetica", 10), bg= '#c9c1be')
+    status.pack(side=TOP)
 
     # Listeners
     app.dispatcher.add_listener('status', lambda time, val: status.config(text="  " + state_name(val)))

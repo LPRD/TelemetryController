@@ -120,22 +120,22 @@ class Application(Frame):
         self._setupPlots()
 
         buttons = Frame(self, bg=self.flags['controls_background'])
-        self.controlButton = Button(buttons, text="Start", command=self.start, bg="lime green")
+        self.controlButton = Button(buttons, text="Start", command=self.start, bg="lime green",font=("Helvetica", 8))
         self.controlButton.pack(side=LEFT)
 
-        self.exitButton = Button(buttons, text="Quit", command=self.terminate)
+        self.exitButton = Button(buttons, text="Quit", command=self.terminate, font=("Helvetica", 8))
         self.exitButton.pack(side=LEFT)
 
-        self.openButton = Button(buttons, text="Open...", command=self.openFile)
+        self.openButton = Button(buttons, text="Open", command=self.openFile, font=("Helvetica", 8), height=1, width=4)
         self.openButton.pack(side=LEFT)
 
-        self.saveButton = Button(buttons, text="Save as...", command=self.saveFile)
+        self.saveButton = Button(buttons, text="Save as", command=self.saveFile, font=("Helvetica", 8), height=1 ,width=6)
         self.saveButton.pack(side=LEFT)
 
-        self.exportButton = Button(buttons, text="Export csv...", command=self.exportCSV)
+        self.exportButton = Button(buttons, text="Export csv", command=self.exportCSV, font=("Helvetica", 8), height=1, width=8)
         self.exportButton.pack(side=LEFT)
 
-        self.thresholdButton = Button(buttons, text="Set thresholds...", command=self.configureThresholds)
+        self.thresholdButton = Button(buttons, text="Thresholds", command=self.configureThresholds, font=("Helvetica", 8), height=1, width=8)
         self.thresholdButton.pack(side=LEFT)
 
         buttons.pack()
@@ -204,12 +204,12 @@ class Application(Frame):
             sendValues.pack()
 
         # Value readout widget
-        valuesLabel = Label(self, text="\nCurrent values", bg=self.flags['controls_background'])
+        valuesLabel = Label(self, text="\nCurrent values", bg=self.flags['controls_background'], height= 2)
         if self.flags['show_current_values']:
-            valuesLabel.pack()
+            valuesLabel.pack(side=TOP)
 
         valuesTableFrame = Frame(self, bg=self.flags['controls_background'])
-        self.valuesTable = Treeview(valuesTableFrame, columns=('value',), show='tree')
+        self.valuesTable = Treeview(valuesTableFrame, columns=('value',), show='tree',height=6)
 
         self.valuesTable.insert('', 'end', 'abs time', text="abs time (ms)")
         self.dispatcher.add_listener(
@@ -224,7 +224,7 @@ class Application(Frame):
                     lambda time, data, id=ty.name: self.valuesTable.item(id, values=(data,)),
                     100)
 
-        valuesScrollbar = Scrollbar(valuesTableFrame, orient=VERTICAL)
+        valuesScrollbar = Scrollbar(valuesTableFrame, orient=VERTICAL, width=15)
         valuesScrollbar.config(command=self.valuesTable.yview)
         self.valuesTable.configure(yscrollcommand=valuesScrollbar.set)
 
