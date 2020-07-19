@@ -37,7 +37,7 @@ class Plot:
         suffix = suffix.replace("_", " ")
         if " " in suffix:
             suffix = suffix[suffix.index(" "):]
-
+        
         if ys_names:
             self.ys_names = ys_names
         elif suffix:
@@ -133,7 +133,7 @@ class Plot:
                             j += 1
                     x_data = new_x_data
                     y_data = new_y_data
-
+                        
                 assert len(x_data) == len(y_data)
                 # 'Prune' plotted data to avoid slow-down with large amounts of data
                 indices = range(0, len(x_data), max(len(x_data) // max_points, 1))
@@ -167,7 +167,7 @@ def gen_layout(plots):
             available = {(i, j): True
                          for i in range(width)
                          for j in range(height)}
-
+            
             # List of info for each plot
             layout = []
 
