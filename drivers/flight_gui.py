@@ -136,24 +136,30 @@ def init(config=Config.FLIGHT):
             else:
                 countdown.config(text="  T-01:00:00")
             start_abort_button.config(text="Start", bg='lime green')
-        elif status == 'TERMINAL_COUNT':
-            status.config(bg='#e6d925')
-        elif status == 'POWERED_ASCENT':
-            status.config(bg='#e04122')
+        #I figured it out... having the below code included caused the unresponsiveness :(
 
-        elif status == 'UNPOWERED_ASCENT':
-            status.config(bg='#bd857b')
-        elif status == 'FREEFALL':
-            status.config(bg='#760e99')
-        elif status == 'DROGUE_DESCENT':
-            status.config(bg='#8b65ba')
-        elif status == 'MAIN_DESCENT':
-            status.config(bg='#402aa1')
+        #elif status == 'TERMINAL_COUNT':
+        #    status.config(bg='#e6d925')            #status.config is bad specifically!!!!
+        #elif status == 'POWERED_ASCENT':
+        #    status.config(bg='#e04122')
 
-        elif status == 'LANDED':
-            status.config(bg='#4395d9')
+        #elif status == 'UNPOWERED_ASCENT':
+        #    status.config(bg='#bd857b')
+        #elif status == 'FREEFALL':
+        #    status.config(bg='#760e99')
+        #elif status == 'DROGUE_DESCENT':
+        #    status.config(bg='#8b65ba')
+        #elif status == 'MAIN_DESCENT':
+        #    status.config(bg='#402aa1')
+        #elif status == 'LANDED':
+        #    status.config(bg='#4395d9')
+
         else:
             start_abort_button.config(text="Abort", bg='red')
+        #if status == 'TERMINAL_COUNT':
+        #    running = True
+            #qqq= 10            #causes issues also
+
 
     def update_time(abs_time, relative_time):
         if not running:
@@ -164,6 +170,25 @@ def init(config=Config.FLIGHT):
         cs   = (abs(relative_time) // 10) % 100
         text = "  T{}{:02}:{:02}:{:02}".format(sign, mins, secs, cs)
         countdown.config(text=text, fg = "green" if relative_time > 0 else "red")
+
+    #def update_state(time, status):
+    #    if status== 'STAND_BY':
+    #        status.config(bg='#e6d925')
+    #    if status == 'POWERED_ASCENT':
+    #        status.config(bg='#e04122')
+    #    if status == 'UNPOWERED_ASCENT':
+    #        status.config(bg='#bd857b')
+    #    if status == 'FREEFALL':
+    #        status.config(bg='#760e99')
+    #    if status == 'DROGUE_DESCENT':
+    #        status.config(bg='#8b65ba')
+    #    if status == 'MAIN_DESCENT':
+    #        status.config(bg='#402aa1')
+    #    if status == 'LANDED':
+    #        status.config(bg='#4395d9')
+
+
+
 
     def state_name(name):
         lower_name = name[0] + name[1:].lower()
@@ -266,9 +291,14 @@ def init(config=Config.FLIGHT):
     status = Label(runFrame, text="  Stand by", width=16, font=("Helvetica", 10), bg= '#c9c1be')
     status.pack(side=TOP)
 
+
+
+
+
     # Listeners
     app.dispatcher.add_listener('status', lambda time, val: status.config(text="  " + state_name(val)))
     app.dispatcher.add_listener('status', check_stop)
+    #app.dispatcher.add_listener('status', update_state)
     app.dispatcher.add_listener('run_time', update_time)
     app.dispatcher.add_listener('ss', lambda time, val: sensorStatus.config(text="All sensors functional" if val else "Sensor error encountered",
                                                                                        fg='green' if val else 'red'))
