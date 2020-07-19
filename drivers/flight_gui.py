@@ -50,8 +50,7 @@ def init(config=Config.FLIGHT):
            manager.DataType('temperature', float, units='deg C', thresholds=(-20, 80)),
            manager.DataType('gps_vel', float, units='xy m/s', thresholds=(-20, 100)),
            manager.DataType('gps_dir', float, units='xy deg', thresholds=(-20, 365)),
-           manager.DataType('x_from_launch', float, units='m', thresholds=(-100000, 100000)),
-           manager.DataType('y_from_launch', float, units='m', thresholds=(-100000, 100000)),
+           manager.DataType('xy_from_lanch', float, units='xy m', thresholds=(-20, 100000)),
            manager.DataType('dir_from_launch', float, units='xy deg', thresholds=(-20, 365)),
            manager.DataType('P1_setting', bool),
            manager.DataType('P2_setting', bool),
@@ -66,10 +65,14 @@ def init(config=Config.FLIGHT):
            manager.DataType('launch_lon', float),
            manager.DataType('land_lat', float),
            manager.DataType('land_lon', float),
+           manager.DataType('gps_n', float, units="m"),
+           manager.DataType('gps_e', float, units="m"),
 
+           manager.DataType('up', bool),
+           manager.DataType('down', bool),
            manager.DataType('gps_d', bool),
            manager.DataType('bmp_d', bool),
-           #manager.DataType('bmp_d2', bool),
+           manager.DataType('bmp_d2', bool),
            manager.DataType('bno_d', bool),
 
            manager.DataType('run_time', int, units="ms"),
@@ -90,7 +93,6 @@ def init(config=Config.FLIGHT):
     dispatcher = manager.Dispatcher(*dts)
     data_manager = manager.DataManager(dispatcher)
     root = Tk()
-<<<<<<< HEAD
     root.configure(background='#69615e')
     app = gui.Application(
         dispatcher, data_manager, plots, master=root,
@@ -104,20 +106,8 @@ def init(config=Config.FLIGHT):
         plots_background='#69615e',
         controls_background='#69615e',
         default_baud=57600)
-=======
-    app = gui.Application(dispatcher, data_manager, plots, master=root,
-                           window_manager_title=
-                           "Telemetry monitor - Demo" if config == Config.DEMO else
-                           "Telemetry monitor - Flight" if config == Config.FLIGHT else
-                           "Telemetry monitor",
-                           show_send_value=False,
-                           serial_console_height=5,
-                           plots_size=(10,10),
-                           default_baud=57600)
->>>>>>> parent of b41a304... bg colors and positioning
 
     running = False
-
     def heartbeat():
         if running:        #get link2ground status all the time, exept if I delete this line, the start/abort button doesn't work right for some reason
             app.sendValue("c")  #c stands for connection, i.e. heartbeat
@@ -138,7 +128,7 @@ def init(config=Config.FLIGHT):
         nonlocal running
         if status == 'STAND_BY':    #was 'STAND_BY'
             #status.config(bg='#0fe9f5')
-            app.stop()     #app.stop()
+            app.stop()
             running = False
             if config == Config.DEMO:
                 countdown.config(text="  T-00:10:00")
@@ -146,28 +136,21 @@ def init(config=Config.FLIGHT):
                 countdown.config(text="  T-01:00:00")
             start_abort_button.config(text="Start", bg='lime green')
         elif status == 'TERMINAL_COUNT':
-            running = True
-            app.start()
             status.config(bg='#e6d925')
-            start_abort_button.config(text="Abort", bg='red')
         elif status == 'POWERED_ASCENT':
             status.config(bg='#e04122')
-            start_abort_button.config(text="Abort", bg='red')
+
         elif status == 'UNPOWERED_ASCENT':
             status.config(bg='#bd857b')
-            start_abort_button.config(text="Abort", bg='red')
         elif status == 'FREEFALL':
             status.config(bg='#760e99')
-            start_abort_button.config(text="Abort", bg='red')
         elif status == 'DROGUE_DESCENT':
             status.config(bg='#8b65ba')
-            start_abort_button.config(text="Abort", bg='red')
         elif status == 'MAIN_DESCENT':
             status.config(bg='#402aa1')
-            start_abort_button.config(text="Abort", bg='red')
+
         elif status == 'LANDED':
             status.config(bg='#4395d9')
-            start_abort_button.config(text="Abort", bg='red')
         else:
             start_abort_button.config(text="Abort", bg='red')
 
@@ -186,22 +169,13 @@ def init(config=Config.FLIGHT):
         return lower_name.replace("_", " ")
 
     # Add custom gui controls
-<<<<<<< HEAD
     Label(app, text="\nControls", bg= '#69615e').pack(side=TOP)
-=======
-    Label(app, text="\nControls").pack()
->>>>>>> parent of b41a304... bg colors and positioning
 
     # Sensor controls
     #Label(app, text="\nSensor Controls").pack()
     controlsFrame = Frame(app, bg= '#69615e')
-<<<<<<< HEAD
     controlsFrame.pack(side=TOP)    #expand=1
     sensorStatus = Label(controlsFrame, text="All sensors functional", fg='green', font=("Helvetica", 12), bg= '#c9c1be') #light grey c9c1be
-=======
-    controlsFrame.pack()    #expand=1
-    sensorStatus = Label(controlsFrame, text="All sensors functional", fg='green', font=("Helvetica", 17))
->>>>>>> parent of b41a304... bg colors and positioning
     sensorStatus.grid(row=0,column=0,columnspan=4)
     #Button(controlsFrame, text="Zero force", command=lambda: app.sendValue("zero_force")).pack(side=LEFT)
     #Button(controlsFrame, text="Zero pressure", command=lambda: app.sendValue("zero_pressure")).pack(side=LEFT)
@@ -262,21 +236,12 @@ def init(config=Config.FLIGHT):
     #Label(app, text="\nThrottle Controls").pack()
     throttleFrame = Frame(app, bg= '#69615e')   #bg or background works
     throttleFrame.pack()
-<<<<<<< HEAD
     Label(throttleFrame, text="Drogue", font=("Helvetica", 10), bg= '#69615e').grid(row=0, column=1, sticky= W)
     Label(throttleFrame, text="Main", font=("Helvetica", 10), bg= '#69615e').grid(row=0, column=2, padx=15, sticky= W)
     Label(throttleFrame, text="1", font=("Helvetica", 10), bg= '#69615e').grid(row=1, column=0, sticky=W, padx=5)
     Label(throttleFrame, text="2", font=("Helvetica", 10), bg= '#69615e').grid(row=2, column=0, sticky=W, padx=5)
     Label(throttleFrame, text="Cam", font=("Helvetica", 10), bg= '#69615e').grid(row=3, column=0, sticky=W, padx=5)
-    Button(throttleFrame, text="Reset board", font=("Helvetica", 8), command=lambda: app.sendValue("r")).grid(row=3, column=2, sticky=W, padx=5)
-=======
-    Label(throttleFrame, text="Drouge", font=("Helvetica", 15)).grid(row=0, column=1)
-    Label(throttleFrame, text="Main", font=("Helvetica", 15)).grid(row=0, column=2, padx=15)
-    Label(throttleFrame, text="1", font=("Helvetica", 15)).grid(row=1, column=0, sticky=W, padx=5)
-    Label(throttleFrame, text="2", font=("Helvetica", 15)).grid(row=2, column=0, sticky=W, padx=5)
-    Label(throttleFrame, text="Cam", font=("Helvetica", 15)).grid(row=3, column=0, sticky=W, padx=5)
-    Button(throttleFrame, text="Reset board", command=lambda: app.sendValue("reset")).grid(row=3, column=2, sticky=W, padx=5)
->>>>>>> parent of b41a304... bg colors and positioning
+    Button(throttleFrame, text="Reset board", font=("Helvetica", 8), command=lambda: app.sendValue("reset")).grid(row=3, column=2, sticky=W, padx=5)
 
 
     valves = ['P1', 'P2', 'P3', 'P4', 'P5']         #indexing starts at 0
@@ -294,18 +259,11 @@ def init(config=Config.FLIGHT):
     runFrame.pack(side=TOP)
     start_abort_button = Button(runFrame, text="Start", command=start_abort_handler, bg="lime green", height=2, width=8)
     start_abort_button.pack(side=LEFT)
-<<<<<<< HEAD
     countdown = Label(runFrame, text="  T-01:00:00", width=10, fg="red", font=("Helvetica", 16, "bold"), bg= '#c9c1be')  #b9b1ae
     countdown.pack(side=TOP)
 
     status = Label(runFrame, text="  Stand by", width=16, font=("Helvetica", 10), bg= '#c9c1be')
     status.pack(side=TOP)
-=======
-    countdown = Label(runFrame, text="  T-01:00:00", fg="red", font=("Helvetica", 20, "bold"))
-    countdown.pack()
-    status = Label(runFrame, text="  Stand by", width=15, font=("Helvetica", 17))
-    status.pack()
->>>>>>> parent of b41a304... bg colors and positioning
 
     # Listeners
     app.dispatcher.add_listener('status', lambda time, val: status.config(text="  " + state_name(val)))
