@@ -30,12 +30,23 @@ def vector_Plot(x, y, name=None, *args, **kwd_args):
 def init(config=Config.FLIGHT):
     dts = (
            [
+           manager.DataType('run_time', int, units="ms"),
+           manager.DataType('Launch_ALT', float, units="m"),
+           manager.DataType('Px', float, units='m'), #E/W
+           manager.DataType('Py', float, units='m'), #N/S
+           manager.DataType('Pz', float, units='m'), #AGL       #Kalman Altitude AGL
+           manager.DataType('bno_alt', float, units='m'),   #Kalman Altitude ASL
            manager.DataType('bmp_alt', float, units='m', thresholds=(-100, 80000)),
            manager.DataType('gps_alt', float, units='m', thresholds=(-100, 80000)),
-           manager.DataType('gps_lat', float, units='deg', thresholds=(-91, 91)),
-           manager.DataType('gps_lon', float, units='deg', thresholds=(-181, 181)),
+           manager.DataType('x_from_launch', float, units='xy m', thresholds=(-10000, 100000)),
+           manager.DataType('y_from_launch', float, units='xy m', thresholds=(-10000, 100000)),
+           manager.DataType('dir_from_launch', float, units='xy deg', thresholds=(-20, 365)),
+           manager.DataType('gps_lat', float, units='deg', show=False, thresholds=(-91, 91)),
+           manager.DataType('gps_lon', float, units='deg', show=False, thresholds=(-181, 181)),
+           manager.DataType('launch_lat', float, show=False),
+           manager.DataType('launch_lon', float, show=False),
            manager.DataType('vb1', float, units='V', thresholds=(-1, 55)),
-           manager.DataType('test', float, units='_', thresholds=(-1, 1)),
+           manager.DataType('test', float, thresholds=(-1, 1)),
            manager.DataType('hdp', float, units='m', thresholds=(0, 100)),
            manager.DataType('sats', int, units='#', thresholds=(-10, 169)),
            manager.DataType('heading', float, units='deg', thresholds=(-180, 180)),
@@ -50,9 +61,6 @@ def init(config=Config.FLIGHT):
            manager.DataType('temperature', float, units='deg C', thresholds=(-20, 80)),
            manager.DataType('gps_vel', float, units='xy m/s', thresholds=(-20, 100)),
            manager.DataType('gps_dir', float, units='xy deg', thresholds=(-20, 365)),
-           manager.DataType('x_from_launch', float, units='xy m', thresholds=(-10000, 100000)),
-           manager.DataType('y_from_launch', float, units='xy m', thresholds=(-10000, 100000)),
-           manager.DataType('dir_from_launch', float, units='xy deg', thresholds=(-20, 365)),
            manager.DataType('P1_setting', bool),
            manager.DataType('P2_setting', bool),
            manager.DataType('P3_setting', bool),
@@ -60,10 +68,7 @@ def init(config=Config.FLIGHT):
            manager.DataType('P5_setting', bool),
 
            manager.DataType('ATST', float, units="m"),
-           manager.DataType('Launch_ALT', float, units="m"),
-           manager.DataType('BMPcf', float, units="Pa*100"),
-           manager.DataType('launch_lat', float),
-           manager.DataType('launch_lon', float),
+           manager.DataType('BMPcf', float, units="HPa"),
            #manager.DataType('land_lat', float),
            #manager.DataType('land_lon', float),
            #manager.DataType('gps_n', float, units="m"),
@@ -76,20 +81,19 @@ def init(config=Config.FLIGHT):
            #manager.DataType('bmp_d2', bool),
            #manager.DataType('bno_d', bool),
 
-           manager.DataType('run_time', int, units="ms"),
            manager.DataType('status', str), #str),
            manager.DataType('Apogee_Passed', bool),
            manager.DataType('l2g', bool),
            manager.DataType('ss', bool) #sensor_status , show=False
            ]
            )
-    plots = [plot.Plot('time', ['bmp_alt', 'gps_alt'], "Altitude", width=2, show_x_label=False),
+    plots = [plot.Plot('time', ['bmp_alt', 'gps_alt', 'bno_alt'], "Alt ASL", width=2, show_x_label=False),
+             plot.Plot('time', 'Px', width=1, show_x_label=False),
+             plot.Plot('time', 'Py', width=1, show_x_label=False),
              plot.Plot('time', ['heading', 'attitude','bank'], "q-Angles", width=4, show_x_label=False),
-             plot.Plot('time', 'gps_lat', width=1, show_x_label=False),
-             plot.Plot('time', 'gps_lon', width=1, show_x_label=False),
-             #plot.Plot('gps_e', 'gps_n',"xy from launch (m)", width=1, show_x_label=True),
-             vector_Plot('time', 'euler_angle', width=4, show_x_label=False),
-             vector_Plot('time', 'gyro', width=4, show_x_label=False),
+             #vector_Plot('time', 'euler_angle', width=4, show_x_label=False),
+             vector_Plot('time', 'gyro', width=2, show_x_label=False),
+             plot.Plot('Px', ['Py'], "X/Y pos", width=2, show_x_label=False),
              vector_Plot('time', 'acceleration', width=4, show_x_label=False)]
     dispatcher = manager.Dispatcher(*dts)
     data_manager = manager.DataManager(dispatcher)
@@ -99,7 +103,7 @@ def init(config=Config.FLIGHT):
         dispatcher, data_manager, plots, master=root,
         window_manager_title=
         "Telemetry monitor - Demo" if config == Config.DEMO else
-        "Telemetry monitor - Flight" if config == Config.FLIGHT else
+        "Telemetry monitor - Cricket" if config == Config.FLIGHT else
         "Telemetry monitor",
         show_send_value=False,
         serial_console_height=1,
@@ -217,7 +221,7 @@ def init(config=Config.FLIGHT):
     u1.grid(row=1,column=2,columnspan=2)
     #u1.focus_set()  #not sure if this is needed
     #def sendVar():
-    b1= Button(controlsFrame, text="set launch alt (m)",font=("Helvetica", 7), width=20, command=lambda: app.sendValue("Launch_ALT",float(u1.get())))
+    b1= Button(controlsFrame, text="Zero Pz/Set Launch Alt (m)",font=("Helvetica", 7), width=20, command=lambda: app.sendValue("Launch_ALT",float(u1.get())))
     b1.grid(row=1,column=0,padx=5,columnspan=2)
 
     u2= Entry(controlsFrame)
@@ -232,22 +236,22 @@ def init(config=Config.FLIGHT):
 
     u4= Entry(controlsFrame,width=8)
     u4.grid(row=4,column=1)
-    b4= Button(controlsFrame, text="set launch lat", width=10, font=("Helvetica", 7), command=lambda: app.sendValue("launch_lat",u4.get()))
+    b4= Button(controlsFrame, text="--(open)--", width=10, font=("Helvetica", 7), command=lambda: app.sendValue("launch_lat",u4.get()))
     b4.grid(row=4,column=0,padx=1)
 
     u5= Entry(controlsFrame,width=8)
     u5.grid(row=4,column=3)
-    b5= Button(controlsFrame, text="set launch lon", font=("Helvetica", 7), width=10, command=lambda: app.sendValue("launch_lon",u5.get()))
+    b5= Button(controlsFrame, text="--(open)--", font=("Helvetica", 7), width=10, command=lambda: app.sendValue("launch_lon",u5.get()))
     b5.grid(row=4,column=2,padx=1)
 
     u6= Entry(controlsFrame,width=8)
     u6.grid(row=5,column=1)
-    b6= Button(controlsFrame, text="set land lat", width=10, font=("Helvetica", 7), command=lambda: app.sendValue("land_lat",u6.get()))
+    b6= Button(controlsFrame, text="Zero Py", width=10, font=("Helvetica", 7), command=lambda: app.sendValue("0Lat",u6.get()))
     b6.grid(row=5,column=0,padx=1)
 
     u7= Entry(controlsFrame,width=8)
     u7.grid(row=5,column=3)
-    b7= Button(controlsFrame, text="set land lon", width=10, font=("Helvetica", 7), command=lambda: app.sendValue("land_lon",u7.get()))
+    b7= Button(controlsFrame, text="Zero Px", width=10, font=("Helvetica", 7), command=lambda: app.sendValue("0Lon",u7.get()))
     b7.grid(row=5,column=2,padx=1)
 
 
