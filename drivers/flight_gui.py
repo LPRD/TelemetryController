@@ -46,19 +46,25 @@ def init(config=Config.FLIGHT):
            manager.DataType('launch_lat', float, show=False),
            manager.DataType('launch_lon', float, show=False),
            manager.DataType('vb1', float, units='V', thresholds=(-1, 55)),
-           manager.DataType('test', float, thresholds=(-1, 1)),
+           #manager.DataType('test', float, thresholds=(-1, 1)),
            manager.DataType('hdp', float, units='m', thresholds=(0, 100)),
            manager.DataType('sats', int, units='#', thresholds=(-10, 169)),
-           manager.DataType('heading', float, units='deg', thresholds=(-180, 180)),
-           manager.DataType('attitude', float, units='deg', thresholds=(-90, 90)),
-           manager.DataType('bank', float, units='deg', thresholds=(-180, 180))
+           manager.DataType('roll', float, units='deg', thresholds=(-180, 180)),    #phi, body x
+           manager.DataType('pitch', float, units='deg', thresholds=(-90, 90)),     #theta, body y
+           manager.DataType('yaw', float, units='deg', thresholds=(-180, 180)),      #psy, body z
+           manager.DataType('oX', float, units='deg', thresholds=(-180, 180)),    #phi, body x (roll)
+           manager.DataType('oY', float, units='deg', thresholds=(-90, 90)),     #theta, body y (pitch)
+           manager.DataType('oZ', float, units='deg', thresholds=(-180, 180))      #psy, body z (yaw)
+           #manager.DataType('bank', float, units='deg', thresholds=(-180, 180)),    #roll
+           #manager.DataType('heading', float, units='deg', thresholds=(-90, 90)),   #pitch
+           #manager.DataType('attitude', float, units='deg', thresholds=(-180, 180))   #yaw
            ] +
-           vector_DataType('euler_angle', float, units='degrees', thresholds=(-180, 360)) +
+           #vector_DataType('euler_angle', float, units='degrees', thresholds=(-180, 360)) +
            vector_DataType('magnetometer', float, units='mu T', thresholds=(-100, 100)) +
            vector_DataType('gyro', float, units='rad/s', thresholds=(-100, 100)) +
            vector_DataType('acceleration', float, units='m/sec^2', thresholds=(-50, 50)) +
            [
-           manager.DataType('temperature', float, units='deg C', thresholds=(-20, 80)),
+           manager.DataType('tIMU', float, units='deg C', thresholds=(-20, 80)),
            manager.DataType('gps_vel', float, units='xy m/s', thresholds=(-20, 100)),
            manager.DataType('gps_dir', float, units='xy deg', thresholds=(-20, 365)),
            manager.DataType('P1_setting', bool),
@@ -87,14 +93,15 @@ def init(config=Config.FLIGHT):
            manager.DataType('ss', bool) #sensor_status , show=False
            ]
            )
-    plots = [plot.Plot('time', ['bmp_alt', 'gps_alt', 'bno_alt'], "Alt ASL", width=2, show_x_label=False),
-             plot.Plot('time', 'Px', width=1, show_x_label=False),
+    plots = [plot.Plot('time', 'Px', width=1, show_x_label=False),
              plot.Plot('time', 'Py', width=1, show_x_label=False),
-             plot.Plot('time', ['heading', 'attitude','bank'], "q-Angles", width=4, show_x_label=False),
+             plot.Plot('Px', ['Py'], "X/Y pos", width=2, height=2, show_x_label=False),
+             plot.Plot('time', ['bmp_alt', 'gps_alt', 'bno_alt'], "Alt ASL", width=2, height=1, show_x_label=False),
+             plot.Plot('time', ['roll', 'pitch','yaw'], "Fusion q-Angles", width=2, height=1, show_x_label=False),
              #vector_Plot('time', 'euler_angle', width=4, show_x_label=False),
+             plot.Plot('time', ['oX', 'oY','oZ'], "Gyro Orientation", width=2, height=1, show_x_label=False),
              vector_Plot('time', 'gyro', width=2, show_x_label=False),
-             plot.Plot('Px', ['Py'], "X/Y pos", width=2, show_x_label=False),
-             vector_Plot('time', 'acceleration', width=4, show_x_label=False)]
+             vector_Plot('time', 'acceleration', width=2, height=1, show_x_label=False)]
     dispatcher = manager.Dispatcher(*dts)
     data_manager = manager.DataManager(dispatcher)
     root = Tk()
