@@ -35,6 +35,29 @@ def init(config=Config.FLIGHT):
            manager.DataType('Px', float, units='m'), #E/W
            manager.DataType('Py', float, units='m'), #N/S
            manager.DataType('Pz', float, units='m'), #AGL       #Kalman Altitude AGL
+           manager.DataType('gyrX', float, units='deg'), #
+           manager.DataType('gyrY', float, units='deg'), #
+           manager.DataType('gyrZ', float, units='deg'), #
+           manager.DataType('aX', float, units='deg'), #
+           manager.DataType('aY', float, units='deg'), #
+           manager.DataType('aZ', float, units='deg'), #
+           manager.DataType('gR', float, units='Hz'), #
+           manager.DataType('tR', float, units='Hz'), #
+           manager.DataType('rR', float, units='Hz'), #
+           manager.DataType('bmpR', float, units='Hz'), #
+           manager.DataType('bnoR', float, units='Hz'), #
+           manager.DataType('sdR', float, units='Hz'), #
+           manager.DataType('fR', float, units='Hz'), #
+           manager.DataType('oR', float, units='Hz'), #
+           manager.DataType('gT', float, units='us'), #
+           manager.DataType('tT', float, units='us'), #
+           manager.DataType('rT', float, units='us'), #
+           manager.DataType('bmpT', float, units='us'), #
+           manager.DataType('bnoT', float, units='us'), #
+           manager.DataType('sdT', float, units='us'), #
+           manager.DataType('fT', float, units='us'), #
+           manager.DataType('oT', float, units='us'), #
+
            manager.DataType('bno_alt', float, units='m'),   #Kalman Altitude ASL
            manager.DataType('bmp_alt', float, units='m', thresholds=(-100, 80000)),
            manager.DataType('gps_alt', float, units='m', thresholds=(-100, 80000)),
@@ -45,7 +68,8 @@ def init(config=Config.FLIGHT):
            manager.DataType('gps_lon', float, units='deg', show=False, thresholds=(-181, 181)),
            manager.DataType('launch_lat', float, show=False),
            manager.DataType('launch_lon', float, show=False),
-           manager.DataType('vb1', float, units='V', thresholds=(-1, 55)),
+           manager.DataType('vb', float, units='V', thresholds=(-1, 65)),
+           manager.DataType('vg', float, units='V', thresholds=(-1, 65)),
            #manager.DataType('test', float, thresholds=(-1, 1)),
            manager.DataType('hdp', float, units='m', thresholds=(0, 100)),
            manager.DataType('sats', int, units='#', thresholds=(-10, 169)),
@@ -60,9 +84,9 @@ def init(config=Config.FLIGHT):
            #manager.DataType('attitude', float, units='deg', thresholds=(-180, 180))   #yaw
            ] +
            #vector_DataType('euler_angle', float, units='degrees', thresholds=(-180, 360)) +
-           vector_DataType('magnetometer', float, units='mu T', thresholds=(-100, 100)) +
-           vector_DataType('gyro', float, units='rad/s', thresholds=(-100, 100)) +
-           vector_DataType('acceleration', float, units='m/sec^2', thresholds=(-50, 50)) +
+           #vector_DataType('magnetometer', float, units='mu T', thresholds=(-100, 100)) +
+           #vector_DataType('gyro', float, units='rad/s', thresholds=(-100, 100)) +
+           #vector_DataType('acceleration', float, units='m/sec^2', thresholds=(-50, 50)) +
            [
            manager.DataType('tIMU', float, units='deg C', thresholds=(-20, 80)),
            manager.DataType('gps_vel', float, units='xy m/s', thresholds=(-20, 100)),
@@ -72,6 +96,7 @@ def init(config=Config.FLIGHT):
            manager.DataType('P3_setting', bool),
            manager.DataType('P4_setting', bool),
            manager.DataType('P5_setting', bool),
+           manager.DataType('P5V_setting', bool),
 
            manager.DataType('ATST', float, units="m"),
            manager.DataType('BMPcf', float, units="HPa"),
@@ -100,8 +125,10 @@ def init(config=Config.FLIGHT):
              plot.Plot('time', ['roll', 'pitch','yaw'], "Fusion q-Angles", width=2, height=1, show_x_label=False),
              #vector_Plot('time', 'euler_angle', width=4, show_x_label=False),
              plot.Plot('time', ['oX', 'oY','oZ'], "Gyro Orientation", width=2, height=1, show_x_label=False),
-             vector_Plot('time', 'gyro', width=2, show_x_label=False),
-             vector_Plot('time', 'acceleration', width=2, height=1, show_x_label=False)]
+             #vector_Plot('time', 'gyro', width=2, show_x_label=False),
+             plot.Plot('time', ['gyrX', 'gyrY','gyrZ'], "Gyros", width=2, show_x_label=False),
+             #vector_Plot('time', 'acceleration', width=2, height=1, show_x_label=False)]
+             plot.Plot('time', ['aX', 'aY','aZ'], "Acceleration", width=2, height=1, show_x_label=False)]
     dispatcher = manager.Dispatcher(*dts)
     data_manager = manager.DataManager(dispatcher)
     root = Tk()
@@ -278,7 +305,7 @@ def init(config=Config.FLIGHT):
     Label(throttleFrame, text="1", font=("Helvetica", 10), bg= '#69615e').grid(row=1, column=0, sticky=W, padx=5)
     Label(throttleFrame, text="2", font=("Helvetica", 10), bg= '#69615e').grid(row=2, column=0, sticky=W, padx=5)
     Label(throttleFrame, text="Cam", font=("Helvetica", 10), bg= '#69615e').grid(row=3, column=0, sticky=W, padx=5)
-    Button(throttleFrame, text="Reset board", font=("Helvetica", 8), command=lambda: app.sendValue("reset")).grid(row=3, column=2, sticky=W, padx=5)
+    Button(throttleFrame, text="Reset board", font=("Helvetica", 8), command=lambda: app.sendValue("r")).grid(row=3, column=2, sticky=W, padx=5)
 
 
     valves = ['P1', 'P2', 'P3', 'P4', 'P5']         #indexing starts at 0
