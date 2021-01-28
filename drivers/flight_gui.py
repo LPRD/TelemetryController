@@ -201,8 +201,9 @@ def init(config=Config.FLIGHT):
 
     def update_time(abs_time, relative_time):
         if not running:
-            relative_time = -60000 if config != Config.DEMO else -10000
-        sign = "+" if relative_time > 0 else "-"
+            #relative_time = -60000 if config != Config.DEMO else -10000
+            relative_time = 0 if config != Config.DEMO else -10000
+        sign = "+" if relative_time >= 0 else "-"
         mins = abs(relative_time) // 60000
         secs = (abs(relative_time) // 1000) % 60
         cs   = (abs(relative_time) // 10) % 100
