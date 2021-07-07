@@ -50,7 +50,8 @@ class Application(Frame):
                      'serial_console_height': 15,
                      'default_baud': 9600,
                      'plots_size': (12,10),
-                     'plots_background': 'white'}
+                     'plots_background': 'white',
+                     'controls_background': None}
         new_flags.update(flags)
         self.flags = new_flags
 
@@ -69,8 +70,8 @@ class Application(Frame):
         self.flags['full_screen'] = args.full_screen
 
         # Init gui
-        Frame.__init__(self, master)
-        self.pack()
+        Frame.__init__(self, master, bg=self.flags['controls_background'])
+        self.pack(side=LEFT)     #side=LEFT
         #master.iconbitmap('telemetry.png')
         master.attributes("-fullscreen", self.flags['full_screen'])
         master.bind('<Escape>', self.unmaximize)
@@ -118,32 +119,31 @@ class Application(Frame):
         """Initialize the various widgets in the main frame."""
         self._setupPlots()
 
-        buttons = Frame(self)
-        self.controlButton = Button(buttons, text="Start", command=self.start, bg="lime green")
+        buttons = Frame(self, bg=self.flags['controls_background'])
+        self.controlButton = Button(buttons, text="Start", command=self.start, bg="lime green",font=("Helvetica", 8))
         self.controlButton.pack(side=LEFT)
 
-        self.exitButton = Button(buttons, text="Quit", command=self.terminate)
+        self.exitButton = Button(buttons, text="Quit", command=self.terminate, font=("Helvetica", 8))
         self.exitButton.pack(side=LEFT)
 
-        self.openButton = Button(buttons, text="Open...", command=self.openFile)
+        self.openButton = Button(buttons, text="Open", command=self.openFile, font=("Helvetica", 8), height=1, width=4)
         self.openButton.pack(side=LEFT)
 
-        self.saveButton = Button(buttons, text="Save as...", command=self.saveFile)
+        self.saveButton = Button(buttons, text="Save as", command=self.saveFile, font=("Helvetica", 8), height=1 ,width=6)
         self.saveButton.pack(side=LEFT)
 
-        self.exportButton = Button(buttons, text="Export csv...", command=self.exportCSV)
+        self.exportButton = Button(buttons, text="Export csv", command=self.exportCSV, font=("Helvetica", 8), height=1, width=8)
         self.exportButton.pack(side=LEFT)
 
-        self.thresholdButton = Button(buttons, text="Set thresholds...", command=self.configureThresholds)
+        self.thresholdButton = Button(buttons, text="Thresholds", command=self.configureThresholds, font=("Helvetica", 8), height=1, width=8)
         self.thresholdButton.pack(side=LEFT)
-        
-        buttons.pack()
 
-        serialLabel = Label(self, text="\nSerial console")
+        buttons.pack()
+        serialLabel = Label(self, text="\nSerial console", bg=self.flags['controls_background'])
         serialLabel.pack()
 
-        serial = Frame(self)
-        serialControls = Frame(serial)
+        serial = Frame(self, bg=self.flags['controls_background'])
+        serialControls = Frame(serial, bg=self.flags['controls_background'])
 
         self.serialPort = StringVar(self)
         self.serialSelect = OptionMenu(serialControls, self.serialPort, [])
@@ -173,7 +173,7 @@ class Application(Frame):
             self.serialIn.bind('<Return>', self.sendSerial)
         self.serialIn.pack()
 
-        serialSendButtons = Frame(serial)
+        serialSendButtons = Frame(serial, bg=self.flags['controls_background'])
 
         self.sendButton = Button(serialSendButtons, text="Send", command=self.sendSerial)
         self.sendButton.pack(side=LEFT)
@@ -182,7 +182,6 @@ class Application(Frame):
         self.sendNewlineButton.pack(side=LEFT)
 
         serialSendButtons.pack()
-        serialSendButtons = Frame(serial)
 
         serial.pack()
 
@@ -191,7 +190,7 @@ class Application(Frame):
         if self.flags['show_send_value']:
             sendValuesLabel.pack()
 
-        sendValues = Frame(self)
+        sendValues = Frame(self, bg=self.flags['controls_background'])
 
         self.sendDataName = Entry(sendValues, width=10)
         self.sendDataName.bind('<Return>', self.sendValues)
@@ -205,13 +204,13 @@ class Application(Frame):
             sendValues.pack()
 
         # Value readout widget
-        valuesLabel = Label(self, text="\nCurrent values")
+        valuesLabel = Label(self, text="\nCurrent values", bg=self.flags['controls_background'], height= 2)
         if self.flags['show_current_values']:
-            valuesLabel.pack()
+            valuesLabel.pack(side=TOP)
 
-        valuesTableFrame = Frame(self)
-        self.valuesTable = Treeview(valuesTableFrame, columns=('value',), show='tree')
-        
+        valuesTableFrame = Frame(self, bg=self.flags['controls_background'])
+        self.valuesTable = Treeview(valuesTableFrame, columns=('value',), show='tree',height=6)
+
         self.valuesTable.insert('', 'end', 'abs time', text="abs time (ms)")
         self.dispatcher.add_listener(
             'sys time',
@@ -224,8 +223,8 @@ class Application(Frame):
                     ty.name,
                     lambda time, data, id=ty.name: self.valuesTable.item(id, values=(data,)),
                     100)
-        
-        valuesScrollbar = Scrollbar(valuesTableFrame, orient=VERTICAL)
+
+        valuesScrollbar = Scrollbar(valuesTableFrame, orient=VERTICAL, width=15)
         valuesScrollbar.config(command=self.valuesTable.yview)
         self.valuesTable.configure(yscrollcommand=valuesScrollbar.set)
 
@@ -241,7 +240,7 @@ class Application(Frame):
         self.fig = matplotlib.figure.Figure(figsize=self.flags['plots_size'], dpi=100)
         self.fig.set_facecolor(self.flags['plots_background'])
         self.canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(self.fig, master=self)
-        
+
         plot.setup(self.plots, self.fig, self.manager)
 
         def animate(i):
@@ -287,18 +286,18 @@ class Application(Frame):
         else:
             showerror("Error", "No serial port selected")
             return False
-    
+
     def stop(self):
         """Stop the current run."""
         self.manager.stop()
         self.controlButton.config(text="Reset", bg="grey", command=self.reset)
-    
+
     def reset(self):
         """Reset for the next run."""
         self.resetValuesTable()
         self.manager.reset()
         self.controlButton.config(text="Start", bg="lime green", command=self.start)
-    
+
     def sendSerial(self, _=None):
         """Send a serial command."""
         if self.serialManager:
@@ -306,7 +305,7 @@ class Application(Frame):
             self.serialIn.delete(0, 'end')
         else:
             showerror("Error", "No serial port selected")
-    
+
     def sendSerialNewline(self, _=None):
         """Handler for sending a serial command with a newline appended."""
         if self.serialManager:
@@ -314,13 +313,13 @@ class Application(Frame):
             self.serialIn.delete(0, 'end')
         else:
             showerror("Error", "No serial port selected")
-    
+
     def sendValues(self, _=None):
         """Handler for sending a formatted packet."""
         self.sendValue(self.sendDataName.get(), self.sendDataIn.get())
         if self.serialManager:
             self.sendDataIn.delete(0, 'end')
-    
+
     def sendValue(self, name, value=""):
         """Send a formatted packet."""
         if self.serialManager:
@@ -329,20 +328,20 @@ class Application(Frame):
         else:
             showerror("Error", "No serial port selected")
             return False
-    
+
     def unmaximize(self, _):
         """Disable full-screen mode."""
         self.master.attributes("-fullscreen", False)
-    
+
     def toggleFullScreen(self, _):
         """Toggle full-screen mode."""
         self.master.attributes("-fullscreen", not self.master.attributes('-fullscreen'))
-    
+
     def resetValuesTable(self):
         """Clear the values table after a reset or changing ports."""
         for item in self.valuesTable.get_children():
             self.valuesTable.item(item, values=())
-    
+
     def changeSerial(self, *args):
         """Handler for changing the serial port."""
         # Try-catch needed b/c error messages in tracebacks on Windows are buggy
@@ -357,20 +356,20 @@ class Application(Frame):
         except:
             if not sys.platform.startswith('win'):
                 traceback.print_exc()
-    
+
     def checkSerial(self):
         """Handler for checking the available serial ports."""
         self.serialSelect['menu'].delete(0, 'end')
         for port in serialmanager.serial_ports():
             self.serialSelect['menu'].add_command(label=port, command=lambda p=port: self.serialPort.set(p))
-    
+
     def _startListeners(self):
         """Begin updating the data manager listeners."""
         if self.manager.update_all_listeners():
             self.after(50, self._startListeners)
         else:
             self.after(100, self._startListeners)
-    
+
     def startSerial(self):
         """Begin reading serial data."""
         if self.serialManager:
@@ -382,7 +381,7 @@ class Application(Frame):
             except OSError:
                 self.serialManager = None
                 self.checkSerial()
-    
+
     _last_update_time = ""
     def saveBackup(self, times, values):
         """Write the current run data log to the backup file once per second
@@ -391,10 +390,10 @@ class Application(Frame):
         if len(values) > 0 and values[-1] != self._last_update_time:
             self._last_update_time = values[0]
             open(self.flags["backup_log"], 'w').write(self.manager.dump('json'))
-    
+
     def openFile(self):
         """Handler to open a file."""
-        filename = askopenfilename(filetypes=[('All files', '*.*'), 
+        filename = askopenfilename(filetypes=[('All files', '*.*'),
                                               ('JSON data file', '*.json'),
                                               ('Log file', '*.log'),
                                               ('Comma-seperated values', '*.csv')])
@@ -415,7 +414,7 @@ class Application(Frame):
                     showerror("Error", "Invalid data file:\n" + str(e))
                 else:
                     self.controlButton.config(text="Reset", bg="grey", command=self.reset)
-    
+
     def saveFile(self):
         """Handler to save to a file."""
         filename = asksaveasfilename(defaultextension='.json',
@@ -450,7 +449,7 @@ class Application(Frame):
                         self.serialManager.paused = False
                 else:
                     self.fig.savefig(filename)
-    
+
     def exportCSV(self):
         """Handler to export as a CSV file."""
         filename = asksaveasfilename()
@@ -587,7 +586,7 @@ class Application(Frame):
             enabled_vars[data.name] = enabled_var
             lower_vars[data.name] = lower_var
             upper_vars[data.name] = upper_var
-            
+
         ok = False
         def accept():
             nonlocal ok
