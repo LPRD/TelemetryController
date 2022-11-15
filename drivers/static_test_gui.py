@@ -23,10 +23,15 @@ def vector_DataType(name, *args, **kwd_args):
 
 NUM_MK2_THERMOCOUPLES = 3
 
+##UPDATED##
+##TODDO: ADD new data types so that the gui can communicate with the arduino##
 def init(config=Config.MK_2):
     dts =\
         [manager.DataType('run_time', int, units="ms", show=False, export_csv=False),
-         manager.DataType('force', float, units="Newtons", export_csv=True),
+         manager.DataType('force1', float, units="Newtons", export_csv=True),
+         manager.DataType('force2', float, units="Newtons", export_csv=True),
+         manager.DataType('force3', float, units="Newtons", export_csv=True),
+         manager.DataType('force4', float, units="Newtons", export_csv=True),
          manager.DataType('inlet_temp', float, units="deg C", export_csv=True),
          manager.DataType('outlet_temp', float, units="deg C", export_csv=True)] +\
          ([] if config != Config.MK_2 else
@@ -43,18 +48,20 @@ def init(config=Config.MK_2):
          manager.DataType('fuel_pre_setting', bool, show=False),
          manager.DataType('ox_pre_setting', bool, show=False),
          manager.DataType('fuel_main_setting', bool, show=False),
-         manager.DataType('ox_main_setting', bool, show=False)]
+         manager.DataType('ox_main_setting', bool, show=False),
+         manager.DataType('nitro_fill_setting', bool, show=False),
+         manager.DataType('nitro_drain_setting', bool, show=False)]
     plots =\
-        [plot.Plot('time', 'force', width=3, show_x_label=False),
-         plot.Plot('time', ['fuel_press', 'ox_press', 'fuel_inj_press', 'ox_inj_press'], "line pressure", width=3)] +\
+        [plot.Plot('time', ['force1','force2','force3','force4'],'force', width=1, show_x_label=False),
+         plot.Plot('time', ['fuel_press', 'ox_press', 'fuel_inj_press', 'ox_inj_press'], "line pressure", width=1, show_x_label=False)] +\
         ([] if config != Config.MK_2 else
          [plot.Plot('time', ['chamber_temp_' + str(i + 1)
                              for i in range(NUM_MK2_THERMOCOUPLES)],
                     "chamber temperature")]) +\
         [plot.Plot('time', ['inlet_temp', 'outlet_temp'], "coolant temperature",
-                   width=3 if config != Config.MK_2 else 1, show_x_label=False),
-         plot.Plot('time', ['x_accel', 'y_accel', 'z_accel'],
                    width=3 if config != Config.MK_2 else 1)]
+        #  plot.Plot('time', ['x_accel', 'y_accel', 'z_accel'],
+        #            width=3 if config != Config.MK_2 else 1)]
     dispatcher = manager.Dispatcher(*dts)
     data_manager = manager.DataManager(dispatcher)
     root = Tk()
@@ -134,18 +141,24 @@ def init(config=Config.MK_2):
     #Label(app, text="\nThrottle Controls").pack()
     throttleFrame = Frame(app)
     throttleFrame.pack()
-    Label(throttleFrame, text="Prestage", font=("Helvetica", 15)).grid(row=0, column=1)
-    Label(throttleFrame, text="Mainstage", font=("Helvetica", 15)).grid(row=0, column=2, padx=15)
-    Label(throttleFrame, text="Fuel", font=("Helvetica", 15)).grid(row=1, column=0, sticky=W, padx=5)
-    Label(throttleFrame, text="Oxidizer", font=("Helvetica", 15)).grid(row=2, column=0, sticky=W, padx=5)
+    ##UPDATED##
+    Label(throttleFrame, text="Fuel", font=("Helvetica", 12)).grid(row=0, column=1)
+    Label(throttleFrame, text="Oxidizer", font=("Helvetica", 12)).grid(row=0, column=2)
+    Label(throttleFrame, text="Nitrogen", font=("Helvetica", 12)).grid(row=0, column=4, padx=15)
+    Label(throttleFrame, text="Prestage", font=("Helvetica", 12)).grid(row=1, column=0, sticky=W)
+    Label(throttleFrame, text="Mainstage", font=("Helvetica", 12)).grid(row=2, column=0, sticky=W)
+    Label(throttleFrame, text="Fill", font=("Helvetica", 12)).grid(row=1, column=3, padx=5)
+    Label(throttleFrame, text="Drain", font=("Helvetica", 12)).grid(row=2, column=3, padx=5)
 
-    valves = ['fuel_pre', 'fuel_main', 'ox_pre', 'ox_main']
+
+    ##UPDATED##
+    valves = ['fuel_pre', 'ox_pre', 'fuel_main', 'ox_main', 'nitro_fill', 'nitro_drain']
     valveSettings = {valve: False for valve in valves}
     valveButtons = {}
     for i, valve in enumerate(valves):
         button = Button(throttleFrame, text="closed", background="red")
         button.bind('<Button-1>', lambda _, valve=valve: app.sendValue(valve + "_command", not valveSettings[valve]))
-        button.grid(row=1 + int(i / 2), column=1 + i % 2, sticky=W, padx=5)
+        button.grid(row=1 + int(i / 3), column=list([1,2,4])[i % 3], sticky=W, padx=5)
         valveButtons[valve] = button
 
     # Run controls
