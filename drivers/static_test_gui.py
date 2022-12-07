@@ -33,11 +33,8 @@ def init(config=Config.MK_2):
          manager.DataType('force3', float, units="Newtons", export_csv=True),
          manager.DataType('force4', float, units="Newtons", export_csv=True),
          manager.DataType('inlet_temp', float, units="deg C", export_csv=True),
-         manager.DataType('outlet_temp', float, units="deg C", export_csv=True)] +\
-         ([] if config != Config.MK_2 else
-          [manager.DataType('chamber_temp_' + str(i + 1), float, units="deg C", export_csv=True)
-           for i in range(NUM_MK2_THERMOCOUPLES)]) +\
-        [manager.DataType('fuel_press', float, units="PSI", export_csv=True),
+         manager.DataType('outlet_temp', float, units="deg C", export_csv=True),
+         manager.DataType('fuel_press', float, units="PSI", export_csv=True),
          manager.DataType('ox_press', float, units="PSI", export_csv=True),
          manager.DataType('fuel_inj_press', float, units="PSI", export_csv=True),
          manager.DataType('ox_inj_press', float, units="PSI", export_csv=True)] +\
@@ -53,15 +50,8 @@ def init(config=Config.MK_2):
          manager.DataType('nitro_drain_setting', bool, show=False)]
     plots =\
         [plot.Plot('time', ['force1','force2','force3','force4'],'force', width=1, show_x_label=False),
-         plot.Plot('time', ['fuel_press', 'ox_press', 'fuel_inj_press', 'ox_inj_press'], "line pressure", width=1, show_x_label=False)] +\
-        ([] if config != Config.MK_2 else
-         [plot.Plot('time', ['chamber_temp_' + str(i + 1)
-                             for i in range(NUM_MK2_THERMOCOUPLES)],
-                    "chamber temperature")]) +\
-        [plot.Plot('time', ['inlet_temp', 'outlet_temp'], "coolant temperature",
-                   width=3 if config != Config.MK_2 else 1)]
-        #  plot.Plot('time', ['x_accel', 'y_accel', 'z_accel'],
-        #            width=3 if config != Config.MK_2 else 1)]
+         plot.Plot('time', ['fuel_press', 'ox_press', 'fuel_inj_press', 'ox_inj_press'], "line pressure", width=1, show_x_label=False),
+         plot.Plot('time', ['inlet_temp', 'outlet_temp'], "coolant temperature", width=1)]
     dispatcher = manager.Dispatcher(*dts)
     data_manager = manager.DataManager(dispatcher)
     root = Tk()
