@@ -23,8 +23,6 @@ def vector_DataType(name, *args, **kwd_args):
 
 NUM_MK2_THERMOCOUPLES = 3
 
-##UPDATED##
-##TODDO: ADD new data types so that the gui can communicate with the arduino##
 def init(config=Config.MK_2):
     dts =\
         [manager.DataType('run_time', int, units="ms", show=False, export_csv=False),
@@ -37,9 +35,8 @@ def init(config=Config.MK_2):
          manager.DataType('fuel_press', float, units="PSI", export_csv=True),
          manager.DataType('ox_press', float, units="PSI", export_csv=True),
          manager.DataType('fuel_inj_press', float, units="PSI", export_csv=True),
-         manager.DataType('ox_inj_press', float, units="PSI", export_csv=True)] +\
-        vector_DataType('accel', float, units="m/s^2", export_csv=True) +\
-        [manager.DataType('status', str, show=False),
+         manager.DataType('ox_inj_press', float, units="PSI", export_csv=True),
+         manager.DataType('status', str, show=False),
          # True = open, False = closed for these
          manager.DataType('sensor_status', bool, show=False),
          manager.DataType('fuel_pre_setting', bool, show=False),
@@ -131,7 +128,6 @@ def init(config=Config.MK_2):
     #Label(app, text="\nThrottle Controls").pack()
     throttleFrame = Frame(app)
     throttleFrame.pack()
-    ##UPDATED##
     Label(throttleFrame, text="Fuel", font=("Helvetica", 12)).grid(row=0, column=1)
     Label(throttleFrame, text="Oxidizer", font=("Helvetica", 12)).grid(row=0, column=2)
     Label(throttleFrame, text="Nitrogen", font=("Helvetica", 12)).grid(row=0, column=4, padx=15)
@@ -141,8 +137,7 @@ def init(config=Config.MK_2):
     Label(throttleFrame, text="Drain", font=("Helvetica", 12)).grid(row=2, column=3, padx=5)
 
 
-    ##UPDATED##
-    valves = ['fuel_pre', 'ox_pre', 'fuel_main', 'ox_main', 'nitro_fill', 'nitro_drain']
+    valves = ['fuel_pre', 'ox_pre',  'nitro_fill', 'fuel_main', 'ox_main', 'nitro_drain']
     valveSettings = {valve: False for valve in valves}
     valveButtons = {}
     for i, valve in enumerate(valves):
