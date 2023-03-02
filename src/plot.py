@@ -98,7 +98,9 @@ class Plot:
            self.subplot.legend(loc=self.legend)
 
         # Set up listeners
-        max_points = 1000
+        # max_points = 1000
+        max_points = 20
+
         for y in self.ys:
             def fn(x_data, y_data, y=y):
                 # If the x series is the time, then scale it to plot in seconds
@@ -136,7 +138,10 @@ class Plot:
                         
                 assert len(x_data) == len(y_data)
                 # 'Prune' plotted data to avoid slow-down with large amounts of data
-                indices = range(0, len(x_data), max(len(x_data) // max_points, 1))
+                # indices = range(0, len(x_data), max(len(x_data) // max_points, 1))
+
+                # Delete old data values to make graphs scroll
+                indices = range(max(0, len(x_data)-max_points), len(x_data))
                 x_data = [x_data[i] for i in indices]
                 y_data = [y_data[i] for i in indices]
                 self.update[y] = x_data, y_data
