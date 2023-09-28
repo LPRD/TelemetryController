@@ -27,9 +27,6 @@ def init(config=Config.MK_2):
     dts =\
         [manager.DataType('run_time', int, units="ms", show=False, export_csv=False),
          manager.DataType('force1', float, units="Newtons", export_csv=True),
-         manager.DataType('force2', float, units="Newtons", export_csv=True),
-         manager.DataType('force3', float, units="Newtons", export_csv=True),
-         manager.DataType('force4', float, units="Newtons", export_csv=True),
          manager.DataType('inlet_temp', float, units="deg C", export_csv=True),
          manager.DataType('outlet_temp', float, units="deg C", export_csv=True),
          manager.DataType('fuel_press', float, units="PSI", export_csv=True),
@@ -46,7 +43,7 @@ def init(config=Config.MK_2):
          manager.DataType('nitro_fill_setting', bool, show=False),
          manager.DataType('nitro_drain_setting', bool, show=False)]
     plots =\
-        [plot.Plot('time', ['force1','force2','force3','force4'],'force', width=1, show_x_label=False),
+        [plot.Plot('time', ['force1'],'force', width=1, show_x_label=False),
          plot.Plot('time', ['fuel_press', 'ox_press', 'fuel_inj_press', 'ox_inj_press'], "line pressure", width=1, show_x_label=False),
          plot.Plot('time', ['inlet_temp', 'outlet_temp'], "coolant temperature", width=1)]
     dispatcher = manager.Dispatcher(*dts)
