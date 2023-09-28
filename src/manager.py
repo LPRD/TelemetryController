@@ -66,7 +66,7 @@ class DataType:
             self.full_name += " (" + self.units + ")"
 
 class PacketSpec:
-    """Representation of a serial packet that contains multiple data types."""
+    """Representation of a packet that contains multiple data types."""
     def __init__(self, name: str, *data_types: DataType) -> None:
         self.name = name
         self.data_types = data_types
@@ -75,7 +75,7 @@ Spec = Union[PacketSpec, DataType]
 DispatchListener = Callable[[Optional[int], Data], None]
 
 class Dispatcher:
-    """Manages parsing incoming serial packets, recieving data in given data
+    """Manages parsing incoming packets, recieving data in given data
     types, and passes it to listeners.  Also tracks system date and time.  """
     
     def __init__(self, *specs: Spec) -> None:

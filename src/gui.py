@@ -1,4 +1,4 @@
-import serialmanager
+import socketmanager
 import manager
 import plot
 
@@ -47,8 +47,7 @@ class Application(Frame):
                      'show_send_value': True,
                      'full_screen': False,
                      'backup_log': ".temp_log.json",
-                     'serial_console_height': 15,
-                     'default_baud': 9600,
+                     'console_height': 15,
                      'plots_size': (12,10),
                      'plots_background': 'white'}
         new_flags.update(flags)
@@ -63,8 +62,6 @@ class Application(Frame):
                             action='store_true',
                             default=self.flags['full_screen'],
                             help="open the gui in full screen mode if requested")
-        parser.add_argument('-p','--port',
-                            help="default port to open")
         args = parser.parse_args()
         self.flags['full_screen'] = args.full_screen
 
@@ -79,20 +76,8 @@ class Application(Frame):
         self._createWidgets()
         self.manager.add_listener("sys time", self.saveBackup)
 
-        # Start reading from Serial
-        self.serialManager: Optional[serialmanager.SerialManager] = None
-        self.checkSerial()
-        self.baud.set(str(self.flags['default_baud']))
-        self.serialPort.trace('w', self.changeSerial)
-        self.baud.trace('w', self.changeSerial)
-        ports = serialmanager.serial_ports()
-        if args.port:
-            if args.port in ports:
-                self.serialPort.set(args.port)
-            else:
-                parser.error("Invalid serial port " + args.port)
-        elif ports:
-            self.serialPort.set(ports[0])
+        # Declare socketManager
+        self.socketManager: Optional[socketmanager.SocketManager] = None
 
         self._startListeners()
 
@@ -139,52 +124,44 @@ class Application(Frame):
         
         buttons.pack()
 
-        serialLabel = Label(self, text="\nSerial console")
-        serialLabel.pack()
+        consoleLabel = Label(self, text="\nConsole")
+        consoleLabel.pack()
 
-        serial = Frame(self)
-        serialControls = Frame(serial)
+        console = Frame(self)
+        consoleControls = Frame(console)
 
-        self.serialPort = StringVar(self)
-        self.serialSelect = OptionMenu(serialControls, self.serialPort, [])
-        self.serialSelect.pack(side=LEFT)
+        self.boardConnect = Button(consoleControls, text="Connect", command=self.connectSocket)
+        self.boardConnect.pack()
 
-        self.baud = StringVar(self)
-        self.baudSelect = OptionMenu(serialControls, self.baud, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 38400, 57600, 115200, 230400, 250000)
-        self.baudSelect.pack(side=LEFT)
+        consoleControls.pack()
 
-        self.refreshPortButton = Button(serialControls, text="Refresh", command=self.checkSerial)
-        self.refreshPortButton.pack()
-
-        serialControls.pack()
-
-        self.serialOut = ScrolledText(serial, width=50, height=self.flags['serial_console_height'])
-        self.serialOut.config(state=DISABLED)
+        self.consoleOut = ScrolledText(console, width=50, height=self.flags['console_height'])
+        self.consoleOut.config(state=DISABLED)
         self.colorStreams = {}
         for color in ['red', 'yellow', 'green', 'blue']:
-            self.serialOut.tag_config(color + '_text', foreground=color)
+            self.consoleOut.tag_config(color + '_text', foreground=color)
             self.colorStreams[color] = FnWriteableStream(lambda txt, color=color: self.write(txt, str(color)))
-        self.serialOut.pack()
+        self.consoleOut.pack()
 
-        self.serialIn = Entry(serial, width=50)
+        self.consoleIn = Entry(console, width=50)
         if self.flags["send_with_newline_default"]:
-            self.serialIn.bind('<Return>', self.sendSerialNewline)
+            self.consoleIn.bind('<Return>', self.sendConsoleNewline)
         else:
-            self.serialIn.bind('<Return>', self.sendSerial)
-        self.serialIn.pack()
+            self.consoleIn.bind('<Return>', self.sendConsole)
+        self.consoleIn.pack()
 
-        serialSendButtons = Frame(serial)
+        consoleSendButtons = Frame(console)
 
-        self.sendButton = Button(serialSendButtons, text="Send", command=self.sendSerial)
+        self.sendButton = Button(consoleSendButtons, text="Send", command=self.sendConsole)
         self.sendButton.pack(side=LEFT)
 
-        self.sendNewlineButton = Button(serialSendButtons, text="Send with newline", command=self.sendSerialNewline)
+        self.sendNewlineButton = Button(consoleSendButtons, text="Send with newline", command=self.sendConsoleNewline)
         self.sendNewlineButton.pack(side=LEFT)
 
-        serialSendButtons.pack()
-        serialSendButtons = Frame(serial)
+        consoleSendButtons.pack()
+        consoleSendButtons = Frame(console)
 
-        serial.pack()
+        console.pack()
 
         # Formatted packet sending widget
         sendValuesLabel = Label(self, text="\nSend value")
@@ -244,11 +221,11 @@ class Application(Frame):
         
         plot.setup(self.plots, self.fig, self.manager)
 
-        def animate(i):
+        def animatePlots(i):
             for plot in self.plots:
                 plot.animate()
 
-        ani = FuncAnimation(self.fig, animate, interval=200)
+        self.ani = FuncAnimation(self.fig, animatePlots, interval=200)
 
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(side=LEFT)
@@ -267,25 +244,25 @@ class Application(Frame):
             sys.exit(0)
 
     def write(self, txt: str, color: str=None):
-        """Write text to the serial console."""
+        """Write text to the console."""
         if txt:
-            self.serialOut.config(state=NORMAL)
+            self.consoleOut.config(state=NORMAL)
             if color:
-                self.serialOut.insert(END, str(txt), color + '_text')
+                self.consoleOut.insert(END, str(txt), color + '_text')
             else:
-                self.serialOut.insert(END, str(txt))
-            self.serialOut.see(END)
-            self.serialOut.config(state=DISABLED)
+                self.consoleOut.insert(END, str(txt))
+            self.consoleOut.see(END)
+            self.consoleOut.config(state=DISABLED)
 
     def start(self):
         """Start a run."""
-        if self.serialManager:
+        if self.socketManager:
             self.resetValuesTable()
             self.manager.start()
             self.controlButton.config(text="Stop", bg="red", command=self.stop)
             return True
         else:
-            showerror("Error", "No serial port selected")
+            showerror("Error", "No socket connection established")
             return False
     
     def stop(self):
@@ -298,36 +275,44 @@ class Application(Frame):
         self.resetValuesTable()
         self.manager.reset()
         self.controlButton.config(text="Start", bg="lime green", command=self.start)
-    
-    def sendSerial(self, _=None):
-        """Send a serial command."""
-        if self.serialManager:
-            self.serialManager.write(self.serialIn.get())
-            self.serialIn.delete(0, 'end')
+
+    def sendConsole(self, _=None):
+        """Send a command over the socket."""
+        if self.socketManager:
+            try:
+                self.socketManager.write(self.consoleIn.get())
+                self.consoleIn.delete(0, 'end')
+            except BrokenPipeError:
+                self.disconnectSocket()
+                showerror("Error", "Socket connection lost")
         else:
-            showerror("Error", "No serial port selected")
+            showerror("Error", "No socket connection established")
     
-    def sendSerialNewline(self, _=None):
-        """Handler for sending a serial command with a newline appended."""
-        if self.serialManager:
-            self.serialManager.write(self.serialIn.get() + "\r\n")
-            self.serialIn.delete(0, 'end')
+    def sendConsoleNewline(self, _=None):
+        """Handler for sending a command over the socket with a newline appended."""
+        if self.socketManager:
+            try:
+                self.socketManager.write(self.consoleIn.get() + "\r\n")
+                self.consoleIn.delete(0, 'end')
+            except BrokenPipeError:
+                self.disconnectSocket()
+                showerror("Error", "Socket connection lost")
         else:
-            showerror("Error", "No serial port selected")
+            showerror("Error", "No socket connection established")
     
     def sendValues(self, _=None):
         """Handler for sending a formatted packet."""
         self.sendValue(self.sendDataName.get(), self.sendDataIn.get())
-        if self.serialManager:
+        if self.socketManager:
             self.sendDataIn.delete(0, 'end')
     
     def sendValue(self, name, value=""):
         """Send a formatted packet."""
-        if self.serialManager:
-            self.serialManager.write("@@@@@" + name + ":" + manager.unparse(value) + "&&&&&\r\n")
+        if self.socketManager:
+            self.socketManager.write("@@@@@" + name + ":" + manager.unparse(value) + "&&&&&\r\n")
             return True
         else:
-            showerror("Error", "No serial port selected")
+            showerror("Error", "No socket connection established")
             return False
     
     def unmaximize(self, _):
@@ -339,31 +324,29 @@ class Application(Frame):
         self.master.attributes("-fullscreen", not self.master.attributes('-fullscreen'))
     
     def resetValuesTable(self):
-        """Clear the values table after a reset or changing ports."""
+        """Clear the values table after a reset."""
         for item in self.valuesTable.get_children():
             self.valuesTable.item(item, values=())
     
-    def changeSerial(self, *args):
-        """Handler for changing the serial port."""
-        # Try-catch needed b/c error messages in tracebacks on Windows are buggy
-        try:
-            #print("Selected port", self.serialPort.get())
-            self.serialOut.config(state=NORMAL)
-            self.serialOut.delete(1.0, 'end')
-            self.serialOut.config(state=DISABLED)
+    def connectSocket(self):
+        """Connect via a web socket to the test stand."""
+        self.socketManager = socketmanager.makeManager(self.dispatcher)
+        if self.socketManager:
+            self.consoleOut.config(state=NORMAL)
+            self.consoleOut.delete(1.0, 'end')
+            self.consoleOut.config(state=DISABLED)
             self.reset()
-            self.serialManager = serialmanager.SerialManager(self.dispatcher, self.serialPort.get(), int(self.baud.get()))
-            self.startSerial()
-        except:
-            if not sys.platform.startswith('win'):
-                traceback.print_exc()
-    
-    def checkSerial(self):
-        """Handler for checking the available serial ports."""
-        self.serialSelect['menu'].delete(0, 'end')
-        for port in serialmanager.serial_ports():
-            self.serialSelect['menu'].add_command(label=port, command=lambda p=port: self.serialPort.set(p))
-    
+            self.startSocket()
+            self.boardConnect.config(text="Disconnect", bg="light grey", fg="grey", command=self.disconnectSocket)
+        else:
+            showerror("Error", "Socket connection cannot be made")
+
+    def disconnectSocket(self):
+        if self.socketManager:
+            del self.socketManager
+            self.socketManager = None
+        self.boardConnect.config(text="Connect", command=self.connectSocket)
+
     def _startListeners(self):
         """Begin updating the data manager listeners."""
         if self.manager.update_all_listeners():
@@ -371,17 +354,17 @@ class Application(Frame):
         else:
             self.after(100, self._startListeners)
     
-    def startSerial(self):
-        """Begin reading serial data."""
-        if self.serialManager:
+    def startSocket(self):
+        """Begin reading data from the socket"""
+        if self.socketManager:
             try:
-                if self.serialManager.handleInput(self, self.colorStreams['red']):
-                    self.after(50, self.startSerial)
+                if self.socketManager.handleInput(self, self.colorStreams['red']):
+                    self.after(50, self.startSocket)
                 else:
-                    self.after(100, self.startSerial)
-            except OSError:
-                self.serialManager = None
-                self.checkSerial()
+                    self.after(100, self.startSocket)
+            except (ConnectionResetError, BrokenPipeError):
+                self.disconnectSocket()
+                showerror("Error", "Socket connection lost")
     
     _last_update_time = ""
     def saveBackup(self, times, values):
@@ -443,11 +426,11 @@ class Application(Frame):
                               "Legal formats are json, csv, log, eps, pdf, pgf, png, ps, raw, rgba, svg, svgz")
             else:
                 if extension in ["json", "log", "csv"]:
-                    if self.serialManager:
-                        self.serialManager.paused = True
+                    if self.socketManager:
+                        self.socketManager.paused = True
                     open(filename, 'w').write(self.manager.dump(extension))
-                    if self.serialManager:
-                        self.serialManager.paused = False
+                    if self.socketManager:
+                        self.socketManager.paused = False
                 else:
                     self.fig.savefig(filename)
     

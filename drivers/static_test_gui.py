@@ -58,8 +58,7 @@ def init(config=Config.MK_2):
                           "Telemetry monitor - Mk 2 static test" if config == Config.MK_2 else
                           "Telemetry monitor",
                           show_send_value=False,
-                          serial_console_height=7,
-                          default_baud=115200)
+                          console_height=7)
     running = False
     def heartbeat():
         if running:

@@ -5,7 +5,7 @@ from typing import *
 from manager import Dispatcher, Writeable
 
 class SocketManager:
-    """Manages recieving data from a serial port and passes it to a Dispatcher."""
+    """Manages recieving data from a socket and passes it to a Dispatcher."""
     
     paused = False
 
@@ -39,7 +39,7 @@ class SocketManager:
         return False
     
     def write(self, txt: Text):
-        """Send the given text back out the serial port."""
+        """Send the given text back out the socket."""
         if not self.socket.send(txt.encode()):
             raise BrokenPipeError("Socket closed")
 
