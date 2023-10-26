@@ -29,7 +29,7 @@ class SocketManager:
 
         if readable and not self.paused:
             # Read from socket
-            bytes_in = self.socket.recv(1024)
+            bytes_in = self.socket.recv(2048)
             if not bytes_in:
                 raise BrokenPipeError("Socket closed")
 

@@ -359,7 +359,7 @@ class Application(Frame):
         if self.socketManager:
             try:
                 if self.socketManager.handleInput(self, self.colorStreams['red']):
-                    self.after(50, self.startSocket)
+                    self.after(5, self.startSocket)
                 else:
                     self.after(100, self.startSocket)
             except (ConnectionResetError, BrokenPipeError):

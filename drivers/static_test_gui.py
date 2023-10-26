@@ -35,7 +35,7 @@ def init(config=Config.MK_2):
          manager.DataType('ox_inj_press', float, units="PSI", export_csv=True),
          manager.DataType('status', str, show=False),
          # True = open, False = closed for these
-         manager.DataType('sensor_status', bool, show=False),
+         manager.DataType('sensors_ok', bool, show=False),
          manager.DataType('fuel_pre_setting', bool, show=False),
          manager.DataType('ox_pre_setting', bool, show=False),
          manager.DataType('fuel_main_setting', bool, show=False),
@@ -111,7 +111,7 @@ def init(config=Config.MK_2):
     sensorStatus.pack()
     Button(controlsFrame, text="Zero force", command=lambda: app.sendValue("zero_force")).pack(side=LEFT)
     Button(controlsFrame, text="Zero pressure", command=lambda: app.sendValue("zero_pressure")).pack(side=LEFT)
-    Button(controlsFrame, text="Reset board", command=lambda: app.sendValue("reset")).pack(side=LEFT)
+    Button(controlsFrame, text="Restart controller", command=lambda: app.sendValue("reset")).pack(side=LEFT)
 
     # Igniter controls
     #Label(app, text="\Igniter Controls").pack()
@@ -157,7 +157,7 @@ def init(config=Config.MK_2):
     app.dispatcher.add_listener('status', lambda time, val: status.config(text="  " + state_name(val)))
     app.dispatcher.add_listener('status', check_stop)
     app.dispatcher.add_listener('run_time', update_time)
-    app.dispatcher.add_listener('sensor_status', lambda time, val: sensorStatus.config(text="All sensors functional" if val else "Sensor error encountered",
+    app.dispatcher.add_listener('sensors_ok', lambda time, val: sensorStatus.config(text="All sensors functional" if val else "Sensor error encountered",
                                                                                        fg='green' if val else 'red'))
 
     for valve in valves:
